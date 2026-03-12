@@ -26,41 +26,33 @@
 
 
 
-# Initialization service: installs JDK and Maven (if needed) and creates a JPMS multi-module
-# project following `JPMS_Guide.md`. It mounts the repository root and will create
-# `Gift_Basket_Production` and a `Core` module if they do not already exist.
-
 services:
-  
-  jpms-init:
-    image: ubuntu:22.04
+  maven-init:
+    image: maven:3.9-eclipse-temurin-17
     volumes:
       - ./:/workspace
     working_dir: /workspace
-    tty: true
-    command:
-      - /bin/bash
-      - -c
-      - |
-        set -euo pipefail && apt-get update && apt-get install -y --no-install-recommends openjdk-17-jdk maven ca-certificates curl && rm -rf /var/lib/apt/lists/* && echo 'JDK and Maven installed' && \
-        if [ ! -d Gift_Basket_Production ]; then \
-          mvn -B archetype:generate -DarchetypeGroupId=org.codehaus.mojo.archetypes -DarchetypeArtifactId=pom-root -DarchetypeVersion=RELEASE -DgroupId=dk.sdu.sem4 -DartifactId=Gift_Basket_Production -Dversion=1.0-SNAPSHOT -Dpackage=dk.sdu.sem4 -DinteractiveMode=false; \
-        else \
-          echo 'Gift_Basket_Production already exists, skipping parent creation'; \
-        fi && \
-        cd Gift_Basket_Production || exit 0 && \
-        if [ ! -d Core ]; then \
-          mvn -B archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DarchetypeArtifactId=maven-archetype-quickstart -DgroupId=dk.sdu.sem4 -DartifactId=Core -Dversion=1.0-SNAPSHOT -Dpackage=dk.sdu.sem4 -DinteractiveMode=false; \
-        else \
-          echo 'Core module already exists, skipping'; \
-        fi && \
-        mkdir -p Core/src/main/java/dk/sdu/sem4 && \
-        if [ ! -f Core/src/main/java/module-info.java ]; then \
-          printf '%s\n' 'module Core {' '    exports dk.sdu.sem4;' '}' > Core/src/main/java/module-info.java; \
-        fi && \
-        if [ ! -f Core/src/main/java/dk/sdu/sem4/App.java ]; then \
-          printf '%s\n' 'package dk.sdu.sem4;' 'public class App {' '    public static void main(String[] args) {' '        System.out.println("Hello, JPMS (from Core)");' '    }' '}' > Core/src/main/java/dk/sdu/sem4/App.java; \
-        fi && \
-        # Ensure parent pom lists the module
-        if ! grep -q "<modules>" pom.xml; then perl -0777 -pe "s|(</packaging>)|\$1\n  <modules>\n    <module>Core</module>\n  </modules>|s" -i pom.xml || true; fi && \
-        echo 'JPMS project created/verified in /workspace/Gift_Basket_Production' && ls -R | sed -n '1,200p'
+    command: >
+      mvn archetype:generate
+      -DgroupId=dk.sdu.sem4
+      -DartifactId=Scaling-Experiment-project
+      -DarchetypeArtifactId=maven-archetype-quickstart
+      -DinteractiveMode=false
+
+# Start with running the docker-compose file to create the maven project structure, then stop the container and add the code to the generated project structure. 
+# The generated project structure will be in the Scaling-Experiment-project folder. 
+# In a terminal you run the docker-compose file with:
+#   docker-compose up
+# 
+# To build the project, navigate to Scaling-Experiment-project with:
+#   cd Scaling-Experiment-project
+# And run:
+#   mvn compile
+# 
+# Then run:
+#   mvn package
+# 
+# Then run the jar file with:
+#   java -cp target/Scaling-Experiment-project-1.0-SNAPSHOT.jar
+#
+# Then you terminal shgould see the output of the program.
