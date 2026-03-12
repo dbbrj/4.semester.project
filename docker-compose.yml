@@ -30,8 +30,6 @@
 # project following `JPMS_Guide.md`. It mounts the repository root and will create
 # `Gift_Basket_Production` and a `Core` module if they do not already exist.
 
-version: '3.8'
-
 services:
   
   jpms-init:
