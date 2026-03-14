@@ -27,32 +27,7 @@
 
 
 services:
-  maven-init:
-    image: maven:3.9-eclipse-temurin-17
-    volumes:
-      - ./:/workspace
-    working_dir: /workspace
-    command: >
-      mvn archetype:generate
-      -DgroupId=dk.sdu.sem4
-      -DartifactId=Scaling-Experiment-project
-      -DarchetypeArtifactId=maven-archetype-quickstart
-      -DinteractiveMode=false
-
-# Start with running the docker-compose file to create the maven project structure, then stop the container and add the code to the generated project structure. 
-# The generated project structure will be in the Scaling-Experiment-project folder. 
-# In a terminal you run the docker-compose file with:
-#   docker-compose up
-# 
-# To build the project, navigate to Scaling-Experiment-project with:
-#   cd Scaling-Experiment-project
-# And run:
-#   mvn compile
-# 
-# Then run:
-#   mvn package
-# 
-# Then run the jar file with:
-#   java -cp target/Scaling-Experiment-project-1.0-SNAPSHOT.jar
-#
-# Then you terminal shgould see the output of the program.
+  sem4:
+    build: .
+    tty: true
+    stdin_open: true
