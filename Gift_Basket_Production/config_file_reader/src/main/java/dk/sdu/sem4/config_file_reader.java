@@ -1,5 +1,5 @@
 package dk.sdu.sem4;
 
-public class config_file_reader {
+public class Config_file_reader {
     
 }
