@@ -11,6 +11,11 @@
     <maven.compiler.release>17</maven.compiler.release>
   </properties>
   
+  <modules>
+    <module>Core</module>
+    <module>config_file_reader</module>
+  </modules>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -150,9 +155,5 @@
     </profile>
  
   </profiles>
- 
-  <modules>
-    <module>Core</module>
-  </modules>
-  
+   
 </project>
