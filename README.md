@@ -60,6 +60,12 @@ mvn exec:exec
 
 
 
+## How to make a new module-info.java
+when you are looking at the folder strukture, you need to have the module-info.java file in the path ..\src\main\java 
+**ALL** moduels need to have this file, its what makes the program connect the different modules
+
+
+
 ## How to Run 
 [Tell how to run the Program in a Docker Container.]
 
@@ -79,11 +85,6 @@ mvn exec:exec
 
 ### Naming Structur: 
 [A general guide to how you name things, and what the different words means in the context of the program.]
-
-
-
-
-
 
 
 
