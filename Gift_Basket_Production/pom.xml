@@ -8,8 +8,8 @@
   <name>Gift_Basket_Production</name>
 
   <modules>
-    <module>Core</module>
-    <module>Config_file_reader</module>
+    <module>core</module>
+    <module>config_file_reader</module>
   </modules>
 
   <properties>
@@ -36,7 +36,7 @@
       </dependency>
       <dependency>
         <groupId>org.json</groupId>
-        <artifactId>org.json</artifactId>
+        <artifactId>json</artifactId>
         <version>20231013</version>
       </dependency>
     </dependencies>
