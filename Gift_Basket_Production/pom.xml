@@ -7,17 +7,17 @@
 
   <name>Gift_Basket_Production</name>
 
-  <modules>
-    <module>machine_orch</module>
-    <module>core</module>
-  </modules>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
   </properties>
+
+  <modules>
+    <module>machine_orch</module>
+    <module>core</module>
+  </modules>
   
-    <dependencyManagement>
+  <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.openjfx</groupId>
@@ -42,7 +42,7 @@
     </dependencies>
   </dependencyManagement>
  
-   <build>
+ <build>
     <plugins>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
