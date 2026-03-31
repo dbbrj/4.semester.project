@@ -7,15 +7,15 @@
 
   <name>Gift_Basket_Production</name>
 
-  <modules>
-    <module>config_file_reader</module>
-    <module>core</module>
-  </modules>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
   </properties>
+  
+  <modules>
+    <module>config_file_reader</module>
+    <module>core</module>
+  </modules>
   
   <dependencyManagement>
     <dependencies>
