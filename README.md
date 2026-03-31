@@ -41,7 +41,7 @@ docker exec -it 4semesterproject-sem4-1 bash
 
 Run the Project from inside the Container. 
 ```bash
-mvn exec:exec
+mvn exec:exec -N
 ```
 
 
