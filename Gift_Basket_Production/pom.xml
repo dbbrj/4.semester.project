@@ -8,8 +8,8 @@
   <name>Gift_Basket_Production</name>
 
   <modules>
-    <module>core</module>
     <module>config_file_reader</module>
+    <module>core</module>
   </modules>
 
   <properties>
@@ -59,54 +59,50 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.6.3</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>exec</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <executable>java</executable>
-            <workingDirectory>.</workingDirectory>
-            <arguments>
-              <argument>--module-path=mods-mvn</argument>
-              <argument>--class-path=libs/*</argument>
-              <argument>--module=Core/dk.sdu.sem4.main.App</argument>
-              <argument>--add-modules javafx.graphics</argument>
-            </arguments>
-          </configuration>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
     </plugins>
   </build>
   
   <profiles>
-    <profile>
-      <id>parent-project</id>
-      <activation>
-        <file>
-          <missing>src</missing>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-clean-plugin</artifactId>
-            <version>3.2.0</version>
-            <configuration>
-              <filesets>
-                <fileset>
-                  <directory>mods-mvn</directory>
-                </fileset>
-                <fileset>
-                  <directory>libs</directory>
-                </fileset>
-              </filesets>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+  <profile>
+    <id>parent-project</id>
+    <activation>
+      <file>
+        <missing>src</missing>
+      </file>
+    </activation>
+    <build>
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <filesets>
+              <fileset><directory>mods-mvn</directory></fileset>
+              <fileset><directory>libs</directory></fileset>
+            </filesets>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.6.3</version>
+          <configuration>
+            <skip>false</skip>
+            <executable>java</executable>
+            <workingDirectory>${project.basedir}</workingDirectory>
+            <arguments>
+              <argument>--module-path=${project.basedir}/mods-mvn</argument>
+              <argument>--module=core/dk.sdu.sem4.App</argument>
+            </arguments>
+          </configuration>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
     <profile>
       <id>child-project</id>
       <activation>
@@ -132,6 +128,12 @@
                       <groupId>${project.groupId}</groupId>
                       <artifactId>${project.artifactId}</artifactId>
                       <version>${project.version}</version>
+                      <type>jar</type>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.json</groupId>
+                      <artifactId>json</artifactId>
+                      <version>20231013</version>
                       <type>jar</type>
                     </artifactItem>
                   </artifactItems>

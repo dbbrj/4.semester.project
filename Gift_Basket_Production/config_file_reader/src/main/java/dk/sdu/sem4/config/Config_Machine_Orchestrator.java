@@ -1,4 +1,4 @@
-package dk.sdu.sem4;
+package dk.sdu.sem4.config;
 
 public class Config_Machine_Orchestrator {
     private String machineName;

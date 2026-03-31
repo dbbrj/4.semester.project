@@ -1,6 +1,7 @@
 package dk.sdu.sem4;
 
-import dk.sdu.sem4.config_file_reader;
+import dk.sdu.sem4.config.Config_Machine_Orchestrator;
+import dk.sdu.sem4.config.Config_file_reader;
 
 /**
  * Hello world!
