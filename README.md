@@ -41,7 +41,7 @@ docker exec -it 4semesterproject-sem4-1 bash
 
 Run the Project from inside the Container. 
 ```bash
-mvn exec:exec
+mvn exec:exec -N
 ```
 
 
@@ -57,6 +57,13 @@ mvn exec:exec
 ```java
 [Code Examples]
 ```
+
+
+
+## How to make a new module-info.java
+when you are looking at the folder strukture, you need to have the module-info.java file in the path ..\src\main\java
+
+**ALL** moduels need to have this file, its what makes the program connect the different modules
 
 
 
@@ -79,11 +86,6 @@ mvn exec:exec
 
 ### Naming Structur: 
 [A general guide to how you name things, and what the different words means in the context of the program.]
-
-
-
-
-
 
 
 
