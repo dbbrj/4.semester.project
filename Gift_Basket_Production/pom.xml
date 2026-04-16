@@ -153,6 +153,7 @@
  
   <modules>
     <module>Core</module>
+    <module>erp_simulator</module>
   </modules>
   
 </project>
