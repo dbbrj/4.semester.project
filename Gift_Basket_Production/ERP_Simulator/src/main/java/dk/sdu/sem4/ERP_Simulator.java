@@ -5,9 +5,9 @@ import java.util.List;
 
 public class ERP_Simulator {
 
-    private List<Order_Class> erp_OrderList_Idle;
+    private final List<Order_Class> erp_OrderList_Idle;
     private Order_Class erp_OrderList_Processing;
-    private List<Order_Class> erp_OrderList_Done;
+    private final List<Order_Class> erp_OrderList_Done;
 
     public ERP_Simulator() {
         this.erp_OrderList_Idle = new ArrayList<>();

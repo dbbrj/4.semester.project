@@ -1,9 +1,9 @@
 package dk.sdu.sem4;
 
 public class Order_Class {
-    private String orderId;
-    private String productName;
-    private int quantity;
+    private final String orderId;
+    private final String productName;
+    private final int quantity;
     private String status;
 
     public Order_Class(String orderId, String productName, int quantity, String status) {

@@ -13,6 +13,7 @@
   </properties>
 
   <modules>
+    <module>erp_simulator</module>
     <module>core</module>
   </modules>
 
@@ -145,13 +146,5 @@
       </build>
     </profile>
   </profiles>
-<<<<<<< HEAD
- 
-  <modules>
-    <module>Core</module>
-    <module>erp_simulator</module>
-  </modules>
-=======
->>>>>>> dfcae8ddac1f9e0aa1db5cac95dc2c2cdfa978e2
   
 </project>
