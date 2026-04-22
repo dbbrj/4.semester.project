@@ -10,6 +10,7 @@
   <modules>
     <module>erp_simulator</module>
     <module>config_file_reader</module>
+    <module>machine_orch</module>
     <module>core</module>
   </modules>
 
