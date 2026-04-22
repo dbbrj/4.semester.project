@@ -11,6 +11,9 @@
     <module>erp_simulator</module>
     <module>config_file_reader</module>
     <module>machine_orch</module>
+    <module>AGV_struct</module>
+    <module>Assembly_struct</module>
+    <module>Warehouse_Struct</module>
     <module>core</module>
   </modules>
 
