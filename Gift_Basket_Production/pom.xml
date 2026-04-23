@@ -153,6 +153,8 @@
  
   <modules>
     <module>Core</module>
+      <module>OrderManager</module>
+      <module>OrderManager</module>
   </modules>
   
 </project>
