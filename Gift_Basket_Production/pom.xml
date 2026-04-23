@@ -5,13 +5,23 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Gift_Basket_Production</name>
-  
+ 
+  <modules>
+    <module>erp_simulator</module>
+    <module>config_file_reader</module>
+    <module>machine_orch</module>
+    <module>AGV_struct</module>
+    <module>Assembly_struct</module>
+    <module>Warehouse_Struct</module>
+    <module>core</module>
+  </modules>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
   </properties>
-  
-  <dependencyManagement>
+
+   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.junit</groupId>
