@@ -1,0 +1,16 @@
+{
+"orders": [
+    {
+    "orderId": "1001",
+    "productName": "GiftBasketSmall",
+    "quantity": 2,
+    "status": "IDLE"
+    },
+    {
+    "orderId": "1002",
+    "productName": "GiftBasketLarge",
+    "quantity": 1,
+    "status": "IDLE"
+    }
+]
+}
