@@ -13,6 +13,7 @@
   </properties>
 
   <modules>
+    <module>assembly_struct</module>
     <module>core</module>
   </modules>
 

@@ -31,3 +31,9 @@ services:
     build: .
     tty: true
     stdin_open: true
+
+  mqtt: 
+    image: thmork/st4-mqtt:latest
+    ports:
+      - 1883:1883
+      - 9001:9001
