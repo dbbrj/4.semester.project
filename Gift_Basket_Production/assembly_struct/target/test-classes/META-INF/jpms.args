@@ -1,4 +1,0 @@
---patch-module
-assembly_struct=_
---add-reads
-assembly_struct=ALL-UNNAMED
