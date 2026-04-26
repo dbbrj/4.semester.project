@@ -31,9 +31,15 @@ services:
     build: .
     tty: true
     stdin_open: true
-
   mqtt: 
     image: thmork/st4-mqtt:latest
     ports:
       - 1883:1883
       - 9001:9001
+  st4-assemblystation:
+    image: thmork/st4-assemblystation:latest
+    depends_on:
+      - mqtt
+    environment:
+      MQTT_TCP_CONNECTION_HOST: "mqtt"
+      MQTT_TCP_CONNECTION_PORT: 1883
