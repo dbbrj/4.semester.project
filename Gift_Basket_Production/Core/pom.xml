@@ -21,16 +21,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>dk.sdu.sem4</groupId>
-      <artifactId>config_file_reader</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>dk.sdu.sem4</groupId>
-      <artifactId>machine_orch</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
     </dependency>
