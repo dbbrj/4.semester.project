@@ -1,51 +1,64 @@
-package dk.sdu.sem4;
+package dk.sdu.sem4.orderManager;
 
-public class Warehouse_Structure_Class {
+import dk.sdu.sem4.erp_simulator.Order_Class;
 
-    private Warehouse_Structure_interface warehouse_Component_instance;
+public class Warehouse_Structure_Class implements Warehouse_Structure_interface {
 
+    private Warehouse_Component_Interface warehouse_Component_instance;
     private Item_Class warehouse_ItemLoad;
-
     private Order_Class warehouse_OrderLoad;
 
-    public boolean assign_Warehouse_component(Warehouse_Component_Interface Component){
+    @Override
+    public boolean assign_Warehouse_component(Warehouse_Component_Interface Component) {
         return false;
     }
 
-    public int get_Warehouse_Process(){
+    @Override
+    public int get_Warehouse_Process() {
         return 0;
     }
 
-    public int get_Warehouse_Process_Status(){
+    @Override
+    public int get_Warehouse_Process_Status() {
         return 0;
     }
 
+    @Override
     public boolean insert_Order(Order_Class order) {
         return false;
     }
 
-    public boolean insert_Item(int order_ID, Order_Item_Class & item, int amount = 1){
+    @Override
+    public boolean insert_Item(int order_ID, Order_Item_Class item, int amount) {
         return false;
     }
 
-    public order_Class extract_Order();
+    @Override
+    public Order_Class extract_Order() {
+        return null;
+    }
 
-    public boolean extract_Item(int order_ID, Order_Item_Class & item, int amount = 1) {
+    @Override
+    public boolean extract_Item(int order_ID, Order_Item_Class item, int amount) {
         return false;
     }
 
-    public String get_InventoryList(){
-        return "hello";
+    @Override
+    public String get_InventoryList() {
+        return "";
     }
 
-    public boolean check_Inventory_forOrder(int order_ID){
+    @Override
+    public boolean check_Inventory_forOrder(int order_ID) {
         return false;
     }
 
-    public int check_Inventory_forItem(Item_Class item){
+    @Override
+    public int check_Inventory_forItem(Item_Class item) {
         return 0;
     }
 
+    @Override
     public boolean check_CurrentlyLoaded() {
         return false;
     }

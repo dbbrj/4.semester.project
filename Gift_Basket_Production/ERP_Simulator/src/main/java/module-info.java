@@ -1,6 +1,6 @@
 module ERP_Simulator {
     requires org.json;
     
-    exports erp_simulator;
+    exports dk.sdu.sem4.erp_simulator;
 
 }
