@@ -1,4 +1,4 @@
-package dk.sdu.sem4;
+package dk.sdu.sem4.core;
 
 import dk.sdu.sem4.config.Config_Machine_Orchestrator;
 import dk.sdu.sem4.config.Config_file_reader;
