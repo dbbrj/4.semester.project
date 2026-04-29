@@ -74,7 +74,7 @@ public class AssemblyStationAdapter {
         try {
             if (mqttClient != null && mqttClient.isConnected()) {
                 mqttClient.disconnect();
-                isConnected = false;
+                this.isConnected = false;
                 System.out.println("[Adapter] Disconnected from broker.");
             }
         } catch (MqttException e) {
@@ -87,7 +87,7 @@ public class AssemblyStationAdapter {
     // -------------------------------------------------------------------------
 
     public boolean publishOperation(int processId) {
-        if (!isConnected) {
+        if (this.isConnected) {
             System.err.println("[Adapter] Cannot publish — not connected!");
             return false;
         }
@@ -112,12 +112,12 @@ public class AssemblyStationAdapter {
     // Getters
     // -------------------------------------------------------------------------
 
-    public boolean isConnected()           { return isConnected; }
-    public int     getState()              { return state; }
-    public int     getLastOperation()      { return lastOperation; }
-    public int     getCurrentOperation()   { return currentOperation; }
-    public String  getTimestamp()          { return timestamp; }
-    public boolean isHealthy()             { return isHealthy; }
+    public boolean isConnected()           { return this.isConnected; }
+    public int     getState()              { return this.state; }
+    public int     getLastOperation()      { return this.lastOperation; }
+    public int     getCurrentOperation()   { return this.currentOperation; }
+    public String  getTimestamp()          { return this.timestamp; }
+    public boolean isHealthy()             { return this.isHealthy; }
 
     // -------------------------------------------------------------------------
     // Private MqttCallback — keeps MQTT types out of the public API
