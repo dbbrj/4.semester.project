@@ -1,9 +1,0 @@
-﻿module ERP_Simulator {
-	requires javafx.controls;
-	requires javafx.fxml;
-	requires java.sql;
-
-	opens dk.sdu.sem4.erp_simulator to javafx.fxml;
-	
-	exports dk.sdu.sem4.erp_simulator;
-}
