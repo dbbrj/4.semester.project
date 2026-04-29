@@ -9,6 +9,8 @@
 .classpath
 .project
 .settings/
+.vs
+.idea
 
 
 # MacOS
