@@ -56,8 +56,8 @@ public class AssemblyStationAdapter {
 
             mqttClient.connect(options);
 
-            mqttClient.subscribe(TOPIC_STATUS, 1);
-            mqttClient.subscribe(TOPIC_CHECKHEALTH, 1);
+            mqttClient.subscribe(TOPIC_STATUS, 1); //Subscribe to the status topic, and make sure I actually receive the messages — resend if needed.
+            mqttClient.subscribe(TOPIC_CHECKHEALTH, 1); //Subscribe to the status topic, and make sure I actually receive the messages — resend if needed.
 
             isConnected = true;
             System.out.println("[Adapter] Connected to broker: " + brokerUrl);
