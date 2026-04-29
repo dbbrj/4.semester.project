@@ -65,7 +65,7 @@ public class AssemblyStationAdapter {
 
         } catch (MqttException e) {
             System.err.println("[Adapter] ERROR connecting: " + e.getMessage());
-            isConnected = false;
+            this.isConnected = false;
             return false;
         }
     }
