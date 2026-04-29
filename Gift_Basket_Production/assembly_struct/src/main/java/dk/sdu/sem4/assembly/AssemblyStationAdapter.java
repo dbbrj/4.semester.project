@@ -51,7 +51,7 @@ public class AssemblyStationAdapter {
 
             MqttConnectionOptions options = new MqttConnectionOptions();
             options.setCleanStart(true);
-            options.setConnectionTimeout(10);
+            options.setConnectionTimeout(1000);
             options.setAutomaticReconnect(true);
 
             mqttClient.connect(options);
