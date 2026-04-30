@@ -225,6 +225,7 @@ public class Warehouse_Adapter_Class
         return sendRequest("InsertItem", soapBody);
     }
 
+
     /**
      * Retrieve the current inventory of the warehouse.
      * Also returns State and TimeStamp in the response.
