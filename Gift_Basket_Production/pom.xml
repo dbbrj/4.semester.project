@@ -14,6 +14,7 @@
 
   <modules>
     <module>core</module>
+      <module>AGV_Struc</module>
   </modules>
 
    <dependencyManagement>
