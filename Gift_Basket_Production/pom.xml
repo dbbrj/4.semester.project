@@ -13,7 +13,8 @@
   </properties>
 
   <modules>
-    <module>core</module>
+      <module>Core</module>
+      <module>Warehouse_Component</module>
   </modules>
 
    <dependencyManagement>
