@@ -18,14 +18,16 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     private AssemblyStationListener listener;
 
     // --- Track previous state to detect changes ---
-    private int previousState = -1;
+    private int previousState;
 
 
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
     public AssemblyStationController(String brokerUrl) {
-        this.adapter = new AssemblyStationAdapter(brokerUrl, "assembly-st-controller", this);
+        this.previousState = -1;
+
+        this.adapter = new AssemblyStationAdapter(brokerUrl, "assembly-st-controller");
     }
 
 
@@ -65,7 +67,7 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     // -------------------------------------------------------------------------
     @Override
     public String checkStatus() {
-        if (!adapter.isConnected()) {
+        if (!adapter.getIsConnected()) {
             return "NOT CONNECTED — check docker-compose is running";
         }
         return switch (adapter.getState()) {
@@ -78,7 +80,7 @@ public class AssemblyStationController implements AssemblyStationControllerInter
 
     @Override
     public boolean isReadyForCommand() {
-        return adapter.isConnected() && adapter.getState() == STATE_IDLE;
+        return adapter.getIsConnected() && adapter.getState() == STATE_IDLE;
     }
 
 
@@ -89,7 +91,7 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     public boolean startAssembly(int processId) {
         System.out.println("[Controller] startAssembly() — processId: " + processId);
 
-        if (!adapter.isConnected()) {
+        if (!adapter.getIsConnected()) {
             System.err.println("[Controller] ERROR: Not connected.");
             notifyError("Cannot start assembly — station is not connected.");
             return false;
@@ -126,8 +128,8 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     // -------------------------------------------------------------------------
     @Override
     public boolean isPackageReadyForPickup() {
-        if (!adapter.isConnected()) return false;
-        return adapter.getState() == STATE_IDLE && adapter.isHealthy();
+        if (!adapter.getIsConnected()) return false;
+        return adapter.getState() == STATE_IDLE && adapter.getIsHealthy();
     }
 
 
@@ -171,7 +173,7 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     // -------------------------------------------------------------------------
     @Override public int     getCurrentProcessId() { return adapter.getCurrentOperation(); }
     @Override public int     getLastProcessId()    { return adapter.getLastOperation(); }
-    @Override public boolean isHealthy()           { return adapter.isHealthy(); }
+    @Override public boolean isHealthy()           { return adapter.getIsHealthy(); }
     @Override public String  getTimestamp()        { return adapter.getTimestamp(); }
 
     private void notifyError(String message) {

@@ -1,15 +1,10 @@
 package dk.sdu.sem4.assembly;
 
-import org.eclipse.paho.mqttv5.client.IMqttToken;
-import org.eclipse.paho.mqttv5.client.MqttCallback;
 import org.eclipse.paho.mqttv5.client.MqttClient;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
-import org.eclipse.paho.mqttv5.client.MqttDisconnectResponse;
 import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
-import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AssemblyStationAdapter {
@@ -24,20 +19,24 @@ public class AssemblyStationAdapter {
     private final String brokerUrl;
     private final String clientId;
 
-    private final AssemblyStationController controller;
 
     // --- Cached state from incoming messages ---
-    private int     lastOperation    = -1;
-    private int     currentOperation = -1;
-    private int     state            = -1;   // 0=Idle, 1=Executing, 2=Error
-    private String  timestamp        = "";
-    private boolean isHealthy        = false;
-    private boolean isConnected      = false;
+    private int lastOperation;
+    private int currentOperation;
+    private int state;   // 0=Idle, 1=Executing, 2=Error
+    private String timestamp;
+    private boolean isHealthy;
+    private boolean isConnected;
 
-    public AssemblyStationAdapter(String brokerUrl, String clientId, AssemblyStationController controller) {
+    public AssemblyStationAdapter(String brokerUrl, String clientId) {
         this.brokerUrl  = brokerUrl;
         this.clientId   = clientId;
-        this.controller = controller;
+        this.lastOperation    = -1;
+        this.currentOperation = -1;
+        this.state            = -1;
+        this.timestamp        = "";
+        this.isHealthy        = false;
+        this.isConnected      = false;
     }
 
     // -------------------------------------------------------------------------
@@ -47,7 +46,7 @@ public class AssemblyStationAdapter {
     public boolean connect() {
         try {
             mqttClient = new MqttClient(brokerUrl, clientId, new MemoryPersistence());
-            mqttClient.setCallback(new CallbackHandler());
+            mqttClient.setCallback(new CallbackHandler(this.lastOperation, this.currentOperation, this.state, this.timestamp, this.isHealthy, this.isConnected));
 
             MqttConnectionOptions options = new MqttConnectionOptions();
             options.setCleanStart(true);
@@ -59,7 +58,7 @@ public class AssemblyStationAdapter {
             mqttClient.subscribe(TOPIC_STATUS, 1); //Subscribe to the status topic, and make sure I actually receive the messages — resend if needed.
             mqttClient.subscribe(TOPIC_CHECKHEALTH, 1); //Subscribe to the status topic, and make sure I actually receive the messages — resend if needed.
 
-            isConnected = true;
+            this.isConnected = true;
             System.out.println("[Adapter] Connected to broker: " + brokerUrl);
             return true;
 
@@ -87,7 +86,7 @@ public class AssemblyStationAdapter {
     // -------------------------------------------------------------------------
 
     public boolean publishOperation(int processId) {
-        if (this.isConnected) {
+        if (!this.isConnected) {
             System.err.println("[Adapter] Cannot publish — not connected!");
             return false;
         }
@@ -112,88 +111,10 @@ public class AssemblyStationAdapter {
     // Getters
     // -------------------------------------------------------------------------
 
-    public boolean isConnected()           { return this.isConnected; }
-    public int     getState()              { return this.state; }
-    public int     getLastOperation()      { return this.lastOperation; }
-    public int     getCurrentOperation()   { return this.currentOperation; }
-    public String  getTimestamp()          { return this.timestamp; }
-    public boolean isHealthy()             { return this.isHealthy; }
-
-    // -------------------------------------------------------------------------
-    // Private MqttCallback — keeps MQTT types out of the public API
-    // -------------------------------------------------------------------------
-
-    private class CallbackHandler implements MqttCallback {
-
-        @Override
-        public void messageArrived(String topic, MqttMessage message) throws Exception {
-            String payload = new String(message.getPayload());
-            System.out.println("[Adapter] Message on [" + topic + "]: " + payload);
-
-            try {
-                System.out.println("[Adapter] Raw payload: " + payload);
-                JSONObject json = new JSONObject(payload);
-
-                if (topic.equals(TOPIC_STATUS)) {
-                    int newState = json.optInt("State", -1);
-
-                    lastOperation    = json.optInt("LastOperation",    lastOperation);
-                    currentOperation = json.optInt("CurrentOperation", currentOperation);
-                    timestamp        = json.optString("TimeStamp",     timestamp);
-
-                    if (newState != state) {
-                        state = newState;
-                        controller.onStateChanged(state, currentOperation);
-                    } else {
-                        state = newState;
-                    }
-
-                } else if (topic.equals(TOPIC_CHECKHEALTH)) {
-                    isHealthy = json.optBoolean("IsHealthy", false);
-                    System.out.println("[Adapter] Health check result — healthy: " + isHealthy);
-
-                    if (!isHealthy) {
-                        controller.onStateChanged(AssemblyStationController.STATE_ERROR, currentOperation);
-                    }
-                }
-
-            } catch (JSONException e) {
-                System.err.println("[Adapter] ERROR parsing JSON message: " + e.getMessage() + " | Payload: " + payload);
-            }
-        }
-
-        @Override
-        public void disconnected(MqttDisconnectResponse disconnectResponse) {
-            isConnected = false;
-            String reason = (disconnectResponse != null && disconnectResponse.getReasonString() != null)
-                    ? disconnectResponse.getReasonString()
-                    : "unknown reason";
-            System.err.println("[Adapter] Connection lost! Reason: " + reason);
-            controller.onConnectionLost(reason);
-        }
-
-        @Override
-        public void connectComplete(boolean reconnect, String serverURI) {
-            isConnected = true;
-            if (reconnect) {
-                System.out.println("[Adapter] Reconnected to broker: " + serverURI);
-                controller.onConnectionRestored();
-            }
-        }
-
-        @Override
-        public void deliveryComplete(IMqttToken token) {
-            // safe to ignore
-        }
-
-        @Override
-        public void mqttErrorOccurred(MqttException exception) {
-            System.err.println("[Adapter] MQTT error: " + exception.getMessage());
-        }
-
-        @Override
-        public void authPacketArrived(int reasonCode, MqttProperties properties) {
-            // not used
-        }
-    }
+    public boolean getIsConnected()             { return this.isConnected; }
+    public int     getState()                   { return this.state; }
+    public int     getLastOperation()           { return this.lastOperation; }
+    public int     getCurrentOperation()        { return this.currentOperation; }
+    public String  getTimestamp()               { return this.timestamp; }
+    public boolean getIsHealthy()               { return this.isHealthy; }
 }
