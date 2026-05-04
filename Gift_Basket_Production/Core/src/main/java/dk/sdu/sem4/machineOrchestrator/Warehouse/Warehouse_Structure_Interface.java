@@ -1,50 +1,97 @@
 package dk.sdu.sem4.machineOrchestrator.Warehouse;
 
-public interface Warehouse_Structure_Interface implements Machine_Structure_Interface
+import dk.sdu.sem4.machineOrchestrator.Machine_Structure_Interface;
+import org.json.JSONObject;
+
+public interface Warehouse_Structure_Interface extends Machine_Structure_Interface
 {
 
-    // --- Component pairing ---
+    // --- Component Pairing Methods ---
 
     // Called by the Component Loader to inject the matched Component instance
-    public boolean assign_Warehouse_Component(Warehouse_Component_Interface component);
+    public boolean Assign_Warehouse_Component(Warehouse_Component_Interface component);
 
-    // --- Process state ---
 
-    // Returns the current warehouse process as an int
-    public int get_Warehouse_Process();
 
-    // Returns the current status of the warehouse process as an int
-    public int get_Warehouse_Process_Status();
 
-    // --- Order level operations ---
+    // --- Order Methods ---
+
+    // Extracts the Items listed in the CurrentOrder attribute.
+    public boolean Extract_Items_fromCurrentsOrder();
 
     // Receives a full order to be handled by the warehouse
-    public boolean insert_Order(Order_Class order);
+    public boolean Insert_NewOrder(Order_Class order);
 
-    // Retrieves and returns a full order by its ID
-    public Order_Class extract_Order(int order_ID);
+    // Gets the current order
+    public Order_Class Get_CurrentOrder();
 
-    // --- Item level operations ---
+    // Remove the current order
+    public boolean Remove_CurrentOrder();
 
-    // Inserts a specific item in a given quantity for a given order
-    public boolean insert_Item(int order_ID, Order_Item_Class item, int amount);
+    // .
+    public int Get_CurrentOrder_ItemAmount_Total();
 
-    // Extracts a specific item in a given quantity for a given order
-    public boolean extract_Item(int order_ID, Order_Item_Class item, int amount);
+    // .
+    public int Get_CurrentOrder_ItemAmount_Done();
+
+    // .
+    public int Add_Item_toCurrentOrder(OrderItem_Class orderItem);
+
+
+
+
+    // --- Single Item Methods ---
+
+    // Inserts a specific item
+    public boolean Insert_Item(Item_Class item);
+
+    // Inserts a specific item
+    public boolean Insert_Item(int item_id, String item_name, String[] item_WarehouseInventory_ID);
+
+    // Extracts a specific item
+    public boolean Extract_Item(Item_Class item);
+
+    // Extracts a specific item
+    public boolean Extract_Item(String[] item_WarehouseInventory_ID);
+
+
+
+
+    // --- Inventory Operations Methods ---
+
+    // Updates the local List of the WarehouseInventory
+    public boolean Update_Full_WarehouseInventory();
 
     // Returns the full inventory list as a String
-    public String get_InventoryList();
+    public String Get_Full_WarehouseInventory_String();
 
-    // --- Inventory checks ---
+    // Returns the full inventory list as a JSON Object
+    public JSONObject Get_Full_WarehouseInventory_JSON();
+
+    // Returns the full inventory list as a String
+    public ArrayList<OrderItem_Class> Get_Full_WarehouseInventory_List();
+
+
+
+
+    // --- Warehouse Inventory Check Methods ---
 
     // Checks whether the inventory has everything needed for a given order
-    public boolean check_Inventory_forOrder(int order_ID);
+    public int Check_WarehouseInventory_forOrderItems(Order_Class order_toCheck);
 
     // Checks whether a specific item exists in the inventory — returns tray ID or quantity
-    public int check_Inventory_forItem(Item_Class item);
+    public boolean Check_WarehouseInventory_forItem(Item_Class item);
+
+    // Checks whether a specific item exists in the inventory — returns tray ID or quantity
+    public boolean Check_WarehouseInventory_forItem(String[] item_WarehouseInventory_IDs);
+
+
+
+
+    // --- Warehouse Flag Methods ---
 
     // Checks whether the warehouse currently has an item loaded and ready
-    public boolean check_CurrentlyLoaded();
+    public boolean Check_isCurrentlyLoaded_withItem();
 
 
 }

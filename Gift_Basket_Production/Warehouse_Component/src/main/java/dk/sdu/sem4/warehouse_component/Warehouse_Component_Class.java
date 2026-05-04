@@ -1,6 +1,20 @@
 package dk.sdu.sem4.warehouse_component;
 
 
+import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Component_Interface;
+import dk.sdu.sem4.machineOrchestrator.Component_Process_States_Enum;
+import dk.sdu.sem4.machineOrchestrator.Component_Status_Enum;
+
+import dk.sdu.sem4.warehouse_component.Warehouse_Component_Task_Option_Enum;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class Warehouse_Component_Class implements Warehouse_Component_Interface
 {
@@ -10,16 +24,36 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     // Hardcoded type identifier — matched against the config file by the Component Loader
     public static final String COMPONENT_TYPE = "Warehouse_EFFIMAT_SOAP_V1.0";
 
+
     // Connection settings — loaded from config file
     private String ip;
+
     private int port;
 
+
+    // Component identity — identifies the component connected to this machine
+    private int component_ID;
+
+    private String component_Type;
+
+    private Component_Status_Enum component_Status;
+
+    private Component_Process_States_Enum component_State;
+
+
     // Internal state
+    private Warehouse_Component_Task_Option_Enum warehouse_component_CurrentTask;
+
+    private Warehouse_Component_Task_Option_Enum warehouse_component_LastTask;
+
+    private Item_Class warehouse_ItemRequest;
+
     private Item_Class warehouse_ItemLoad;
-    private Order_Class warehouse_OrderLoad;
+
 
     // Inner classes
     private Warehouse_Controller_Class warehouse_Controller;
+
     private Warehouse_Adapter_Class warehouse_Adapter;
 
 
@@ -33,8 +67,8 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         this.warehouse_Adapter = new Warehouse_Adapter_Class(ip, port);
         this.warehouse_Controller = new Warehouse_Controller_Class(this.warehouse_Adapter);
         this.warehouse_ItemLoad = null;
-        this.warehouse_OrderLoad = null;
     }
+
 
 
 
@@ -42,22 +76,30 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     // --- From Machine_Component_Interface ---
 
     @Override
-    public int Startup_Process() {
-        // TODO: return this component's ID
-        return 0;
+    public int Read_Component_ID()
+    {
+        return this.component_ID;
     }
 
     @Override
-    public String Running_process() {
-        // TODO: return "Warehouse" or similar
-        return null;
+    public String Read_Component_Type()
+    {
+        return this.component_Type;
     }
 
     @Override
-    public String Shutdown_process() {
-        // TODO: delegate to controller or check internal state
-        return null;
+    public Component_Status_Enum Read_Component_Status()
+    {
+        return this.component_Status;
     }
+
+    @Override
+    public Component_Process_States_Enum Read_Component_State()
+    {
+        return this.component_State;
+    }
+
+
 
 
 
@@ -65,43 +107,86 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     // --- From Machine_Component_Interface ---
 
     @Override
-    public int read_Component_ID() {
-        // TODO: return this component's ID
-        return 0;
+    public boolean Startup_Process()
+    {
+        // TODO
+        // If there is nothing that need to be done at the start up, then just let it return true.
+        return true;
     }
 
     @Override
-    public String read_Component_Type() {
-        // TODO: return "Warehouse" or similar
-        return null;
+    public boolean Running_process()
+    {
+        // TODO
+        return true;
     }
 
     @Override
-    public String read_Component_Status() {
-        // TODO: delegate to controller or check internal state
-        return null;
+    public boolean Shutdown_process()
+    {
+        // TODO
+        // If there is nothing that need to be done at the shutdown, then just let it return true.
+        return true;
     }
+
+
+
+
+
+
 
 
 
     // --- From Warehouse_Component_Interface ---
 
+
+    // --- Single Item Methods ---
+
     @Override
-    public boolean insert_Item() {
+    public boolean Insert_Item(Item_Class item)
+    {
         // TODO: delegate to controller
         return false;
     }
 
     @Override
-    public boolean extract_Item() {
+    public boolean Insert_Item(int item_id, String item_name, String[] item_WarehouseInventory_ID)
+    {
         // TODO: delegate to controller
         return false;
     }
 
     @Override
-    public String get_InventoryList() {
+    public boolean Extract_Item(Item_Class item)
+    {
         // TODO: delegate to controller
-        return null;
+        return false;
+    }
+
+    @Override
+    public boolean Extract_Item(String[] item_WarehouseInventory_ID)
+    {
+        // TODO: delegate to controller
+        return false;
+    }
+
+
+
+
+    // --- Inventory Operations Methods ---
+
+    @Override
+    public String Get_Full_WarehouseInventory_String()
+    {
+        // TODO: delegate to controller
+        return "";
+    }
+
+    @Override
+    public JSONObject Get_Full_WarehouseInventory_JSON()
+    {
+        // TODO: delegate to controller
+        return ;
     }
 
 

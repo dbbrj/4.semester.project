@@ -1,15 +1,29 @@
 package dk.sdu.sem4.machineOrchestrator;
 
+
+import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
+import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
+import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
+
+import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Component_Interface;
+import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Component_Interface;
+import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Component_Interface;
+
+import dk.sdu.sem4.machineOrchestrator.Machine_Process_States_Enum;
+import dk.sdu.sem4.machineOrchestrator.Machine_Status_Enum;
+
+
+
 public class Machine_ComponentLoader_Class
 {
 
     // Machine Maps
-    private
+    private;
 
 
 
 
-    public void Machine_ComponentLoader_Class()
+    public Machine_ComponentLoader_Class()
     {
         System.out.println("Machine_ComponentLoader_Class is running...");
     }
@@ -38,7 +52,7 @@ public class Machine_ComponentLoader_Class
     /**
      *
      */
-    public void get_ServiceLoader_Warehouse_Component ()
+    public void Get_ServiceLoader_Warehouse_Component ()
     {
 
 

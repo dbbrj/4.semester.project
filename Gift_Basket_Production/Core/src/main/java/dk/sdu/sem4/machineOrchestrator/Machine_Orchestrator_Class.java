@@ -1,10 +1,16 @@
 package dk.sdu.sem4.machineOrchestrator;
 
+
 import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
 import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
 import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
+
+import dk.sdu.sem4.machineOrchestrator.Machine_Process_States_Enum;
+import dk.sdu.sem4.machineOrchestrator.Machine_Status_Enum;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 
 public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interface
@@ -29,6 +35,8 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     private String error_Message;
 
 
+
+    
     // Constructor
     public Machine_Orchestrator_Class()
     {
