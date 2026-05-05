@@ -11,6 +11,17 @@ public enum Component_Process_States_Enum
     /**
      *
      */
+    NONE {
+        // This state is the default state.
+        public String toString()
+        {
+            return "NONE";
+        }
+    },
+
+    /**
+     *
+     */
     CONSTRUCTED {
         // This state is used to indicate the component have been constructed, but nothing else.
         public String toString()

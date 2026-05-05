@@ -18,21 +18,35 @@ public class Warehouse_Controller_Class
 
 
     // Delegates item extraction request to the Adapter
-    public String pickItem(int trayId)
+    public boolean Check_Connection()
+    {
+        // TODO: call warehouse_Adapter.pickItem(trayId)
+        return false;
+    }
+
+    // Delegates item extraction request to the Adapter
+    public String GetStatus()
+    {
+        // TODO: call warehouse_Adapter.pickItem(trayId)
+        return null;
+    }
+
+    // Delegates item extraction request to the Adapter
+    public String PickItem(int trayId)
     {
         // TODO: call warehouse_Adapter.pickItem(trayId)
         return null;
     }
 
     // Delegates item insertion request to the Adapter
-    public String insertItem(int trayId, String name)
+    public String InsertItem(int trayId, String name)
     {
         // TODO: call warehouse_Adapter.insertItem(trayId, name)
         return null;
     }
 
     // Delegates inventory retrieval to the Adapter
-    public String getInventory()
+    public String GetInventory()
     {
         // TODO: call warehouse_Adapter.getInventory()
         return null;

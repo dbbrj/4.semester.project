@@ -145,28 +145,57 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public boolean Insert_Item(Item_Class item)
     {
-        // TODO: delegate to controller
+        // TODO: set flag
+
+        // Check if ready for new task.
+
+        // Set Flag
+        this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.INSERT_ITEM;
+
+
+
         return false;
     }
 
     @Override
     public boolean Insert_Item(int item_id, String item_name, String[] item_WarehouseInventory_ID)
     {
-        // TODO: delegate to controller
+        // TODO: set flag
+
+        // Check if ready for new task.
+
+        // Set Flag
+        this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.INSERT_ITEM;
+
+
+
         return false;
     }
 
     @Override
     public boolean Extract_Item(Item_Class item)
     {
-        // TODO: delegate to controller
+        // Check if ready for new task.
+
+        // Set Flag
+        this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.EXTRACT_ITEM;
+
+
+
+
         return false;
     }
 
     @Override
     public boolean Extract_Item(String[] item_WarehouseInventory_ID)
     {
-        // TODO: delegate to controller
+        // Check if ready for new task.
+
+        // Set Flag
+        this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.EXTRACT_ITEM;
+
+
+
         return false;
     }
 
@@ -178,15 +207,18 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public String Get_Full_WarehouseInventory_String()
     {
-        // TODO: delegate to controller
-        return "";
+        // Needs to do some more safety checks.
+        return this.warehouse_Controller.GetInventory();
     }
 
     @Override
     public JSONObject Get_Full_WarehouseInventory_JSON()
     {
-        // TODO: delegate to controller
-        return ;
+        // Since this method sh
+
+        // Needs to do some more safety checks.
+        JSONObject json_object = new JSONObject( this.Get_Full_WarehouseInventory_String() );
+        return json_object;
     }
 
 
