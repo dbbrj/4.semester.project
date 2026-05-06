@@ -1,5 +1,8 @@
 package dk.sdu.sem4.machineOrchestrator.Warehouse;
-import dk.sdu.sem4.machineOrchestrator.*;
+import dk.sdu.sem4.machineOrchestrator.Machine_Structure_Class;
+import dk.sdu.sem4.orderManager.Item_Class;
+import dk.sdu.sem4.orderManager.Order_Item_Class;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
 
     private Warehouse_Structure_Task_Option_Enum warehouseStructure_LastTask;
 
-    private ArrayList<OrderItem_Clas> warehouse_Inventory;
+    private ArrayList<Order_Item_Class> warehouse_Inventory;
 
     private LocalDateTime warehouse_Inventory_TimeStamp;
 
@@ -35,7 +38,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
 
     // Order Data & Item Data
 
-    private Order_Class warehouse_OrderRequest;
+    private Order_Item_Class warehouse_OrderRequest;
 
     private Item_Class warehouse_ItemRequest;
 
@@ -353,7 +356,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
     public Order_Class Get_CurrentOrder()
     {
         // TODO
-        return ;
+        return null;
     }
 
     @Override
@@ -378,7 +381,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
     }
 
     @Override
-    public int Add_Item_toCurrentOrder(OrderItem_Class orderItem)
+    public int Add_Item_toCurrentOrder(Order_Item_Class orderItem)
     {
         // TODO
         return 0;
@@ -442,15 +445,15 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
     {
         // Instead check the local variable "warehouse_Inventory", Call the component.
         // TODO
-        return ;
+        return null;
     }
 
     @Override
-    public ArrayList<OrderItem_Class> Get_Full_WarehouseInventory_List()
+    public ArrayList<Order_Item_Class> Get_Full_WarehouseInventory_List()
     {
         // Instead of calling the component, check the local variable "warehouse_Inventory".
         // TODO
-        return ;
+        return null;
     }
 
 

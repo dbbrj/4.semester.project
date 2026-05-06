@@ -38,12 +38,9 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.6.3</version>
-<<<<<<<< HEAD:Gift_Basket_Production/AGV_Struc/pom.xml
-========
                 <configuration>
                     <skip>true</skip>
                 </configuration>
->>>>>>>> Assembly_struct:Gift_Basket_Production/assembly_struct/pom.xml
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

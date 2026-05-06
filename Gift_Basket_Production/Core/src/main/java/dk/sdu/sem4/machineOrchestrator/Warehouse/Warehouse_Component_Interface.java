@@ -1,15 +1,9 @@
 package dk.sdu.sem4.machineOrchestrator.Warehouse;
 
+import org.json.JSONObject;
 
 import dk.sdu.sem4.machineOrchestrator.Machine_Component_Interface;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import dk.sdu.sem4.orderManager.Item_Class;
 
 
 public interface Warehouse_Component_Interface extends Machine_Component_Interface
