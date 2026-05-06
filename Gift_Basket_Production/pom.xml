@@ -10,7 +10,7 @@
     <module>erp_simulator</module>
     <module>AGV_struct</module>
     <module>sssembly_struct</module>
-    <!--<module>Warehouse_Struct</module>-->
+    <module>Warehouse_Struct</module>
     <module>core</module>
   </modules>
 
