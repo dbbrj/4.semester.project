@@ -1,7 +1,7 @@
 package dk.sdu.sem4.gui;
 
 import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Interface;
-import dk.sdu.sem4.machineOrchestrator.OrderItem_Class;
+import dk.sdu.sem4.orderManager.Order_Item_Class;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -402,7 +402,7 @@ public class Gui extends Application {
         currentOrderId.setText("Order ID: " + (orderId == -1 ? "None" : orderId));
         currentOrderStatus.setText("Status: " + safe(orchestrator.Get_CurrentOrder_Status()));
 
-        ArrayList<OrderItem_Class> items = orchestrator.Get_CurrentOrder_ItemList();
+        ArrayList<Order_Item_Class> items = orchestrator.Get_CurrentOrder_ItemList();
 
         if (items == null || items.isEmpty()) {
             orderContentArea.setText("No items");
@@ -411,7 +411,7 @@ public class Gui extends Application {
 
         StringBuilder builder = new StringBuilder();
 
-        for (OrderItem_Class item : items) {
+        for (Order_Item_Class item : items) {
             builder.append(item).append("\n");
         }
 

@@ -11,12 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-<<<<<<<< HEAD:Gift_Basket_Production/AGV_Struc/pom.xml
-
-    <artifactId>AGV_Struc</artifactId>
-========
     <artifactId>assembly_struct</artifactId>
->>>>>>>> Assembly_struct:Gift_Basket_Production/assembly_struct/pom.xml
     <packaging>jar</packaging>
 
     <properties>

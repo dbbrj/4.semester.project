@@ -6,5 +6,5 @@ package dk.sdu.sem4.core;
 public class App {
     public static void main(String[] args) {
 
-        
+    } 
 }

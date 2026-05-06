@@ -19,7 +19,7 @@ public class AssemblyStationComponent implements AssemblyStationComponentInterfa
 
     // Internal state
     private Item_Class assemblyStation_ItemLoad;
-    private Order_Class assemblyStation_OrderLoad;
+    private Order_Item_Class assemblyStation_OrderLoad;
 
     // Constructor — receives connection settings from the Component Loader
     public AssemblyStationComponent(String ip, int port)

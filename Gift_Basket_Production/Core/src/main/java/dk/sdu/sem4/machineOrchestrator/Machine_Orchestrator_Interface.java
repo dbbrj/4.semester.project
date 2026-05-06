@@ -2,7 +2,7 @@ package dk.sdu.sem4.machineOrchestrator;
 
 import java.util.ArrayList;
 
-// Import the Order classes
+import dk.sdu.sem4.orderManager.Order_Item_Class;
 
 public interface Machine_Orchestrator_Interface
 {
@@ -35,9 +35,9 @@ public interface Machine_Orchestrator_Interface
 
     /**
      * Returns the full Order object currently being processed by the Machine Orchestrator.
-     * @return the current Order_Class instance, or null if no order is assigned.
+     * @return the current Order_Item_Class instance, or null if no order is assigned.
      */
-    public Order_Class Get_CurrentOrder();
+    public Order_Item_Class Get_CurrentOrder();
 
     /**
      * Returns the unique ID of the order currently being processed.
@@ -53,9 +53,9 @@ public interface Machine_Orchestrator_Interface
 
     /**
      * Returns the list of items associated with the current order.
-     * @return an ArrayList of OrderItem_Class objects representing the items in the current order.
+     * @return an ArrayList of Order_Item_Class objects representing the items in the current order.
      */
-    public ArrayList<OrderItem_Class> Get_CurrentOrder_ItemList();
+    public ArrayList<Order_Item_Class> Get_CurrentOrder_ItemList();
 
 
 

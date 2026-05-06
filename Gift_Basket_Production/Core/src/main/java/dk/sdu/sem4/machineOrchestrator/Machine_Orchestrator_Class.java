@@ -2,12 +2,15 @@ package dk.sdu.sem4.machineOrchestrator;
 
 
 import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
+import dk.sdu.sem4.orderManager.OrderMangerInterface;
+import dk.sdu.sem4.orderManager.Order_Item_Class;
 import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
 import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
 
 import dk.sdu.sem4.machineOrchestrator.Machine_Process_States_Enum;
 import dk.sdu.sem4.machineOrchestrator.Machine_Status_Enum;
 
+import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,10 +26,10 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     private HashMap<Integer, AGV_Structure_Interface> agv_Map;
 
     // --- Order Manager reference ---
-    private OrderManager_Interface orderManager_Ref;
+    private OrderMangerInterface orderManager_Ref;
 
     // --- Current Order ---
-    private Order_Class currentOrder;
+    private Order_Item_Class currentOrder;
 
     // --- Orchestrator Status ---
     private String orchestrator_Status;
@@ -206,7 +209,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     }
 
     @Override
-    public Order_Class Get_CurrentOrder()
+    public Order_Item_Class Get_CurrentOrder()
     {
         // TODO
         return null;
@@ -227,7 +230,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     }
 
     @Override
-    public ArrayList<OrderItem_Class> Get_CurrentOrder_ItemList()
+    public ArrayList<Order_Item_Class> Get_CurrentOrder_ItemList()
     {
         // TODO
         return null;

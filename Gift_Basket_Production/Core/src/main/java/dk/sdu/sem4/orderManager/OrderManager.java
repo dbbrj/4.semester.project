@@ -1,8 +1,10 @@
 package dk.sdu.sem4.orderManager;
 
 import java.util.ArrayList;
+
 import dk.sdu.sem4.erp_simulator.ERP_Simulator;
 import dk.sdu.sem4.erp_simulator.Order_Class;
+import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Interface;
 
 public class OrderManager implements OrderMangerInterface {
 
