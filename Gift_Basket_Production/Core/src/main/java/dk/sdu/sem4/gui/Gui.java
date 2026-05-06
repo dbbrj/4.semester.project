@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class Gui extends Application {
 
-    private Machine_Orchestrator_Interface orchestrator = new machine_orchestrator();
+    private Machine_Orchestrator_Interface orchestrator = new Machine_Orchestrator_Class();
 
     private int selectedWarehouseId = -1;
     private int selectedAssemblyId = -1;
