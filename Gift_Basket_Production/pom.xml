@@ -19,7 +19,7 @@
     <maven.compiler.release>21</maven.compiler.release>
   </properties>
 
-   <dependencyManagement>
+  <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.junit</groupId>
@@ -47,6 +47,11 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>20251224</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.paho</groupId>
+        <artifactId>org.eclipse.paho.mqttv5.client</artifactId>
+        <version>1.2.5</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
