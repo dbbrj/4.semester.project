@@ -1,253 +1,262 @@
 package dk.sdu.sem4.warehouse_component;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
+import org.json.JSONObject;
 
-/**
- * SOAP adapter for the Warehouse service.
- *
- * Usage example:
- *   Warehouse_Adapter_Class warehouse = new Warehouse_Adapter_Class("localhost", 8081);
- *   boolean reachable = warehouse.isReachable();
- *   String inventory  = warehouse.getInventory();
- *   String pick       = warehouse.pickItem(1);
- *   String insert     = warehouse.insertItem(5, "Drone Part A");
- */
 public class Warehouse_Adapter_Class
 {
 
-    private final String endpoint;
+    // Connection settings — passed in from the Component Class
+    private String ip;
+    private int port;
+    private String endpoint;
+
+    // Tracks whether the Adapter is currently connected to the Warehouse
+    private boolean isConnected;
+
 
     /**
-     * Creates a new Warehouse_Adapter_Class targeting the given host and port.
-     *
-     * @param ipAddress  IP address or hostname of the warehouse service
-     *                   (e.g. "localhost" or "192.168.1.10").
-     * @param port       Port the warehouse service is listening on (e.g. 8081).
+     * Constructs the Warehouse Adapter.
+     * Receives the connection settings from the Component Class,
+     * which reads them from the config file at startup.
+     * Builds the full SOAP endpoint URL from the ip and port.
+     * @param ip the IP address of the Warehouse SOAP service.
+     * @param port the port number of the Warehouse SOAP service.
      */
-    public Warehouse_Adapter_Class(String ipAddress, int port)
+    public Warehouse_Adapter_Class(String ip, int port)
     {
-        this.endpoint = "http://" + ipAddress + ":" + port + "/Service.asmx";
-    }
-
-    // -------------------------------------------------------------------------
-    // Internal helpers
-    // -------------------------------------------------------------------------
-
-    /**
-     * Wraps the provided body element in a SOAP envelope and sends it via HTTP POST.
-     *
-     * @param action       The SOAP action name (used in the SOAPAction header).
-     * @param bodyContent  The XML content to place inside the SOAP Body.
-     * @return             The full XML response body as a String.
-     * @throws Exception   On HTTP or I/O failure.
-     */
-    private String sendRequest(String action, String bodyContent) throws Exception {
-        String soapEnvelope = buildSoapEnvelope(bodyContent);
-
-        URL url = new URL(endpoint);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        try {
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-            connection.setRequestProperty("SOAPAction", "\"http://tempuri.org/" + action + "\"");
-
-            writeRequestBody(connection, soapEnvelope);
-
-            int statusCode = connection.getResponseCode();
-            String responseBody = readResponseBody(connection, statusCode);
-
-            if (statusCode >= 400) {
-                throw new RuntimeException(
-                        "SOAP request failed with HTTP " + statusCode + ": " + responseBody);
-            }
-
-            return responseBody;
-        } finally {
-            connection.disconnect();
-        }
-    }
-
-    /**
-     * Builds a complete SOAP 1.1 envelope around the given body content.
-     *
-     * @param bodyContent  The XML element to wrap inside the SOAP Body.
-     * @return             A complete SOAP envelope as a String.
-     */
-    private String buildSoapEnvelope(String bodyContent) {
-        return "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                "<soap:Envelope " +
-                "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-                "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-                "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-                "<soap:Body>" +
-                bodyContent +
-                "</soap:Body>" +
-                "</soap:Envelope>";
-    }
-
-    /**
-     * Encodes the SOAP envelope as UTF-8 and writes it to the connection's output stream.
-     *
-     * @param connection   An open HttpURLConnection with output enabled.
-     * @param soapEnvelope The SOAP envelope string to send.
-     * @throws Exception   On I/O failure.
-     */
-    private void writeRequestBody(HttpURLConnection connection, String soapEnvelope) throws Exception {
-        byte[] requestBytes = soapEnvelope.getBytes(StandardCharsets.UTF_8);
-        connection.setRequestProperty("Content-Length", String.valueOf(requestBytes.length));
-
-        try (OutputStream outputStream = connection.getOutputStream()) {
-            outputStream.write(requestBytes);
-        }
+        this.ip       = ip;
+        this.port     = port;
+        this.endpoint = "http://" + ip + ":" + port + "/Service.asmx";
+        this.isConnected = false;
     }
 
 
+
+
+    ///////////////////////////////////////////////////////////////////
+    ////////////////////    Public Methods    /////////////////////////
+
+
     /**
-     * Reads the full response body from the connection.
-     * Uses the error stream for HTTP 4xx/5xx responses, and the regular input stream otherwise.
-     *
-     * @param connection  The connection to read from.
-     * @param statusCode  The HTTP status code already retrieved from the connection.
-     * @return            The response body as a String.
-     * @throws Exception  On I/O failure.
+     * Checks whether the Adapter currently has an active connection
+     * to the Warehouse SOAP service by sending a lightweight HTTP HEAD request.
+     * A HEAD request checks if the endpoint is reachable without downloading
+     * any response body, making it much more efficient than a full SOAP call.
+     * Updates the isConnected flag based on the result.
+     * @return true if connected, false otherwise.
      */
-    private String readResponseBody(HttpURLConnection connection, int statusCode) throws Exception
+    public boolean Check_Connection()
     {
-        boolean isError = statusCode >= 400;
-        InputStream responseStream = isError
-                ? connection.getErrorStream()
-                : connection.getInputStream();
-
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(responseStream, StandardCharsets.UTF_8))) {
-
-            StringBuilder responseBody = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                responseBody.append(line).append("\n");
-            }
-            return responseBody.toString();
-        }
-    }
-
-    /** Escapes special XML characters in string values to prevent malformed requests. */
-    private String escapeXml(String value) {
-        if (value == null) return "";
-
-        Map<String, String> xmlEscapes = new LinkedHashMap<>();
-        xmlEscapes.put("&",  "&amp;");   // Must be first to avoid double-escaping
-        xmlEscapes.put("<",  "&lt;");
-        xmlEscapes.put(">",  "&gt;");
-        xmlEscapes.put("\"", "&quot;");
-        xmlEscapes.put("'",  "&apos;");
-
-        String escapedValue = value;
-        for (Map.Entry<String, String> escape : xmlEscapes.entrySet())
+        try
         {
-            escapedValue = escapedValue.replace(escape.getKey(), escape.getValue());
-        }
-        return escapedValue;
-    }
-
-
-    // -------------------------------------------------------------------------
-    // Public API
-    // -------------------------------------------------------------------------
-
-    /**
-     * Checks whether the Warehouse service is reachable at the configured IP and port.
-     * Sends an HTTP GET request to the WSDL endpoint and considers the service
-     * reachable if a 200 OK response is returned within 3 seconds.
-     *
-     * @return true if the service responds with HTTP 200, false otherwise.
-     */
-    public boolean isReachable() {
-        try {
-            URL url = new URL(endpoint + "?WSDL");
+            URL url = new URL(this.endpoint);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // connection.setRequestMethod("GET");
             connection.setRequestMethod("HEAD");
             connection.setConnectTimeout(3000);
             connection.setReadTimeout(3000);
 
-            int statusCode = connection.getResponseCode();
-            connection.disconnect();
-
-            return statusCode == HttpURLConnection.HTTP_OK;
-        } catch (Exception e) {
+            int responseCode = connection.getResponseCode();
+            this.isConnected = (responseCode == HttpURLConnection.HTTP_OK);
+            return this.isConnected;
+        }
+        catch (Exception e)
+        {
+            System.err.println("Connection check failed: " + e.getMessage());
+            this.isConnected = false;
             return false;
         }
     }
 
-    /**
-     * Request an item from the warehouse by tray ID.
-     *
-     * @param trayId  The ID of the tray to pick from.
-     * @return        Raw XML response from the service.
-     * @throws Exception if the HTTP request or SOAP call fails.
-     */
-    public String pickItem(int trayId) throws Exception {
-        String soapBody =
-                "<PickItem xmlns=\"http://tempuri.org/\">" +
-                        "<trayId>" + trayId + "</trayId>" +
-                        "</PickItem>";
-
-        return sendRequest("PickItem", soapBody);
-    }
 
     /**
-     * Insert an item into the warehouse.
-     *
-     * @param trayId  The ID of the tray to insert into.
-     * @param name    The name/label of the item being inserted.
-     * @return        Raw XML response from the service.
-     * @throws Exception if the HTTP request or SOAP call fails.
+     * Retrieves the current state of the Warehouse by calling GetInventory
+     * and reading the "State" field from the JSON response.
+     * The State field is an integer representing the current operational
+     * state of the Warehouse e.g. 0 for idle.
+     * @return the State integer from the Warehouse response, or -1 if the call failed.
      */
-    public String insertItem(int trayId, String name) throws Exception {
-        String soapBody =
-                "<InsertItem xmlns=\"http://tempuri.org/\">" +
-                        "<trayId>" + trayId + "</trayId>" +
-                        "<name>" + escapeXml(name) + "</name>" +
-                        "</InsertItem>";
+    public int GetStatus()
+    {
+        // Build SOAP command for GetInventory
+        String soap_Command = "<GetInventory xmlns=\"http://tempuri.org/\"/>";
 
-        return sendRequest("InsertItem", soapBody);
-    }
+        // Pack into envelope and send
+        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
+        String response      = Send_SoapEnvelope(soap_Envelope);
 
+        // Parse and return the State field from the response
+        if (response != null)
+        {
+            try
+            {
+                JSONObject json = new JSONObject(response);
+                return json.getInt("State");
+            }
+            catch (Exception e)
+            {
+                System.err.println("GetStatus failed to parse response: " + e.getMessage());
+                return -1;
+            }
+        }
 
-    /**
-     * Retrieve the current inventory of the warehouse.
-     * Also returns State and TimeStamp in the response.
-     *
-     * Example response structure:
-     * {
-     *   "Inventory": [{"1": "Item 1", "2": "Item 2", ...}],
-     *   "State": 0,
-     *   "TimeStamp": "12:34:56"
-     * }
-     *
-     * @return Raw XML response from the service.
-     * @throws Exception if the HTTP request or SOAP call fails.
-     */
-    public String getInventory() throws Exception {
-        String soapBody =
-                "<GetInventory xmlns=\"http://tempuri.org/\"/>";
-
-        return sendRequest("GetInventory", soapBody);
+        return -1;
     }
 
 
+    /**
+     * Inserts a named item into a specific tray in the Warehouse.
+     * Builds the InsertItem SOAP command with the provided tray ID and item name,
+     * packs it into a SOAP envelope, sends it, and returns the raw response.
+     * @param item_id the tray ID to insert the item into.
+     * @param item_WarehouseInventory_ID the name of the item to insert.
+     * @return the raw String response from the Warehouse SOAP service, or null if the call failed.
+     */
+    public String InsertItem(int item_id, String item_WarehouseInventory_ID)
+    {
+        // Build SOAP command for InsertItem
+        String soap_Command = "<InsertItem xmlns=\"http://tempuri.org/\">"
+                +     "<trayId>" + item_id + "</trayId>"
+                +     "<name>" + item_WarehouseInventory_ID + "</name>"
+                + "</InsertItem>";
+
+        // Pack into envelope, send and return raw response
+        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
+        return Send_SoapEnvelope(soap_Envelope);
+    }
 
 
+    /**
+     * Requests a specific item tray to be brought out of the Warehouse.
+     * Builds the PickItem SOAP command with the provided tray ID,
+     * packs it into a SOAP envelope, sends it, and returns the raw response.
+     * @param item_id the tray ID to pick from.
+     * @return the raw String response from the Warehouse SOAP service, or null if the call failed.
+     */
+    public String PickItem(int item_id)
+    {
+        // Build SOAP command for PickItem
+        String soap_Command = "<PickItem xmlns=\"http://tempuri.org/\">"
+                +     "<trayId>" + item_id + "</trayId>"
+                + "</PickItem>";
+
+        // Pack into envelope, send and return raw response
+        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
+        return Send_SoapEnvelope(soap_Envelope);
+    }
+
+
+    /**
+     * Retrieves the full inventory of the Warehouse.
+     * Builds the GetInventory SOAP command, packs it into a SOAP envelope,
+     * sends it, and returns the raw response string.
+     * The response contains a JSON object with an Inventory list,
+     * a State value and a DateTime timestamp.
+     * @return the raw String response from the Warehouse SOAP service, or null if the call failed.
+     */
+    public String GetInventory()
+    {
+        // Build SOAP command for GetInventory
+        String soap_Command = "<GetInventory xmlns=\"http://tempuri.org/\"/>";
+
+        // Pack into envelope, send and return raw response
+        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
+        return Send_SoapEnvelope(soap_Envelope);
+    }
+
+
+
+
+    ///////////////////////////////////////////////////////////////////
+    ////////////////////    Private Methods    ////////////////////////
+
+
+    /**
+     * Wraps the provided SOAP command string inside a standard SOAP 1.1 envelope.
+     * The Adapter is responsible for the envelope structure.
+     * Each public method is responsible for building its own command content.
+     * @param soap_Command the method-specific SOAP XML command to wrap.
+     * @return a String containing the complete SOAP envelope XML.
+     */
+    private String Pack_SoapEnvelope(String soap_Command)
+    {
+        return "<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+                +     "<Body>"
+                +         soap_Command
+                +     "</Body>"
+                + "</Envelope>";
+    }
+
+
+    /**
+     * Sends the provided SOAP envelope as an HTTP POST request to the Warehouse endpoint.
+     * Handles all HTTP connection setup, header configuration, request writing
+     * and response reading.
+     * Updates the isConnected flag based on whether the call succeeded or failed.
+     * @param soap_Envelope the complete SOAP envelope XML string to send.
+     * @return the raw String response body from the Warehouse SOAP service,
+     *         or null if the call failed.
+     */
+    private String Send_SoapEnvelope(String soap_Envelope)
+    {
+        try
+        {
+            // --- Step 1: Open HTTP connection to the endpoint ---
+            URL url = new URL(this.endpoint);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            // --- Step 2: Set required SOAP headers ---
+            connection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+
+            // --- Step 3: Write the SOAP envelope to the request body ---
+            try (OutputStream outputStream = connection.getOutputStream())
+            {
+                outputStream.write(soap_Envelope.getBytes("UTF-8"));
+                outputStream.flush();
+            }
+
+            // --- Step 4: Check the HTTP response code ---
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK)
+            {
+                // --- Step 5: Read and return the raw response body ---
+                StringBuilder response = new StringBuilder();
+
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream(), "UTF-8")))
+                {
+                    String line;
+                    while ((line = reader.readLine()) != null)
+                    {
+                        response.append(line);
+                    }
+                }
+
+                this.isConnected = true;
+                return response.toString();
+            }
+            else
+            {
+                System.err.println("SOAP request failed. HTTP response code: " + responseCode);
+                this.isConnected = false;
+                return null;
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("SOAP request error: " + e.getMessage());
+            this.isConnected = false;
+            return null;
+        }
+    }
 }

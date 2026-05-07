@@ -9,6 +9,13 @@ import dk.sdu.sem4.orderManager.Item_Class;
 public interface Warehouse_Component_Interface extends Machine_Component_Interface
 {
 
+    // --- Connection Methods ---
+
+    // Checks if we have a connection to the Warehouse.
+    public boolean Check_isConnection();
+
+
+
 
     // --- Single Item Methods ---
 
@@ -16,7 +23,7 @@ public interface Warehouse_Component_Interface extends Machine_Component_Interfa
     public boolean Insert_Item(Item_Class item);
 
     // Inserts a specific item
-    public boolean Insert_Item(int item_id, String item_name, String[] item_WarehouseInventory_ID);
+    public boolean Insert_Item(int item_id, String item_WarehouseInventory_ID);
 
     // Extracts a specific item
     public boolean Extract_Item(Item_Class item);

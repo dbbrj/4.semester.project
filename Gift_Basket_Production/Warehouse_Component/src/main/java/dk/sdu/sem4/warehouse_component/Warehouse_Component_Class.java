@@ -117,7 +117,39 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public boolean Running_process()
     {
-        // TODO
+        // Check component_Status
+        // Check for Error Status.
+
+
+        // Check/Process Flags/Tasks.
+
+        // Flag == GET_STATUS   &&   ( Status == Done  ||  Status == Idle )
+        // Call the right method with the right attributes.
+        //
+        // If finished, remember to set Flag and Status back to normal.
+
+
+        // Flag == INSERT_ITEM   &&   ( Status == Done  ||  Status == Idle )
+        // Call the right method with the right attributes.
+        //
+        // If finished, remember to set Flag and Status back to normal.
+
+
+        // Flag == EXTRACT_ITEM   &&   ( Status == Done  ||  Status == Idle )
+        // Call the right method with the right attributes.
+        //
+        // If finished, remember to set Flag and Status back to normal.
+
+
+        // Flag == GET_INVENTORY   &&   ( Status == Done  ||  Status == Idle )
+        // (We are not really using this one, but we have this one to follow the interface-standard.)
+        //
+        // If finished, remember to set Flag and Status back to normal.
+
+
+        // Check for Error Status.
+
+        // Return true if no Errors.
         return true;
     }
 
@@ -137,7 +169,29 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
 
 
 
+
+
     // --- From Warehouse_Component_Interface ---
+
+
+    // --- Connection Methods ---
+
+    @Override
+    public boolean Check_isConnection()
+    {
+        // Using Flags: We use flags/CurrentTask for tasks/processes that takes a long time, and/or depend on hardware to move.
+        //
+        // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
+        //
+
+        // Needs to do some more safety checks.
+        return this.warehouse_Controller.Check_Connection();
+
+        return false;
+    }
+
+
+
 
 
     // --- Single Item Methods ---
@@ -145,12 +199,17 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public boolean Insert_Item(Item_Class item)
     {
-        // TODO: set flag
+        // Using Flags: We use flags/CurrentTask for tasks/processes that takes a long time, and/or depend on hardware to move.
+        //
+        // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
+        //
 
         // Check if ready for new task.
 
         // Set Flag
         this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.INSERT_ITEM;
+
+        // Add Parameter to task attribute.
 
 
 
@@ -158,14 +217,19 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     }
 
     @Override
-    public boolean Insert_Item(int item_id, String item_name, String[] item_WarehouseInventory_ID)
+    public boolean Insert_Item(int item_id, String item_WarehouseInventory_ID)
     {
-        // TODO: set flag
+        // Using Flags: We use flags/CurrentTask for tasks/processes that takes a long time, and/or depend on hardware to move.
+        //
+        // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
+        //
 
         // Check if ready for new task.
 
         // Set Flag
         this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.INSERT_ITEM;
+
+        // Add Parameter to task attribute.
 
 
 
@@ -175,10 +239,17 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public boolean Extract_Item(Item_Class item)
     {
+        // Using Flags: We use flags/CurrentTask for tasks/processes that takes a long time, and/or depend on hardware to move.
+        //
+        // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
+        //
+
         // Check if ready for new task.
 
         // Set Flag
         this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.EXTRACT_ITEM;
+
+        // Add Parameter to task attribute.
 
 
 
@@ -189,15 +260,23 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public boolean Extract_Item(String[] item_WarehouseInventory_ID)
     {
+        // Using Flags: We use flags/CurrentTask for tasks/processes that takes a long time, and/or depend on hardware to move.
+        //
+        // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
+        //
+
+
         // Check if ready for new task.
 
         // Set Flag
         this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.EXTRACT_ITEM;
 
+        // Add Parameter to task attribute.
 
 
         return false;
     }
+
 
 
 
@@ -207,6 +286,11 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public String Get_Full_WarehouseInventory_String()
     {
+        // Using Flags: We use flags/CurrentTask for tasks/processes that takes a long time, and/or depend on hardware to move.
+        //
+        // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
+        //
+
         // Needs to do some more safety checks.
         return this.warehouse_Controller.GetInventory();
     }
@@ -214,10 +298,13 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public JSONObject Get_Full_WarehouseInventory_JSON()
     {
-        // Since this method sh
+        // Using Flags: We use flags/CurrentTask for tasks/processes that takes a long time, and/or depend on hardware to move.
+        //
+        // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
+        //
 
         // Needs to do some more safety checks.
-        JSONObject json_object = new JSONObject( this.Get_Full_WarehouseInventory_String() );
+        JSONObject json_object = new JSONObject( this.warehouse_Controller.GetInventory() );
         return json_object;
     }
 
