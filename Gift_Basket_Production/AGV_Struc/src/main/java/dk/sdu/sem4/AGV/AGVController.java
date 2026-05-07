@@ -1,4 +1,4 @@
-package dk.sdu.sem4;
+package dk.sdu.sem4.AGV;
 
 public class AGVController {
 

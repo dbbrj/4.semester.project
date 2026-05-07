@@ -71,29 +71,27 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     public boolean Startup_process()
     {
         // Startup process for Warehouse Structures
-        for each Warehouse in the Config file // Pseudocode
-        {
-            // Pass the config information as a parameter
-            Startup_process_Warehouse();
-        }
+        // for each Warehouse in the Config file // Pseudocode
+        // {
+        //     Startup_process_Warehouse();
+        // }
 
         // Startup process for Assembly Station Structures
-        for each Assembly Station in the Config file // Pseudocode
-        {
-            // Pass the config information as a parameter
-            Startup_process_AssemblyStation();
-        }
+        // for each Assembly Station in the Config file // Pseudocode
+        // {
+        //     Startup_process_AssemblyStation();
+        // }
 
         // Startup process for AGV Structures
         // Need to be run last, since it connects the Warehouse with AssemblyStation.
-        for each AGV in the Config file // Pseudocode
-        {
-            // Pass the config information as a parameter
-            Startup_process_AGV();
-        }
+        // for each AGV in the Config file // Pseudocode
+        // {
+        //     Startup_process_AGV();
+        // }
 
         // Call the "Machine Component Loader".
         // It will load in the Component
+        return false;
     }
 
     /**
@@ -111,6 +109,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
         // Add Warehouse Structure to the Warehouse Map.
 
         // Run the Warehouse Structure Setup.
+        return -1;
     }
 
     /**
@@ -128,6 +127,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
         // Add Assembly Station Structure to the Assembly Station Map.
 
         // Run the Assembly Station Structure Setup.
+        return -1;
     }
 
     /**
@@ -147,6 +147,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
         // Add AGV Structure to the AGV Map.
 
         // Run the AGV Structure Setup.
+        return -1;
     }
 
 
@@ -166,7 +167,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
      */
     public boolean Running_process()
     {
-
+        return false;
     }
 
 
@@ -184,7 +185,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
      */
     public boolean Shutdown_process()
     {
-
+        return false;
     }
 
 

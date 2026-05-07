@@ -1,4 +1,4 @@
-package dk.sdu.sem4;
+package dk.sdu.sem4.AGV;
 
 public class AGVAdapter {
 
@@ -16,7 +16,6 @@ public class AGVAdapter {
 
         // In real system → HTTP PUT request here
     }
-}
 
     /*AGVControllerService agvControllerService;
 
@@ -26,6 +25,6 @@ public class AGVAdapter {
 
     public AGVControllerService getAGVControllerService() {
         return agvControllerService;
-    }
+    }*/
 
 }

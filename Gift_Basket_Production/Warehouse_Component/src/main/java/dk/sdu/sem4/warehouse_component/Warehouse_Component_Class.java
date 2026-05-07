@@ -4,6 +4,10 @@ package dk.sdu.sem4.warehouse_component;
 import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Component_Interface;
 import dk.sdu.sem4.machineOrchestrator.Component_Process_States_Enum;
 import dk.sdu.sem4.machineOrchestrator.Component_Status_Enum;
+import dk.sdu.sem4.machineOrchestrator.Machine_Process_States_Enum;
+import dk.sdu.sem4.machineOrchestrator.Machine_Status_Enum;
+import dk.sdu.sem4.orderManager.Item_Class;
+import dk.sdu.sem4.orderManager.Order_Item_Class;
 
 import dk.sdu.sem4.warehouse_component.Warehouse_Component_Task_Option_Enum;
 
@@ -171,6 +175,23 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
 
 
 
+    @Override
+    public Machine_Process_States_Enum Read_Machine_Process_State()
+    {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public Machine_Status_Enum Read_Machine_Status()
+    {
+        // TODO
+        return null;
+    }
+
+
+
+
     // --- From Warehouse_Component_Interface ---
 
 
@@ -186,10 +207,8 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
 
         // Needs to do some more safety checks.
         return this.warehouse_Controller.Check_Connection();
-
-        return false;
     }
-
+    
 
 
 

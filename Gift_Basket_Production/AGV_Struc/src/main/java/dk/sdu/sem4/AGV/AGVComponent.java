@@ -1,12 +1,12 @@
-package dk.sdu.sem4;
+package dk.sdu.sem4.AGV;
 
 public class AGVComponent {
     AGVController interfaceController;
     AGVAdapter interfaceAdapter;
 
-    public AGVComponent() {
-        this.interfaceController = new AGVController(this);
-        this.interfaceAdapter = new AGVAdapter(interfaceController);
+    public AGVComponent(String agvUrl) {
+        this.interfaceAdapter = new AGVAdapter(agvUrl);
+        this.interfaceController = new AGVController(interfaceAdapter);
     }
 
     public AGVComponent getAGVStructureInput() {

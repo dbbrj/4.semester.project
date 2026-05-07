@@ -1,8 +1,9 @@
 package dk.sdu.sem4.assembly;
 
 // --- Imports ---
-// TODO: Import Core Classes
-// TODO: Import Core Interfaces
+import dk.sdu.sem4.orderManager.Item_Class;
+import dk.sdu.sem4.orderManager.Order_Item_Class;
+import dk.sdu.sem4.machineOrchestrator.Machine_Component_Interface;
 
 public class AssemblyStationComponent implements AssemblyStationComponentInterface {
     
@@ -34,7 +35,7 @@ public class AssemblyStationComponent implements AssemblyStationComponentInterfa
 
 
     // --- From Machine_Component_Interface ---
-    @Override
+    /* @Override
     public int Startup_Process() {
         // TODO: return this component's ID
         return 0;
@@ -69,7 +70,7 @@ public class AssemblyStationComponent implements AssemblyStationComponentInterfa
         // TODO: delegate to controller or check internal state
         return null;
     }
-
+*/
 
     // --- From AssemblyStationComponentInterface ---
     @Override

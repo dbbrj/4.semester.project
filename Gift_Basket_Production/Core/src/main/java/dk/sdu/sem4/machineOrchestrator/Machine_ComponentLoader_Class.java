@@ -18,7 +18,7 @@ public class Machine_ComponentLoader_Class
 {
 
     // Machine Maps
-    private;
+    // private;
 
 
 

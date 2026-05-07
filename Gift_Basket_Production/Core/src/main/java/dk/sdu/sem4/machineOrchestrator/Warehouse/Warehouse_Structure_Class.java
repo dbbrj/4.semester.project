@@ -1,5 +1,9 @@
 package dk.sdu.sem4.machineOrchestrator.Warehouse;
 import dk.sdu.sem4.machineOrchestrator.Machine_Structure_Class;
+import dk.sdu.sem4.machineOrchestrator.Machine_Status_Enum;
+import dk.sdu.sem4.machineOrchestrator.Machine_Process_States_Enum;
+import dk.sdu.sem4.machineOrchestrator.Component_Status_Enum;
+import dk.sdu.sem4.machineOrchestrator.Component_Process_States_Enum;
 import dk.sdu.sem4.orderManager.Item_Class;
 import dk.sdu.sem4.orderManager.Order_Item_Class;
 
@@ -346,14 +350,14 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
     }
 
     @Override
-    public boolean Insert_NewOrder(Order_Class order)
+    public boolean Insert_NewOrder(Order_Item_Class order)
     {
         // TODO
         return false;
     }
 
     @Override
-    public Order_Class Get_CurrentOrder()
+    public Order_Item_Class Get_CurrentOrder()
     {
         // TODO
         return null;
@@ -462,7 +466,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
     // --- Warehouse Inventory Check Methods ---
 
     @Override
-    public int Check_WarehouseInventory_forOrderItems(Order_Class order_toCheck)
+    public int Check_WarehouseInventory_forOrderItems(Order_Item_Class order_toCheck)
     {
         // Instead of calling the component, check the local variable "warehouse_Inventory".
         // TODO

@@ -1,4 +1,5 @@
 module assembly_struct {
+    requires core;
     requires org.json;
     requires org.eclipse.paho.mqttv5.client;
 
