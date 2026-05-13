@@ -4,7 +4,8 @@ public class AGVAdapter {
 
     private String agvUrl;
 
-    public AGVAdapter(String agvUrl) {
+    public AGVAdapter(String agvUrl)
+    {
         this.agvUrl = agvUrl;
     }
 

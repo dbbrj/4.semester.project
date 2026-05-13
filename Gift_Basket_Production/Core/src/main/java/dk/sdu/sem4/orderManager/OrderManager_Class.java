@@ -6,24 +6,24 @@ import dk.sdu.sem4.erp_simulator.ERP_Simulator;
 import dk.sdu.sem4.erp_simulator.Order_Class;
 import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Interface;
 
-public class OrderManager implements OrderMangerInterface {
+public class OrderManager_Class implements OrderManager_Interface {
 
-   private static OrderManager instance;
+   private static OrderManager_Class instance;
    private ERP_Simulator erp_System_Ref;
 
    private Machine_Orchestrator_Interface machineOrchestrator_Ref;
 
    private ArrayList<Order_Class> order_Queue;
 
-   public OrderManager() {
+   public OrderManager_Class() {
       order_Queue = new ArrayList<>();
       erp_System_Ref = null;
       machineOrchestrator_Ref = null;
    }
 
-   public static OrderManager getInstance() {
+   public static OrderManager_Class getInstance() {
       if (instance == null) {
-         instance = new OrderManager();
+         instance = new OrderManager_Class();
       }
       return instance;
    }

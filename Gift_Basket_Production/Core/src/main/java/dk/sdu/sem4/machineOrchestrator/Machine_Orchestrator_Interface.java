@@ -2,7 +2,8 @@ package dk.sdu.sem4.machineOrchestrator;
 
 import java.util.ArrayList;
 
-import dk.sdu.sem4.orderManager.Order_Item_Class;
+import dk.sdu.sem4.item.Order_Class;
+import dk.sdu.sem4.item.Order_Item_Class;
 
 public interface Machine_Orchestrator_Interface
 {
@@ -24,7 +25,7 @@ public interface Machine_Orchestrator_Interface
      * Should only be called when no order is currently being processed.
      * @return true if the order was successfully assigned, false otherwise.
      */
-    public boolean Assign_Order();
+    public boolean Assign_Order(Order_Class order);
 
     /**
      * Unassigns the current order from the Machine Orchestrator.
@@ -37,7 +38,7 @@ public interface Machine_Orchestrator_Interface
      * Returns the full Order object currently being processed by the Machine Orchestrator.
      * @return the current Order_Item_Class instance, or null if no order is assigned.
      */
-    public Order_Item_Class Get_CurrentOrder();
+    public Order_Class Get_CurrentOrder();
 
     /**
      * Returns the unique ID of the order currently being processed.
@@ -81,7 +82,7 @@ public interface Machine_Orchestrator_Interface
      * Returns the current operational status of the Machine Orchestrator as a whole.
      * @return a String representing the status e.g. "IDLE", "RUNNING", "STOPPED", "ERROR".
      */
-    public String Get_MachineOrchestrator_Status();
+    public Machine_Orchestrator_Status_Enum Get_MachineOrchestrator_Status();
 
 
 
@@ -234,7 +235,17 @@ public interface Machine_Orchestrator_Interface
      * @param inventory_ID an array of inventory ID strings identifying the items to request.
      * @return true if the request was successfully submitted, false otherwise.
      */
-    public boolean Request_ExtraItem(String[] inventory_ID);
+    public boolean Request_ExtraItem(ArrayList<String> inventory_ID);
+
+    /**
+     * Requests an extra item to be added to the current order
+     * using an existing Order_Item_Class object.
+     * Also increments the Production Line's ItemsTotal to keep
+     * Check_allItemsDelivered() accurate.
+     * @param extraItem the Order_Item_Class object representing the extra item.
+     * @return true if successfully added, false otherwise.
+     */
+    public boolean Request_ExtraItem(Order_Item_Class extraItem);
 
     /**
      * Returns the current battery charge level of the specified AGV.

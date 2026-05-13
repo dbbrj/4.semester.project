@@ -20,7 +20,6 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     // --- Track previous state to detect changes ---
     private int previousState;
 
-
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------

@@ -1,12 +1,22 @@
 package dk.sdu.sem4.AGV;
 
-public class AGVController {
+public class AGVController
+{
+
 
     private AGVAdapter adapter;
+
+
+
+
+
 
     public AGVController(AGVAdapter adapter) {
         this.adapter = adapter;
     }
+
+
+
 
     public void sendCommand(String genericCommand) {
 
@@ -32,25 +42,4 @@ public class AGVController {
 
 
 
-
-
-
-
-    /*AGVStructureService agvStructureService;
-    AGVAdapterService agvAdapterService;
-
-    public AGVController(AGVStructure agvStructure) {
-        this.agvStructureService = new AGVStructureService(agvStructure);
-        this.agvAdapterService = new AGVAdapterService();
-    }
-
-    public AGVStructureService getAGVStructureService() {
-        return agvStructureService;
-    }
-
-    public AGVAdapterService getAGVAdapterService() {
-        return agvAdapterService;
-    }
-
-     */
 }

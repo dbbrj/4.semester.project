@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Class;
 import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Interface;
-import dk.sdu.sem4.orderManager.Order_Item_Class;
+import dk.sdu.sem4.item.Order_Item_Class;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

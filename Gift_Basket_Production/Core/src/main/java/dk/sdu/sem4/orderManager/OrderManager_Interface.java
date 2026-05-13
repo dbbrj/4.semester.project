@@ -2,7 +2,7 @@ package dk.sdu.sem4.orderManager;
 
 import dk.sdu.sem4.erp_simulator.Order_Class;
 
-public interface OrderMangerInterface {
+public interface OrderManager_Interface {
     public boolean add_Order_toQueue(Order_Class order);
     public boolean remove_Order_toQueue();
 

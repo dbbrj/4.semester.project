@@ -4,7 +4,7 @@ package dk.sdu.sem4.machineOrchestrator;
 /**
  *
  */
-public enum Machine_Status_Enum
+public enum Machine_Structure_Status_Enum
 {
 
     /**

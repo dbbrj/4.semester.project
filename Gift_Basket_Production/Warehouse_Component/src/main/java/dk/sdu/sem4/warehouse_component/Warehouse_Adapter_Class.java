@@ -8,16 +8,29 @@ import java.net.URL;
 
 import org.json.JSONObject;
 
+
+/**
+ * The Warehouse Adapter Class is the only class in the component that communicates
+ * directly with the physical Warehouse device over SOAP.
+ * All SOAP-specific code is isolated here — no other class knows about XML,
+ * HTTP or the SOAP protocol.
+ * Each public method is responsible for building its own SOAP command,
+ * packing it into an envelope, sending it, unpacking its own specific response,
+ * and returning the correctly typed result to the Controller.
+ * The two private methods handle the generic envelope wrapping and HTTP communication.
+ */
 public class Warehouse_Adapter_Class
 {
 
-    // Connection settings — passed in from the Component Class
+    // Connection settings — passed in from the Component Class,
+    // which reads them from the config file at startup.
     private String ip;
     private int port;
     private String endpoint;
 
-    // Tracks whether the Adapter is currently connected to the Warehouse
-    private boolean isConnected;
+    // Tracks whether the last connection attempt to the Warehouse was successful.
+    // This is a cached value from the last check — not a live connection state.
+    private boolean LastChecked_wasConnected;
 
 
     /**
@@ -25,6 +38,8 @@ public class Warehouse_Adapter_Class
      * Receives the connection settings from the Component Class,
      * which reads them from the config file at startup.
      * Builds the full SOAP endpoint URL from the ip and port.
+     * The connection is not verified at construction time —
+     * call Check_Connection() to verify the endpoint is reachable.
      * @param ip the IP address of the Warehouse SOAP service.
      * @param port the port number of the Warehouse SOAP service.
      */
@@ -33,8 +48,9 @@ public class Warehouse_Adapter_Class
         this.ip       = ip;
         this.port     = port;
         this.endpoint = "http://" + ip + ":" + port + "/Service.asmx";
-        this.isConnected = false;
+        this.LastChecked_wasConnected = false;
     }
+
 
 
 
@@ -48,8 +64,8 @@ public class Warehouse_Adapter_Class
      * to the Warehouse SOAP service by sending a lightweight HTTP HEAD request.
      * A HEAD request checks if the endpoint is reachable without downloading
      * any response body, making it much more efficient than a full SOAP call.
-     * Updates the isConnected flag based on the result.
-     * @return true if connected, false otherwise.
+     * Updates the LastChecked_wasConnected flag based on the result.
+     * @return true if the endpoint responded with HTTP 200 OK, false otherwise.
      */
     public boolean Check_Connection()
     {
@@ -62,24 +78,28 @@ public class Warehouse_Adapter_Class
             connection.setReadTimeout(3000);
 
             int responseCode = connection.getResponseCode();
-            this.isConnected = (responseCode == HttpURLConnection.HTTP_OK);
-            return this.isConnected;
+
+            // Checks if the Response was OK or not, and returns the results.
+            this.LastChecked_wasConnected = (responseCode == HttpURLConnection.HTTP_OK);
+            return this.LastChecked_wasConnected;
         }
         catch (Exception e)
         {
             System.err.println("Connection check failed: " + e.getMessage());
-            this.isConnected = false;
+            this.LastChecked_wasConnected = false;
             return false;
         }
     }
 
 
     /**
-     * Retrieves the current state of the Warehouse by calling GetInventory
-     * and reading the "State" field from the JSON response.
-     * The State field is an integer representing the current operational
-     * state of the Warehouse e.g. 0 for idle.
-     * @return the State integer from the Warehouse response, or -1 if the call failed.
+     * Retrieves the current operational state of the Warehouse.
+     * Internally calls the GetInventory SOAP operation and extracts
+     * the "State" integer field from the JSON response.
+     * The State field represents the current operational state of the Warehouse
+     * e.g. 0 for idle, 1 for working, 2 for error.
+     * @return the State integer from the Warehouse response, or -1 if the call failed
+     *         or the response could not be parsed.
      */
     public int GetStatus()
     {
@@ -87,24 +107,49 @@ public class Warehouse_Adapter_Class
         String soap_Command = "<GetInventory xmlns=\"http://tempuri.org/\"/>";
 
         // Pack into envelope and send
-        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
-        String response      = Send_SoapEnvelope(soap_Envelope);
+        String soap_Envelope = this.Pack_SoapEnvelope(soap_Command);
+        String response      = this.Send_SoapEnvelope(soap_Envelope);
 
-        // Parse and return the State field from the response
-        if (response != null)
+        // Check if response is empty.
+        if (response == null)
         {
+            System.err.println("GetStatus failed: no response from Warehouse.");
+            return -1;
+        }
+
+        // Identify where to Unpack the XML Response
+        String openTag  = "<GetInventoryResult>";
+        String closeTag = "</GetInventoryResult>";
+        int start = response.indexOf(openTag);
+        int end   = response.indexOf(closeTag);
+
+        // Checks if the Response contained the Open and Close Tags.
+        if (start == -1 || end == -1)
+        {
+            System.err.println("GetStatus failed: could not find GetInventoryResult tag.");
+            return -1;
+        }
+
+        // Unpack the JSON / String, from the XML Response.
+        String response_result = response.substring(start + openTag.length(), end);
+
+
+
+        // Check and then return the response_result
+        if (! (response_result.isEmpty()) )
+        {
+            // Parse and return the State field from the JSON
             try
             {
-                JSONObject json = new JSONObject(response);
+                JSONObject json = new JSONObject(response_result);
                 return json.getInt("State");
             }
             catch (Exception e)
             {
-                System.err.println("GetStatus failed to parse response: " + e.getMessage());
+                System.err.println("GetStatus failed to parse State: " + e.getMessage());
                 return -1;
             }
         }
-
         return -1;
     }
 
@@ -112,10 +157,12 @@ public class Warehouse_Adapter_Class
     /**
      * Inserts a named item into a specific tray in the Warehouse.
      * Builds the InsertItem SOAP command with the provided tray ID and item name,
-     * packs it into a SOAP envelope, sends it, and returns the raw response.
+     * packs it into a SOAP envelope, sends it to the Warehouse,
+     * and unpacks the result from the InsertItemResult XML tag.
      * @param item_id the tray ID to insert the item into.
-     * @param item_WarehouseInventory_ID the name of the item to insert.
-     * @return the raw String response from the Warehouse SOAP service, or null if the call failed.
+     * @param item_WarehouseInventory_ID the name of the item to insert into the tray.
+     * @return the unpacked String result from the InsertItemResult tag,
+     *         or null if the call failed or the response could not be unpacked.
      */
     public String InsertItem(int item_id, String item_WarehouseInventory_ID)
     {
@@ -126,17 +173,51 @@ public class Warehouse_Adapter_Class
                 + "</InsertItem>";
 
         // Pack into envelope, send and return raw response
-        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
-        return Send_SoapEnvelope(soap_Envelope);
+        String soap_Envelope = this.Pack_SoapEnvelope(soap_Command);
+        String response      = this.Send_SoapEnvelope(soap_Envelope);
+
+        if (response == null)
+        {
+            System.err.println("InsertItem failed: no response from Warehouse.");
+            return null;
+        }
+
+        // Identify where to Unpack the XML Response
+        String openTag  = "<InsertItemResult>";
+        String closeTag = "</InsertItemResult>";
+        int start = response.indexOf(openTag);
+        int end   = response.indexOf(closeTag);
+
+        // Checks if the Response contained the Open and Close Tags.
+        if (start == -1 || end == -1)
+        {
+            System.err.println("InsertItem failed: could not find InsertItemResult tag.");
+            return null;
+        }
+
+        // Unpack the JSON / String, from the XML Response.
+        String response_result = response.substring(start + openTag.length(), end);
+
+        // Check and then return the response_result
+        if ( response_result != null )
+        {
+            return response_result;
+        }
+
+        return null;
     }
 
 
     /**
      * Requests a specific item tray to be brought out of the Warehouse.
      * Builds the PickItem SOAP command with the provided tray ID,
-     * packs it into a SOAP envelope, sends it, and returns the raw response.
+     * packs it into a SOAP envelope, sends it to the Warehouse,
+     * and unpacks the result from the PickItemResult XML tag.
+     * This is a long-running hardware operation as it physically moves
+     * the tray inside the Warehouse.
      * @param item_id the tray ID to pick from.
-     * @return the raw String response from the Warehouse SOAP service, or null if the call failed.
+     * @return the unpacked String result from the PickItemResult tag,
+     *         or null if the call failed or the response could not be unpacked.
      */
     public String PickItem(int item_id)
     {
@@ -146,18 +227,53 @@ public class Warehouse_Adapter_Class
                 + "</PickItem>";
 
         // Pack into envelope, send and return raw response
-        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
-        return Send_SoapEnvelope(soap_Envelope);
+        String soap_Envelope = this.Pack_SoapEnvelope(soap_Command);
+        String response      = this.Send_SoapEnvelope(soap_Envelope);
+
+        if (response == null)
+        {
+            System.err.println("PickItem failed: no response from Warehouse.");
+            return null;
+        }
+
+        // Identify where to Unpack the XML Response
+        String openTag  = "<PickItemResult>";
+        String closeTag = "</PickItemResult>";
+        int start = response.indexOf(openTag);
+        int end   = response.indexOf(closeTag);
+
+        // Checks if the Response contained the Open and Close Tags.
+        if (start == -1 || end == -1)
+        {
+            System.err.println("PickItem failed: could not find PickItemResult tag.");
+            return null;
+        }
+
+        // Unpack the JSON / String, from the XML Response.
+        String response_result = response.substring(start + openTag.length(), end);
+
+        // Check and then return the response_result
+        if ( response_result != null )
+        {
+            return response_result;
+        }
+
+        return null;
+
+
     }
 
 
     /**
      * Retrieves the full inventory of the Warehouse.
      * Builds the GetInventory SOAP command, packs it into a SOAP envelope,
-     * sends it, and returns the raw response string.
-     * The response contains a JSON object with an Inventory list,
-     * a State value and a DateTime timestamp.
-     * @return the raw String response from the Warehouse SOAP service, or null if the call failed.
+     * sends it to the Warehouse, and unpacks the result from the GetInventoryResult XML tag.
+     * Validates that the unpacked JSON contains the expected fields
+     * "Inventory", "State" and "DateTime" before returning it.
+     * The returned String is a clean JSON string ready for parsing by the Controller.
+     * @return the unpacked and validated JSON String from the GetInventoryResult tag,
+     *         or null if the call failed, the response could not be unpacked,
+     *         or the expected JSON fields were not present.
      */
     public String GetInventory()
     {
@@ -165,8 +281,51 @@ public class Warehouse_Adapter_Class
         String soap_Command = "<GetInventory xmlns=\"http://tempuri.org/\"/>";
 
         // Pack into envelope, send and return raw response
-        String soap_Envelope = Pack_SoapEnvelope(soap_Command);
-        return Send_SoapEnvelope(soap_Envelope);
+        String soap_Envelope = this.Pack_SoapEnvelope(soap_Command);
+        String response      = this.Send_SoapEnvelope(soap_Envelope);
+
+        if (response == null)
+        {
+            System.err.println("GetInventory failed: no response from Warehouse.");
+            return null;
+        }
+
+        // Identify where to Unpack the XML Response
+        String openTag  = "<GetInventoryResult>";
+        String closeTag = "</GetInventoryResult>";
+        int start = response.indexOf(openTag);
+        int end   = response.indexOf(closeTag);
+
+        // Checks if the Response contained the Open and Close Tags.
+        if (start == -1 || end == -1)
+        {
+            System.err.println("GetInventory failed: could not find GetInventoryResult tag.");
+            return null;
+        }
+
+        // Unpack the JSON / String, from the XML Response.
+        String response_result = response.substring(start + openTag.length(), end);
+
+        // Check and then return the response_result
+        if (! (response_result.isEmpty()) )
+        {
+            try
+            {
+                JSONObject json = new JSONObject(response_result);
+
+                // Check for Specific fields.
+                if( json.has("Inventory") && json.has("State") && json.has("DateTime") )
+                {
+                    return response_result;
+                }
+            }
+            catch (Exception e)
+            {
+                System.err.println("GetStatus failed to parse State: " + e.getMessage());
+                return null;
+            }
+        }
+        return null;
     }
 
 
@@ -178,10 +337,10 @@ public class Warehouse_Adapter_Class
 
     /**
      * Wraps the provided SOAP command string inside a standard SOAP 1.1 envelope.
-     * The Adapter is responsible for the envelope structure.
-     * Each public method is responsible for building its own command content.
-     * @param soap_Command the method-specific SOAP XML command to wrap.
-     * @return a String containing the complete SOAP envelope XML.
+     * The Adapter is responsible for the envelope structure —
+     * each public method is responsible for building its own command content.
+     * @param soap_Command the method-specific SOAP XML command to wrap inside the envelope Body.
+     * @return a String containing the complete SOAP 1.1 envelope XML ready to send.
      */
     private String Pack_SoapEnvelope(String soap_Command)
     {
@@ -197,15 +356,25 @@ public class Warehouse_Adapter_Class
      * Sends the provided SOAP envelope as an HTTP POST request to the Warehouse endpoint.
      * Handles all HTTP connection setup, header configuration, request writing
      * and response reading.
-     * Updates the isConnected flag based on whether the call succeeded or failed.
+     * Returns the full raw XML response body — each public method is responsible
+     * for unpacking its own specific result from this raw response.
+     * Updates the LastChecked_wasConnected flag based on whether the call succeeded or failed.
      * @param soap_Envelope the complete SOAP envelope XML string to send.
-     * @return the raw String response body from the Warehouse SOAP service,
-     *         or null if the call failed.
+     * @return the raw XML String response body from the Warehouse SOAP service,
+     *         or null if the connection check failed, the HTTP response code was not 200 OK,
+     *         or an exception occurred during communication.
      */
     private String Send_SoapEnvelope(String soap_Envelope)
     {
         try
         {
+            // --- Step 0: Check HTTP connection to the endpoint ---
+            if (! this.Check_Connection() )
+            {
+                //TODO: Add exception.
+            }
+
+
             // --- Step 1: Open HTTP connection to the endpoint ---
             URL url = new URL(this.endpoint);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -242,20 +411,20 @@ public class Warehouse_Adapter_Class
                     }
                 }
 
-                this.isConnected = true;
+                this.LastChecked_wasConnected = true;
                 return response.toString();
             }
             else
             {
                 System.err.println("SOAP request failed. HTTP response code: " + responseCode);
-                this.isConnected = false;
+                this.LastChecked_wasConnected = false;
                 return null;
             }
         }
         catch (Exception e)
         {
             System.err.println("SOAP request error: " + e.getMessage());
-            this.isConnected = false;
+            this.LastChecked_wasConnected = false;
             return null;
         }
     }

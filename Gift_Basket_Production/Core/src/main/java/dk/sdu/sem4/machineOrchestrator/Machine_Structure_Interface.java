@@ -3,24 +3,38 @@ package dk.sdu.sem4.machineOrchestrator;
 public interface Machine_Structure_Interface
 {
 
-    // ---- Machine State Methods
+    // ---- Machine Structure Methods
 
     // Identifies the physical machine on the factory floor
-    public int Read_Machine_ID();
+    public int Read_Machine_Structure_ID();
 
     // Identifies the type of machine e.g. "Warehouse", "AGV"
-    public String Read_Machine_Type();
+    public String Read_Machine_Structure_Type();
 
     // Returns the current operational status of the machine
-    public Machine_Status_Enum Read_Machine_Status();
+    public Machine_Structure_Status_Enum Read_Machine_Structure_Status();
 
     // Returns the current operational state of the machine
-    public Machine_Process_States_Enum Read_Machine_State();
+    public Machine_Process_States_Enum Read_Machine_Structure_State();
 
 
 
 
-    // ---- Component State Methods
+    // ---- Machine Structure Life-cycle Methods
+
+    // Handles the startup sequence of the component
+    public boolean Startup_Process();
+
+    // Handles the ongoing running logic of the component
+    public boolean Running_Process();
+
+    // Handles the shutdown sequence of the component
+    public boolean Shutdown_Process();
+
+
+
+
+    // ---- Machine Component Methods
 
     // Identifies the component instance connected to this machine
     public int Read_Component_ID();
@@ -46,19 +60,18 @@ public interface Machine_Structure_Interface
     public boolean Read_simulate_Component_SuccessfulOutput_State();
 
 
+    /*
+    Storing Error Type. ( "warning + retry", "warning + action", "Restart Needed" )
+        -   "warning + retry": Sends a message/log, requirer the system above to.  (Connect methods)
+        -   "warning + action": Sends a message/log, requires a person to act in order to fix. (Entry blocked)
+        -   "Restart Needed": Sends a message/log, force the system to restart some/all processes.
+    Storing Error State.
+    Storing Error Message.
 
 
-    // ---- Component Life-cycle Methods
+    Clear
 
-    // Handles the startup sequence of the component
-    public boolean Startup_Process();
-
-    // Handles the ongoing running logic of the component
-    public boolean Running_process();
-
-    // Handles the shutdown sequence of the component
-    public boolean Shutdown_process();
-
+    */
 
 
 

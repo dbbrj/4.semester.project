@@ -1,6 +1,7 @@
 package dk.sdu.sem4.assembly;
 
-public interface AssemblyStationListener {
+public interface AssemblyStationListener
+{
 
     /** Station started executing — AGV should wait */
     void onAssemblyStarted(int processId);

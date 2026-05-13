@@ -4,10 +4,10 @@ public class Machine_Structure_Class
 {
 
     // Machine identity — identifies the physical machine (1 to 255)
-    private int machine_ID;
-    private String machine_Type;
-    private Machine_Status_Enum machine_Status;
-    private Machine_Process_States_Enum machine_State;
+    private int machine_Structure_ID;
+    private String machine_Structure_Type;
+    private Machine_Structure_Status_Enum machine_Structure_Status;
+    private Machine_Process_States_Enum machine_Structure_State;
 
     // Component identity — identifies the component connected to this machine
     private int component_ID;
@@ -25,32 +25,32 @@ public class Machine_Structure_Class
 
 
     // Constructor — called via super() from subclasses
-    public Machine_Structure_Class(int machine_ID, String machine_Type)
+    public Machine_Structure_Class(int machine_Structure_ID, String machine_Structure_Type)
     {
 
         // .
-        if (this.Check_MachineID_isValid(machine_ID))
+        if (this.Check_MachineStructure_ID_isValid(machine_Structure_ID))
         {
-            this.machine_ID = machine_ID;
+            this.machine_Structure_ID = machine_Structure_ID;
         }
         else
         {
             // Could add a System message / Error message.
-            this.machine_ID = 0;
+            this.machine_Structure_ID = 0;
         }
 
-        if (this.Check_MachineType_isValid(machine_Type))
+        if (this.Check_MachineStructure_Type_isValid(machine_Structure_Type))
         {
-            this.machine_Type = machine_Type;
+            this.machine_Structure_Type = machine_Structure_Type;
         }
         else
         {
             // Could add a System message / Error message.
-            this.machine_Type = "Generic Machine Type";
+            this.machine_Structure_Type = "Generic Machine Type";
         }
 
-        this.machine_Status = Machine_Status_Enum.NONE;
-        this.machine_State = Machine_Process_States_Enum.CONSTRUCTED;
+        this.machine_Structure_Status = Machine_Structure_Status_Enum.NONE;
+        this.machine_Structure_State = Machine_Process_States_Enum.CONSTRUCTED;
 
 
         // .
@@ -67,32 +67,32 @@ public class Machine_Structure_Class
     }
 
 
-    public Machine_Structure_Class(int machine_ID, String machine_Type, boolean simulate_Component , boolean simulate_Component_SuccessfulOutput)
+    public Machine_Structure_Class(int machine_Structure_ID, String machine_Structure_Type, boolean simulate_Component , boolean simulate_Component_SuccessfulOutput)
     {
 
         // .
-        if (this.Check_MachineID_isValid(machine_ID))
+        if (this.Check_MachineStructure_ID_isValid(machine_Structure_ID))
         {
-            this.machine_ID = machine_ID;
+            this.machine_Structure_ID = machine_Structure_ID;
         }
         else
         {
             // Could add a System message / Error message.
-            this.machine_ID = 0;
+            this.machine_Structure_ID = 0;
         }
 
-        if (this.Check_MachineType_isValid(machine_Type))
+        if (this.Check_MachineStructure_Type_isValid(machine_Structure_Type))
         {
-            this.machine_Type = machine_Type;
+            this.machine_Structure_Type = machine_Structure_Type;
         }
         else
         {
             // Could add a System message / Error message.
-            this.machine_Type = "Generic Machine Type";
+            this.machine_Structure_Type = "Generic Machine Type";
         }
 
-        this.machine_Status = Machine_Status_Enum.NONE;
-        this.machine_State = Machine_Process_States_Enum.CONSTRUCTED;
+        this.machine_Structure_Status = Machine_Structure_Status_Enum.NONE;
+        this.machine_Structure_State = Machine_Process_States_Enum.CONSTRUCTED;
 
 
         // .
@@ -129,34 +129,34 @@ public class Machine_Structure_Class
 
     // Machine
 
-    protected int Get_Machine_ID()
+    protected int Get_Machine_Structure_ID()
     {
-        return this.machine_ID;
+        return this.machine_Structure_ID;
     }
 
-    protected String Get_Machine_Type()
+    protected String Get_Machine_Structure_Type()
     {
-        return this.machine_Type;
+        return this.machine_Structure_Type;
     }
 
-    protected Machine_Status_Enum Get_Machine_Status()
+    protected Machine_Structure_Status_Enum Get_Machine_Structure_Status()
     {
-        return this.machine_Status;
+        return this.machine_Structure_Status;
     }
 
-    protected Machine_Process_States_Enum Get_Machine_State()
+    protected Machine_Process_States_Enum Get_Machine_Structure_State()
     {
-        return this.machine_State;
+        return this.machine_Structure_State;
     }
 
-    protected boolean Set_Machine_Status(Machine_Status_Enum new_machine_Status)
+    protected boolean Set_Machine_Structure_Status(Machine_Structure_Status_Enum new_machine_Status)
     {
-        if (this.Check_MachineStatus_isValid(new_machine_Status))
+        if (this.Check_MachineStructure_Status_isValid(new_machine_Status))
         {
-            this.machine_Status = new_machine_Status;
+            this.machine_Structure_Status = new_machine_Status;
 
             // Checks to see if it really has been updated.
-            if ((this.machine_Status).compareTo(new_machine_Status) == 0)
+            if ((this.machine_Structure_Status).compareTo(new_machine_Status) == 0)
             {
                 return true;
             }
@@ -164,14 +164,14 @@ public class Machine_Structure_Class
         return false;
     }
 
-    protected boolean Set_Machine_State(Machine_Process_States_Enum new_machine_State)
+    protected boolean Set_Machine_Structure_State(Machine_Process_States_Enum new_machine_State)
     {
-        if (this.Check_MachineState_isValid(new_machine_State))
+        if (this.Check_MachineStructure_State_isValid(new_machine_State))
         {
-            this.machine_State = new_machine_State;
+            this.machine_Structure_State = new_machine_State;
 
             // Checks to see if it really has been updated.
-            if ((this.machine_State).compareTo(new_machine_State) == 0)
+            if ((this.machine_Structure_State).compareTo(new_machine_State) == 0)
             {
                 return true;
             }
@@ -275,7 +275,7 @@ public class Machine_Structure_Class
 
     // Machine Checks.
 
-    private boolean Check_MachineID_isValid(int machine_id)
+    private boolean Check_MachineStructure_ID_isValid(int machine_id)
     {
         if (machine_id < 0)
         {
@@ -296,7 +296,7 @@ public class Machine_Structure_Class
         return false;
     }
 
-    private boolean Check_MachineType_isValid(String machine_type)
+    private boolean Check_MachineStructure_Type_isValid(String machine_type)
     {
         if (machine_type == null)
         {
@@ -315,7 +315,7 @@ public class Machine_Structure_Class
         return false;
     }
 
-    private boolean Check_MachineStatus_isValid(Machine_Status_Enum machine_status)
+    private boolean Check_MachineStructure_Status_isValid(Machine_Structure_Status_Enum machine_status)
     {
         if (machine_status == null)
         {
@@ -334,7 +334,7 @@ public class Machine_Structure_Class
         return false;
     }
 
-    private boolean Check_MachineState_isValid(Machine_Process_States_Enum machine_state)
+    private boolean Check_MachineStructure_State_isValid(Machine_Process_States_Enum machine_state)
     {
         if (machine_state == null)
         {

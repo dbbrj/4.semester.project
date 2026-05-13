@@ -1,59 +1,66 @@
 package dk.sdu.sem4.machineOrchestrator;
 
 
+/**
+ * The Machine Component Interface defines the shared public contract for all
+ * Component implementations in the system, regardless of device type.
+ * Every physical device component — Warehouse, AGV, Assembly Station, or any
+ * future device — must implement this interface.
+ * Device-specific interfaces extend this interface to add operations
+ * specific to that device type.
+ */
 public interface Machine_Component_Interface
 {
 
+    // ── Identity Methods ──────────────────────────────────────────────────────
 
-    // ---- Component State Methods
-
-    // Returns the unique ID of the component instance
+    /**
+     * Returns the unique ID of this Component instance.
+     * @return the component ID as an integer.
+     */
     public int Read_Component_ID();
 
-    // Returns the component type identifier.
+    /**
+     * Returns the type identifier of this Component.
+     * @return the component type identifier string.
+     */
     public String Read_Component_Type();
 
-    // Returns the current operational status.
+    /**
+     * Returns the current operational status of this Component.
+     * @return the current Component_Status_Enum value.
+     */
     public Component_Status_Enum Read_Component_Status();
 
-    // Returns the current operational state.
+    /**
+     * Returns the current process state of this Component.
+     * @return the current Component_Process_States_Enum value.
+     */
     public Component_Process_States_Enum Read_Component_State();
 
 
 
 
+    // ── Lifecycle Methods ─────────────────────────────────────────────────────
 
-    // ---- Component Life-cycle Methods
-
-    // Handles the startup sequence of the component
+    /**
+     * Runs the startup sequence for this Component.
+     * @return true if startup completed successfully, false otherwise.
+     */
     public boolean Startup_Process();
 
-    // Handles the ongoing running logic of the component
+    /**
+     * Runs one cycle of this Component's main operational loop.
+     * @return true if the cycle completed successfully, false otherwise.
+     */
     public boolean Running_process();
 
-    // Handles the shutdown sequence of the component
+    /**
+     * Runs the shutdown sequence for this Component.
+     * @return true if shutdown completed cleanly, false otherwise.
+     */
     public boolean Shutdown_process();
 
 
 
-
-
-    // ---- Component Life-cycle Methods
-
-    // Read the
-    public Machine_Process_States_Enum Read_Machine_Process_State();
-
-    // Read the
-    public Machine_Status_Enum Read_Machine_Status();
-
-
-
-
 }
-
-
-
-
-
-
-
