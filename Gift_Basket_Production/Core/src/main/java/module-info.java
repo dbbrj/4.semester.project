@@ -1,10 +1,8 @@
 module core {
     requires ERP_Simulator;
-    requires AGV_Struc;
     requires org.json;
     requires javafx.graphics;
     requires javafx.controls;
-    requires core;
 
     opens dk.sdu.sem4.gui to javafx.graphics;
 
@@ -14,5 +12,9 @@ module core {
     exports dk.sdu.sem4.machineOrchestrator.Warehouse;
     exports dk.sdu.sem4.orderManager;
     exports dk.sdu.sem4.item;
+
+    uses dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Component_Factory_Interface;
+    uses dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Component_Factory_Interface;
+    uses dk.sdu.sem4.machineOrchestrator.AGV.AGV_Component_Factory_Interface;
 
 }

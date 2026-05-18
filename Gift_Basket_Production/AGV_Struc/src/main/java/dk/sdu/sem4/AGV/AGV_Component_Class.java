@@ -27,8 +27,8 @@ public class AGV_Component_Class implements AGV_Component_Interface
     ///
 
     // Inner classes
-    private AGV_Controller agv_Controller;
-    private AGV_Adapter    agv_Adapter;
+    private AGVController agv_Controller;
+    private AGVAdapter    agv_Adapter;
 
     // Hardcoded type identifier — matched against the config file by the Component Loader
     public static final String COMPONENT_TYPE = "AGV_Enabled_REST_V1";
@@ -70,8 +70,8 @@ public class AGV_Component_Class implements AGV_Component_Interface
         this.port = port;
 
         // Create Adapter and Controller
-        this.agv_Adapter    = new AGV_Adapter(ip, port);
-        this.agv_Controller = new AGV_Controller(this.agv_Adapter);
+        this.agv_Adapter    = new AGVAdapter("http://" + ip + ":" + port);
+        this.agv_Controller = new AGVController(this.agv_Adapter);
 
         // Component identity
         this.component_ID   = -1;

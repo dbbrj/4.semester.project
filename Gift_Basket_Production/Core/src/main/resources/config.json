@@ -1,10 +1,35 @@
 {
-  "machineName": "AGV-01",
-  "ipAddress": "192.168.1.1",
-  "port": 8080,
-
-  "assemblyStation": {
-    "brokerHost": "mqtt",
-    "brokerPort": 1883
-  }
+  "warehouses": [
+    {
+      "machine_ID": 1,
+      "machine_Type": "Warehouse_EFFIMAT_SOAP_V1.0",
+      "type": "Warehouse_EFFIMAT_SOAP_V1.0",
+      "ip": "192.168.1.10",
+      "port": 8080
+    }
+  ],
+  "assemblyStations": [
+    {
+      "machine_ID": 2,
+      "machine_Type": "AssemblyStation_Brand_MQTT_V1",
+      "type": "AssemblyStation_Brand_MQTT_V1",
+      "ip": "192.168.1.20",
+      "port": 1883
+    }
+  ],
+  "agvs": [
+    {
+      "machine_ID": 3,
+      "machine_Type": "AGV_Enabled_REST_V1",
+      "type": "AGV_Enabled_REST_V1",
+      "ip": "192.168.1.30",
+      "port": 8090,
+      "warehouse_Locations": [
+        { "machine_ID": 1 }
+      ],
+      "assemblySt_Locations": [
+        { "machine_ID": 2 }
+      ]
+    }
+  ]
 }

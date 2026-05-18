@@ -1,22 +1,22 @@
 package dk.sdu.sem4.machineOrchestrator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+
+import org.json.JSONObject;
+
 import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Component_Factory_Interface;
 import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Component_Interface;
 import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
 import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Component_Factory_Interface;
 import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Component_Interface;
 import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
+import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Component_Factory_Interface;
 import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Component_Interface;
 import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
-import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Component_Factory_Interface;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.ServiceLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -118,19 +118,43 @@ public class Machine_ComponentLoader_Class
         }
 
         // ── Step 3: Loop through the warehouse map and delegate pairing ───────────
-        // For each Warehouse Structure, delegate the pairing to the helper method.
-        // Track whether all Structures were successfully paired.
+        // For each Warehouse Structure, find its specific config entry from the
+        // "warehouses" array (matched by machine_ID) and delegate pairing.
         boolean allWarehouses_arePaired = true;
 
         for (Map.Entry<Integer, Warehouse_Structure_Interface> warehouse_MapEntry : warehouse_Map.entrySet())
         {
+            int machineId = warehouse_MapEntry.getKey();
+
+            // Find the per-machine config entry from the "warehouses" array.
+            JSONObject machineConfig = null;
+            if (config.has("warehouses"))
+            {
+                for (Object obj : config.getJSONArray("warehouses"))
+                {
+                    JSONObject entry = (JSONObject) obj;
+                    if (entry.optInt("machine_ID", -1) == machineId)
+                    {
+                        machineConfig = entry;
+                        break;
+                    }
+                }
+            }
+
+            if (machineConfig == null)
+            {
+                System.err.println("Load_Warehouse_Components failed: no config entry found for Warehouse " + machineId);
+                allWarehouses_arePaired = false;
+                continue;
+            }
+
             try
             {
                 boolean warehouse_isPaired = this.Pair_Warehouse_Component(
                         warehouse_MapEntry.getValue(),
-                        warehouse_MapEntry.getKey(),
+                        machineId,
                         available_Factories,
-                        config);
+                        machineConfig);
 
                 if (!warehouse_isPaired)
                 {
@@ -140,7 +164,7 @@ public class Machine_ComponentLoader_Class
             catch (Exception e)
             {
                 System.err.println("Load_Warehouse_Components failed: unexpected error while pairing Warehouse "
-                        + warehouse_MapEntry.getKey() + ": " + e.getMessage());
+                        + machineId + ": " + e.getMessage());
                 allWarehouses_arePaired = false;
             }
         }
@@ -322,19 +346,42 @@ public class Machine_ComponentLoader_Class
         }
 
         // ── Step 3: Loop through the assembly station map and delegate pairing ─────
-        // For each Assembly Station Structure, delegate the pairing to the helper method.
-        // Track whether all Structures were successfully paired.
+        // For each Assembly Station Structure, find its specific config entry from the
+        // "assemblyStations" array (matched by machine_ID) and delegate pairing.
         boolean allAssemblyStations_arePaired = true;
 
         for (Map.Entry<Integer, AssemblySt_Structure_Interface> assemblySt_MapEntry : assemblySt_Map.entrySet())
         {
+            int machineId = assemblySt_MapEntry.getKey();
+
+            JSONObject machineConfig = null;
+            if (config.has("assemblyStations"))
+            {
+                for (Object obj : config.getJSONArray("assemblyStations"))
+                {
+                    JSONObject entry = (JSONObject) obj;
+                    if (entry.optInt("machine_ID", -1) == machineId)
+                    {
+                        machineConfig = entry;
+                        break;
+                    }
+                }
+            }
+
+            if (machineConfig == null)
+            {
+                System.err.println("Load_AssemblyStation_Components failed: no config entry found for Assembly Station " + machineId);
+                allAssemblyStations_arePaired = false;
+                continue;
+            }
+
             try
             {
                 boolean assemblySt_isPaired = this.Pair_AssemblyStation_Component(
                         assemblySt_MapEntry.getValue(),
-                        assemblySt_MapEntry.getKey(),
+                        machineId,
                         available_Factories,
-                        config);
+                        machineConfig);
 
                 if (!assemblySt_isPaired)
                 {
@@ -344,7 +391,7 @@ public class Machine_ComponentLoader_Class
             catch (Exception e)
             {
                 System.err.println("Load_AssemblyStation_Components failed: unexpected error while pairing Assembly Station "
-                        + assemblySt_MapEntry.getKey() + ": " + e.getMessage());
+                        + machineId + ": " + e.getMessage());
                 allAssemblyStations_arePaired = false;
             }
         }
@@ -521,19 +568,42 @@ public class Machine_ComponentLoader_Class
         }
 
         // ── Step 3: Loop through the AGV map and delegate pairing ─────────────────
-        // For each AGV Structure, delegate the pairing to the helper method.
-        // Track whether all Structures were successfully paired.
+        // For each AGV Structure, find its specific config entry from the
+        // "agvs" array (matched by machine_ID) and delegate pairing.
         boolean allAGVs_arePaired = true;
 
         for (Map.Entry<Integer, AGV_Structure_Interface> agv_MapEntry : agv_Map.entrySet())
         {
+            int machineId = agv_MapEntry.getKey();
+
+            JSONObject machineConfig = null;
+            if (config.has("agvs"))
+            {
+                for (Object obj : config.getJSONArray("agvs"))
+                {
+                    JSONObject entry = (JSONObject) obj;
+                    if (entry.optInt("machine_ID", -1) == machineId)
+                    {
+                        machineConfig = entry;
+                        break;
+                    }
+                }
+            }
+
+            if (machineConfig == null)
+            {
+                System.err.println("Load_AGV_Components failed: no config entry found for AGV " + machineId);
+                allAGVs_arePaired = false;
+                continue;
+            }
+
             try
             {
                 boolean agv_isPaired = this.Pair_AGV_Component(
                         agv_MapEntry.getValue(),
-                        agv_MapEntry.getKey(),
+                        machineId,
                         available_Factories,
-                        config);
+                        machineConfig);
 
                 if (!agv_isPaired)
                 {
@@ -543,7 +613,7 @@ public class Machine_ComponentLoader_Class
             catch (Exception e)
             {
                 System.err.println("Load_AGV_Components failed: unexpected error while pairing AGV "
-                        + agv_MapEntry.getKey() + ": " + e.getMessage());
+                        + machineId + ": " + e.getMessage());
                 allAGVs_arePaired = false;
             }
         }

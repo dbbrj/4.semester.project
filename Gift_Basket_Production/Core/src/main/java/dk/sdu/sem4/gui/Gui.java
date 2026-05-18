@@ -1,8 +1,8 @@
 package dk.sdu.sem4.gui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Class;
 import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Interface;
 import dk.sdu.sem4.item.Order_Item_Class;
 import javafx.animation.Animation;
@@ -23,7 +23,13 @@ import javafx.util.Duration;
 
 public class Gui extends Application {
 
-    private Machine_Orchestrator_Interface orchestrator = new Machine_Orchestrator_Class();
+    private static Machine_Orchestrator_Interface prelaunchOrchestrator;
+
+    public static void setOrchestrator(Machine_Orchestrator_Interface o) {
+        prelaunchOrchestrator = o;
+    }
+
+    private Machine_Orchestrator_Interface orchestrator;
 
     private int selectedWarehouseId = -1;
     private int selectedAssemblyId = -1;
@@ -54,6 +60,7 @@ public class Gui extends Application {
 
     @Override
     public void start(Stage stage) {
+        this.orchestrator = prelaunchOrchestrator;
         stage.setTitle("Gift Basket Production - GUI");
 
         Label title = new Label("Gift Basket Production Monitor");
@@ -338,7 +345,7 @@ public class Gui extends Application {
                 inventoryIds[i] = inventoryIds[i].trim();
             }
 
-            boolean requested = orchestrator.Request_ExtraItem(inventoryIds);
+            boolean requested = orchestrator.Request_ExtraItem(new ArrayList<>(Arrays.asList(inventoryIds)));
             log("Extra item request sendt: " + requested);
         } catch (Exception e) {
             log("Fejl ved extra item request: " + e.getMessage());
@@ -351,7 +358,7 @@ public class Gui extends Application {
         }
 
         try {
-            systemStatus.setText("System: " + safe(orchestrator.Get_MachineOrchestrator_Status()));
+            systemStatus.setText("System: " + safe(orchestrator.Get_MachineOrchestrator_Status().toString()));
 
             updateWarehouse();
             updateAgv();

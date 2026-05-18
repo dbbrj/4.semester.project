@@ -8,6 +8,7 @@ import org.json.JSONObject;
 public class Config_file_reader {
 
     private Config_Machine_Orchestrator config_machine_orchestrator;
+    private JSONObject rawConfig;
 
     public boolean load_Config_file(){
        try{
@@ -15,10 +16,12 @@ public class Config_file_reader {
             String content = new String(is.readAllBytes());
             JSONObject jsonObject = new JSONObject(content);
 
+            rawConfig = jsonObject;
+
             config_machine_orchestrator = new Config_Machine_Orchestrator();
-            config_machine_orchestrator.setMachineName(jsonObject.getString("machineName"));
-            config_machine_orchestrator.setIpAddress(jsonObject.getString("ipAddress"));
-            config_machine_orchestrator.setPort(jsonObject.getInt("port"));
+            config_machine_orchestrator.setMachineName(jsonObject.optString("machineName"));
+            config_machine_orchestrator.setIpAddress(jsonObject.optString("ipAddress"));
+            config_machine_orchestrator.setPort(jsonObject.optInt("port"));
 
        } catch(IOException e){
            throw new IllegalStateException("Failed to read configuration", e);
@@ -28,6 +31,10 @@ public class Config_file_reader {
 
     public Config_Machine_Orchestrator getConfig_machine_orchestrator() {
         return config_machine_orchestrator;
+    }
+
+    public JSONObject getRawConfig() {
+        return rawConfig;
     }
 
 }

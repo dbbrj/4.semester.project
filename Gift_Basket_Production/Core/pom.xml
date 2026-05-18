@@ -42,12 +42,7 @@
       <artifactId>erp_simulator</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>dk.sdu.sem4</groupId>
-      <artifactId>AGV_Struc</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
+<dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
     </dependency>
@@ -55,6 +50,14 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.6.3</version>
+        <configuration>
+          <mainClass>dk.sdu.sem4.Main</mainClass>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.10.0</version>

@@ -8,10 +8,6 @@ import dk.sdu.sem4.orderManager.OrderManager_Class;
 import dk.sdu.sem4.config.Config_file_reader;
 import dk.sdu.sem4.gui.Gui;
 
-import dk.sdu.sem4.item.Item_Class;
-import dk.sdu.sem4.item.Order_Item_Class;
-import dk.sdu.sem4.item.Order_Class;
-
 import org.json.JSONObject;
 
 
@@ -79,7 +75,8 @@ public class Core_Class
         this.configReader = new Config_file_reader();
 
         // ── Step 2: Read config file ──────────────────────────────────────
-        JSONObject config_data = this.configReader.getConfig_machine_orchestrator();
+        this.configReader.load_Config_file();
+        JSONObject config_data = this.configReader.getRawConfig();
 
         // ── Step 3: Create ERP Simulator ──────────────────────────────────
         // ERP Simulator reads orders from a local file.
@@ -97,9 +94,9 @@ public class Core_Class
                 this.orderManager);
 
         // ── Step 6: Create GUI ────────────────────────────────────────────
-        // GUI receives Machine Orchestrator reference for status and control.
-        // TODO: Pass correct references once GUI interface is finalised.
-        this.gui = new Gui(this.machineOrchestrator);
+        // JavaFX Application cannot receive constructor args — inject via static setter.
+        Gui.setOrchestrator(this.machineOrchestrator);
+        this.gui = null;
 
         // ── Step 7: Wire ERP Simulator to Order Manager ───────────────────
         // TODO: Wire up once interfaces are finalised.
