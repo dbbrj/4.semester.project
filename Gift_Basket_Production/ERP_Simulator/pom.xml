@@ -32,7 +32,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.6.3</version>
                 <configuration>
-                    <skip>false</skip>
+                    <skip>true</skip>
                     <mainClass>dk.sdu.sem4.Main</mainClass>
                 </configuration>
             </plugin>
