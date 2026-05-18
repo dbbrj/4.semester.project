@@ -7,7 +7,7 @@
   <name>Gift_Basket_Production</name>
  
   <modules>
-    <module>erp_simulator</module>
+    <module>ERP_Simulator</module>
     <module>AGV_Struc</module>
     <module>assembly_struct</module>
     <module>Warehouse_Component</module>
@@ -17,7 +17,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
-    <exec.skip>true</exec.skip>
   </properties>
 
   <dependencyManagement>
