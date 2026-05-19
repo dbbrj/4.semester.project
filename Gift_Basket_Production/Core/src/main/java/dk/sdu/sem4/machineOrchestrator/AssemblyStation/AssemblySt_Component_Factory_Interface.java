@@ -2,13 +2,6 @@ package dk.sdu.sem4.machineOrchestrator.AssemblyStation;
 
 
 
-import dk.sdu.sem4.machineOrchestrator.Machine_Component_Interface;
-
-import dk.sdu.sem4.item.Item_Class;
-import dk.sdu.sem4.item.Order_Item_Class;
-import dk.sdu.sem4.item.Order_Class;
-
-import java.util.ArrayList;
 import org.json.JSONObject;
 
 
@@ -44,11 +37,13 @@ public interface AssemblySt_Component_Factory_Interface
      * passing in the connection settings read from the config file.
      * Use this for Assembly Station types that only require basic
      * connection settings to operate.
-     * @param ip the IP address of the Assembly Station device.
+     *
+     * @param id
+     * @param ip   the IP address of the Assembly Station device.
      * @param port the port number of the Assembly Station device.
      * @return a new AssemblySt_Component_Interface instance.
      */
-    public AssemblySt_Component_Interface create(String ip, int port);
+    public AssemblySt_Component_Interface create(int id, String ip, int port);
 
 
     /**
@@ -60,12 +55,14 @@ public interface AssemblySt_Component_Factory_Interface
      * Use this for Assembly Station types that require additional parameters
      * beyond just IP and port — for example MQTT topic names or
      * authentication credentials.
-     * @param ip the IP address of the Assembly Station device.
-     * @param port the port number of the Assembly Station device.
+     *
+     * @param id
+     * @param ip          the IP address of the Assembly Station device.
+     * @param port        the port number of the Assembly Station device.
      * @param config_data a JSONObject containing additional configuration
      *                    parameters specific to this Assembly Station Component type.
      * @return a new AssemblySt_Component_Interface instance.
      */
-    public AssemblySt_Component_Interface create(String ip, int port, JSONObject config_data);
+    public AssemblySt_Component_Interface create(int id, String ip, int port, JSONObject config_data);
 
 }

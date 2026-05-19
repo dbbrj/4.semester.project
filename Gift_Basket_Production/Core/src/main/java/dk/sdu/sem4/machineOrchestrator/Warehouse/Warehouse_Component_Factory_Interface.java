@@ -25,22 +25,26 @@ public interface Warehouse_Component_Factory_Interface
 
     /**
      * Creates and returns a new Warehouse Component instance.
-     * @param ip the IP address of the Warehouse device.
+     *
+     * @param id
+     * @param ip   the IP address of the Warehouse device.
      * @param port the port number of the Warehouse device.
      * @return a new Warehouse_Component_Interface instance.
      */
-    public Warehouse_Component_Interface create(String ip, int port);
+    public Warehouse_Component_Interface create(int id, String ip, int port);
 
 
     /**
      * Creates and returns a new Warehouse Component instance with additional configuration data.
-     * @param ip the IP address of the Warehouse device.
-     * @param port the port number of the Warehouse device.
+     *
+     * @param id
+     * @param ip          the IP address of the Warehouse device.
+     * @param port        the port number of the Warehouse device.
      * @param config_data a JSONObject containing additional configuration parameters
      *                    specific to this Warehouse Component type.
      * @return a new Warehouse_Component_Interface instance.
      */
-    public Warehouse_Component_Interface create(String ip, int port, JSONObject config_data);
+    public Warehouse_Component_Interface create(int id, String ip, int port, JSONObject config_data);
 
 
 

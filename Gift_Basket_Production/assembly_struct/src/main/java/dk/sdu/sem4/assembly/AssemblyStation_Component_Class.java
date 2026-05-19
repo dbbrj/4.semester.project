@@ -57,7 +57,7 @@ public class AssemblyStation_Component_Class implements AssemblySt_Component_Int
      * @param ip the IP address of the physical Assembly Station device.
      * @param port the port number of the physical Assembly Station device.
      */
-    public AssemblyStation_Component_Class(String ip, int port)
+    public AssemblyStation_Component_Class(int id, String ip, int port)
     {
         // Connection settings
         this.ip   = ip;
@@ -70,7 +70,7 @@ public class AssemblyStation_Component_Class implements AssemblySt_Component_Int
                 "tcp://" + ip + ":" + port);
 
         // Component identity
-        this.component_ID   = -1;
+        this.component_ID   = id;
         this.component_Type = COMPONENT_TYPE;
 
         // Component status and state

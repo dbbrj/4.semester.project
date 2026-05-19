@@ -66,14 +66,16 @@ public class AssemblyStation_Component_Factory_Class implements AssemblySt_Compo
      * using basic connection settings.
      * Called by the Machine Component Loader after finding a matching factory,
      * passing in the connection settings read from the config file.
-     * @param ip the IP address of the Assembly Station device.
+     *
+     * @param id
+     * @param ip   the IP address of the Assembly Station device.
      * @param port the port number of the Assembly Station device.
      * @return a new AssemblySt_Component_Interface instance.
      */
     @Override
-    public AssemblySt_Component_Interface create(String ip, int port)
+    public AssemblySt_Component_Interface create(int id, String ip, int port)
     {
-        return new AssemblyStation_Component_Class(ip, port);
+        return new AssemblyStation_Component_Class(id, ip, port);
     }
 
 
@@ -86,18 +88,20 @@ public class AssemblyStation_Component_Factory_Class implements AssemblySt_Compo
      * For now delegates to the basic create() method — extend this
      * when the Assembly Station Component needs additional config parameters
      * such as MQTT topic names or authentication credentials.
-     * @param ip the IP address of the Assembly Station device.
-     * @param port the port number of the Assembly Station device.
+     *
+     * @param id
+     * @param ip          the IP address of the Assembly Station device.
+     * @param port        the port number of the Assembly Station device.
      * @param config_data a JSONObject containing additional configuration
      *                    parameters specific to this Assembly Station Component type.
      * @return a new AssemblySt_Component_Interface instance.
      */
     @Override
-    public AssemblySt_Component_Interface create(String ip, int port, JSONObject config_data)
+    public AssemblySt_Component_Interface create(int id, String ip, int port, JSONObject config_data)
     {
         // TODO: Expand to pass config_data to the Component constructor
         // when additional configuration parameters are needed.
-        return new AssemblyStation_Component_Class(ip, port);
+        return new AssemblyStation_Component_Class(id, ip, port);
     }
 
 }

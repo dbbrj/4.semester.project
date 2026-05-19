@@ -5,13 +5,7 @@ package dk.sdu.sem4.AGV;
 import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Component_Factory_Interface;
 
 import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Component_Interface;
-import dk.sdu.sem4.machineOrchestrator.Component_Process_States_Enum;
-import dk.sdu.sem4.machineOrchestrator.Component_Status_Enum;
 
-
-import dk.sdu.sem4.item.Item_Class;
-import dk.sdu.sem4.item.Order_Item_Class;
-import dk.sdu.sem4.item.Order_Class;
 
 import org.json.JSONObject;
 
@@ -77,14 +71,16 @@ public class AGV_Component_Factory_Class implements AGV_Component_Factory_Interf
      * using basic connection settings.
      * Called by the Machine Component Loader after finding a matching factory,
      * passing in the connection settings read from the config file.
-     * @param ip the IP address of the AGV device.
+     *
+     * @param id
+     * @param ip   the IP address of the AGV device.
      * @param port the port number of the AGV device.
      * @return a new AGV_Component_Interface instance.
      */
     @Override
-    public AGV_Component_Interface create(String ip, int port)
+    public AGV_Component_Interface create(int id, String ip, int port)
     {
-        return new AGV_Component_Class(ip, port);
+        return new AGV_Component_Class(id, ip, port);
     }
 
 
@@ -97,18 +93,20 @@ public class AGV_Component_Factory_Class implements AGV_Component_Factory_Interf
      * For now delegates to the basic create() method — extend this
      * when the AGV Component needs additional config parameters
      * such as authentication credentials or device-specific settings.
-     * @param ip the IP address of the AGV device.
-     * @param port the port number of the AGV device.
+     *
+     * @param id
+     * @param ip          the IP address of the AGV device.
+     * @param port        the port number of the AGV device.
      * @param config_data a JSONObject containing additional configuration
      *                    parameters specific to this AGV Component type.
      * @return a new AGV_Component_Interface instance.
      */
     @Override
-    public AGV_Component_Interface create(String ip, int port, JSONObject config_data)
+    public AGV_Component_Interface create(int id, String ip, int port, JSONObject config_data)
     {
         // TODO: Expand to pass config_data to the Component constructor
         // when additional configuration parameters are needed.
-        return new AGV_Component_Class(ip, port);
+        return new AGV_Component_Class(id, ip, port);
     }
 
 }

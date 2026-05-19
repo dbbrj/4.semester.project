@@ -45,30 +45,34 @@ public class Warehouse_Component_Factory_Class implements Warehouse_Component_Fa
 
     /**
      * Creates and returns a new Warehouse Component instance.
-     * @param ip the IP address of the Warehouse device.
+     *
+     * @param id
+     * @param ip   the IP address of the Warehouse device.
      * @param port the port number of the Warehouse device.
      * @return a new Warehouse_Component_Interface instance.
      */
     @Override
-    public Warehouse_Component_Interface create(String ip, int port)
+    public Warehouse_Component_Interface create(int id, String ip, int port)
     {
-        return new Warehouse_Component_Class(ip, port);
+        return new Warehouse_Component_Class(id, ip, port);
     }
 
 
     /**
      * Creates and returns a new Warehouse Component instance with additional configuration data.
-     * @param ip the IP address of the Warehouse device.
-     * @param port the port number of the Warehouse device.
+     *
+     * @param id
+     * @param ip          the IP address of the Warehouse device.
+     * @param port        the port number of the Warehouse device.
      * @param config_data a JSONObject containing additional configuration parameters.
      * @return a new Warehouse_Component_Interface instance.
      */
     @Override
-    public Warehouse_Component_Interface create(String ip, int port, JSONObject config_data)
+    public Warehouse_Component_Interface create(int id, String ip, int port, JSONObject config_data)
     {
         // For the EFFIMAT implementation, the simple ip and port are sufficient.
         // config_data is accepted but not used — reserved for future use.
-        return new Warehouse_Component_Class(ip, port);
+        return new Warehouse_Component_Class(id, ip, port);
     }
 
 }

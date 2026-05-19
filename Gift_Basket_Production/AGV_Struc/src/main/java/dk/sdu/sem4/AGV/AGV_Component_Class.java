@@ -63,7 +63,7 @@ public class AGV_Component_Class implements AGV_Component_Interface
      * @param ip the IP address of the physical AGV device.
      * @param port the port number of the physical AGV device.
      */
-    public AGV_Component_Class(String ip, int port)
+    public AGV_Component_Class(int id, String ip, int port)
     {
         // Connection settings
         this.ip   = ip;
@@ -74,7 +74,7 @@ public class AGV_Component_Class implements AGV_Component_Interface
         this.agv_Controller = new AGVController(this.agv_Adapter);
 
         // Component identity
-        this.component_ID   = -1;
+        this.component_ID   = id;
         this.component_Type = COMPONENT_TYPE;
 
         // Component status and state

@@ -2,14 +2,6 @@ package dk.sdu.sem4.machineOrchestrator.AGV;
 
 
 
-import dk.sdu.sem4.machineOrchestrator.Machine_Component_Interface;
-import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Location_Class;
-
-import dk.sdu.sem4.item.Item_Class;
-import dk.sdu.sem4.item.Order_Item_Class;
-import dk.sdu.sem4.item.Order_Class;
-
-import java.util.ArrayList;
 import org.json.JSONObject;
 
 
@@ -47,11 +39,13 @@ public interface AGV_Component_Factory_Interface
      * passing in the connection settings read from the config file.
      * Use this for AGV types that only require basic connection settings
      * to operate.
-     * @param ip the IP address of the AGV device.
+     *
+     * @param id
+     * @param ip   the IP address of the AGV device.
      * @param port the port number of the AGV device.
      * @return a new AGV_Component_Interface instance.
      */
-    public AGV_Component_Interface create(String ip, int port);
+    public AGV_Component_Interface create(int id, String ip, int port);
 
 
     /**
@@ -63,12 +57,14 @@ public interface AGV_Component_Factory_Interface
      * Use this for AGV types that require additional parameters beyond
      * just IP and port — for example authentication credentials or
      * device-specific settings.
-     * @param ip the IP address of the AGV device.
-     * @param port the port number of the AGV device.
+     *
+     * @param id
+     * @param ip          the IP address of the AGV device.
+     * @param port        the port number of the AGV device.
      * @param config_data a JSONObject containing additional configuration
      *                    parameters specific to this AGV Component type.
      * @return a new AGV_Component_Interface instance.
      */
-    public AGV_Component_Interface create(String ip, int port, JSONObject config_data);
+    public AGV_Component_Interface create(int id, String ip, int port, JSONObject config_data);
 
 }

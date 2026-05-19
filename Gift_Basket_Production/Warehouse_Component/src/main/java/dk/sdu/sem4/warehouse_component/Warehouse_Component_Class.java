@@ -88,7 +88,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
      * @param ip the IP address of the Warehouse SOAP service.
      * @param port the port number of the Warehouse SOAP service.
      */
-    public Warehouse_Component_Class(String ip, int port)
+    public Warehouse_Component_Class( int id, String ip, int port)
     {
         this.ip   = ip;
         this.port = port;
@@ -98,7 +98,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         this.warehouse_Controller = new Warehouse_Controller_Class(this.warehouse_Adapter);
 
         // Initialise component identity
-        this.component_ID     = 0;
+        this.component_ID     = id;
         this.component_Type   = this.COMPONENT_TYPE;
         this.component_Status = Component_Status_Enum.NONE;
         this.component_State  = Component_Process_States_Enum.CONSTRUCTED;
