@@ -707,21 +707,25 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         if ( !(this.warehouse_Component_instance == null) )
         {
             // Could add a System message / Error message.
+            System.err.println("Assign_Warehouse_Component: Structure is already paired with a Component. Machine ID = " + this.Read_Machine_Structure_ID() + ", Component ID = " + this.Read_Component_ID());
             return false;
         }
         if (component == null)
         {
             // Could add a System message / Error message.
+            System.err.println("Assign_Warehouse_Component: Component instance given was null. Machine ID = " + this.Read_Machine_Structure_ID());
             return false;
         }
         if ( !(super.Check_ComponentID_isValid( component.Read_Component_ID() )) )
         {
             // Could add a System message / Error message.
+            System.err.println("Assign_Warehouse_Component: Component instance is using a invalid ID. Machine ID = " + this.Read_Machine_Structure_ID() + ", Component ID = " + component.Read_Component_ID());
             return false;
         }
         if ( !(super.Check_ComponentType_isValid( component.Read_Component_Type() )) )
         {
             // Could add a System message / Error message.
+            System.err.println("Assign_Warehouse_Component: Component instance is using a invalid Type. Machine ID = " + this.Read_Machine_Structure_ID() + ", Component Type = " + component.Read_Component_Type());
             return false;
         }
 
@@ -732,10 +736,12 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         {
             this.warehouse_Component_instance = component;
 
-            // Could add a System message / Error message.
+            System.out.println("Assign_Warehouse_Component: Component assigned to Structure. Machine ID = " + this.Read_Machine_Structure_ID() + ", Component ID = " + component.Read_Component_ID());
             return true;
         }
 
+
+        System.err.println("Assign_Warehouse_Component: Something when wrong, but can't tell you what. Machine ID = " + this.Read_Machine_Structure_ID());
         return false;
     }
 

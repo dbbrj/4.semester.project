@@ -89,8 +89,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Load_Warehouse_Components failed: ServiceLoader could not load Warehouse Component Factories: "
-                    + e.getMessage());
+            System.err.println("Load_Warehouse_Components failed: ServiceLoader could not load Warehouse Component Factories: " + e.getMessage());
             return false;
         }
 
@@ -105,8 +104,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Load_Warehouse_Components failed: error while loading Warehouse Component Factories: "
-                    + e.getMessage());
+            System.err.println("Load_Warehouse_Components failed: error while loading Warehouse Component Factories: " + e.getMessage());
             return false;
         }
 
@@ -117,17 +115,20 @@ public class Machine_ComponentLoader_Class
             return false;
         }
 
-        // ── Step 3: Loop through the warehouse map and delegate pairing ───────────
-        // For each Warehouse Structure, find its specific config entry from the
-        // "warehouses" array (matched by machine_ID) and delegate pairing.
+        // ── Step 3: Loop through the Warehouse map to pair Structure with Component ───────────
+        // For each Warehouse Structure, use the specific config to pair it with the "warehouses" component.
         boolean allWarehouses_arePaired = true;
 
         for (Map.Entry<Integer, Warehouse_Structure_Interface> warehouse_MapEntry : warehouse_Map.entrySet())
         {
+
+            // ── Step 4: Find the right config information to this Warehouse ───────────
+            // Find its specific config entry from the "warehouses" config array (matched by machine_ID).
             int machineId = warehouse_MapEntry.getKey();
 
             // Find the per-machine config entry from the "warehouses" array.
             JSONObject machineConfig = null;
+
             if (config.has("warehouses"))
             {
                 for (Object obj : config.getJSONArray("warehouses"))
@@ -148,13 +149,13 @@ public class Machine_ComponentLoader_Class
                 continue;
             }
 
+
+            // ── Step 5:  delegate pairing ───────────
+            // Hand over the config files and delegate the pairing to the helper method.
+            // Track whether all Structures were successfully paired.
             try
             {
-                boolean warehouse_isPaired = this.Pair_Warehouse_Component(
-                        warehouse_MapEntry.getValue(),
-                        machineId,
-                        available_Factories,
-                        machineConfig);
+                boolean warehouse_isPaired = this.Pair_Warehouse_Component(warehouse_MapEntry.getValue(), machineId, available_Factories, machineConfig);
 
                 if (!warehouse_isPaired)
                 {
@@ -163,8 +164,7 @@ public class Machine_ComponentLoader_Class
             }
             catch (Exception e)
             {
-                System.err.println("Load_Warehouse_Components failed: unexpected error while pairing Warehouse "
-                        + machineId + ": " + e.getMessage());
+                System.err.println("Load_Warehouse_Components failed: unexpected error while pairing Warehouse " + machineId + ": " + e.getMessage());
                 allWarehouses_arePaired = false;
             }
         }
@@ -194,8 +194,7 @@ public class Machine_ComponentLoader_Class
         // Ensure all required config values are present in the config before proceeding.
         if (!warehouse_Config.has("type") || !warehouse_Config.has("ip") || !warehouse_Config.has("port"))
         {
-            System.err.println("Pair_Warehouse_Component failed: missing config for Warehouse "
-                    + warehouse_MachineID);
+            System.err.println("Pair_Warehouse_Component failed: missing config for Warehouse " + warehouse_MachineID);
             return false;
         }
 
@@ -217,8 +216,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Pair_Warehouse_Component failed: could not read config values for Warehouse "
-                    + warehouse_MachineID + ": " + e.getMessage());
+            System.err.println("Pair_Warehouse_Component failed: could not read config values for Warehouse " + warehouse_MachineID + ": " + e.getMessage());
             return false;
         }
 
@@ -234,8 +232,7 @@ public class Machine_ComponentLoader_Class
             {
                 // ── Step 4: Create the Component using the matching factory ────────
                 // The factory handles instantiation with the correct connection settings.
-                Warehouse_Component_Interface warehouse_Component =
-                        warehouse_Factory.create(warehouse_IP, warehouse_Port);
+                Warehouse_Component_Interface warehouse_Component = warehouse_Factory.create(warehouse_IP, warehouse_Port);
 
                 // ── Step 5: Assign the Component to the Structure ─────────────────
                 // The Structure takes ownership of the Component after assignment.
@@ -245,14 +242,12 @@ public class Machine_ComponentLoader_Class
 
                 if (isAssigned)
                 {
-                    System.out.println("Pair_Warehouse_Component: successfully paired Warehouse "
-                            + warehouse_MachineID + " with component type: " + warehouse_ComponentType);
+                    System.out.println("Pair_Warehouse_Component: successfully paired Warehouse " + warehouse_MachineID + " with component type: " + warehouse_ComponentType);
                     return true;
                 }
                 else
                 {
-                    System.err.println("Pair_Warehouse_Component failed: could not assign component to Warehouse "
-                            + warehouse_MachineID);
+                    System.err.println("Pair_Warehouse_Component failed: could not assign component to Warehouse " + warehouse_MachineID);
                     return false;
                 }
             }
@@ -318,8 +313,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Load_AssemblyStation_Components failed: ServiceLoader could not load Assembly Station Component Factories: "
-                    + e.getMessage());
+            System.err.println("Load_AssemblyStation_Components failed: ServiceLoader could not load Assembly Station Component Factories: " + e.getMessage());
             return false;
         }
 
@@ -333,8 +327,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Load_AssemblyStation_Components failed: error while loading Assembly Station Component Factories: "
-                    + e.getMessage());
+            System.err.println("Load_AssemblyStation_Components failed: error while loading Assembly Station Component Factories: " + e.getMessage());
             return false;
         }
 
@@ -345,21 +338,25 @@ public class Machine_ComponentLoader_Class
             return false;
         }
 
-        // ── Step 3: Loop through the assembly station map and delegate pairing ─────
-        // For each Assembly Station Structure, find its specific config entry from the
-        // "assemblyStations" array (matched by machine_ID) and delegate pairing.
+        // ── Step 3: Loop through the Assembly Station map to pair Structure with Component ───────────
+        // For each Assembly Station Structure, use the specific config to pair it with the "assembly station" component.
         boolean allAssemblyStations_arePaired = true;
 
         for (Map.Entry<Integer, AssemblySt_Structure_Interface> assemblySt_MapEntry : assemblySt_Map.entrySet())
         {
+
+            // ── Step 4: Find the right config information to this Assembly Station ───────────
+            // Find its specific config entry from the "assemblyStation" config array (matched by machine_ID).
             int machineId = assemblySt_MapEntry.getKey();
 
             JSONObject machineConfig = null;
+
             if (config.has("assemblyStations"))
             {
                 for (Object obj : config.getJSONArray("assemblyStations"))
                 {
                     JSONObject entry = (JSONObject) obj;
+
                     if (entry.optInt("machine_ID", -1) == machineId)
                     {
                         machineConfig = entry;
@@ -375,13 +372,12 @@ public class Machine_ComponentLoader_Class
                 continue;
             }
 
+            // ── Step 5:  delegate pairing ───────────
+            // Hand over the config files and delegate the pairing to the helper method.
+            // Track whether all Structures were successfully paired.
             try
             {
-                boolean assemblySt_isPaired = this.Pair_AssemblyStation_Component(
-                        assemblySt_MapEntry.getValue(),
-                        machineId,
-                        available_Factories,
-                        machineConfig);
+                boolean assemblySt_isPaired = this.Pair_AssemblyStation_Component( assemblySt_MapEntry.getValue(), machineId, available_Factories, machineConfig);
 
                 if (!assemblySt_isPaired)
                 {
@@ -390,8 +386,7 @@ public class Machine_ComponentLoader_Class
             }
             catch (Exception e)
             {
-                System.err.println("Load_AssemblyStation_Components failed: unexpected error while pairing Assembly Station "
-                        + machineId + ": " + e.getMessage());
+                System.err.println("Load_AssemblyStation_Components failed: unexpected error while pairing Assembly Station " + machineId + ": " + e.getMessage());
                 allAssemblyStations_arePaired = false;
             }
         }
@@ -421,8 +416,7 @@ public class Machine_ComponentLoader_Class
         // Ensure all required config values are present in the config before proceeding.
         if (!assemblySt_Config.has("type") || !assemblySt_Config.has("ip") || !assemblySt_Config.has("port"))
         {
-            System.err.println("Pair_AssemblyStation_Component failed: missing config for Assembly Station "
-                    + assemblySt_MachineID);
+            System.err.println("Pair_AssemblyStation_Component failed: missing config for Assembly Station " + assemblySt_MachineID);
             return false;
         }
 
@@ -457,8 +451,7 @@ public class Machine_ComponentLoader_Class
             {
                 // ── Step 4: Create the Component using the matching factory ────────
                 // The factory handles instantiation with the correct connection settings.
-                AssemblySt_Component_Interface assemblySt_Component =
-                        assemblySt_Factory.create(assemblySt_IP, assemblySt_Port);
+                AssemblySt_Component_Interface assemblySt_Component = assemblySt_Factory.create(assemblySt_IP, assemblySt_Port);
 
                 // ── Step 5: Assign the Component to the Structure ─────────────────
                 // The Structure takes ownership of the Component after assignment.
@@ -468,22 +461,19 @@ public class Machine_ComponentLoader_Class
 
                 if (isAssigned)
                 {
-                    System.out.println("Pair_AssemblyStation_Component: successfully paired Assembly Station "
-                            + assemblySt_MachineID + " with component type: " + assemblySt_ComponentType);
+                    System.out.println("Pair_AssemblyStation_Component: successfully paired Assembly Station " + assemblySt_MachineID + " with component type: " + assemblySt_ComponentType);
                     return true;
                 }
                 else
                 {
-                    System.err.println("Pair_AssemblyStation_Component failed: could not assign component to Assembly Station "
-                            + assemblySt_MachineID);
+                    System.err.println("Pair_AssemblyStation_Component failed: could not assign component to Assembly Station " + assemblySt_MachineID);
                     return false;
                 }
             }
         }
 
         // No matching factory was found for this Assembly Station type.
-        System.err.println("Pair_AssemblyStation_Component failed: no factory found for Assembly Station "
-                + assemblySt_MachineID + " with type: " + assemblySt_ComponentType);
+        System.err.println("Pair_AssemblyStation_Component failed: no factory found for Assembly Station " + assemblySt_MachineID + " with type: " + assemblySt_ComponentType);
         return false;
     }
 
@@ -540,8 +530,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Load_AGV_Components failed: ServiceLoader could not load AGV Component Factories: "
-                    + e.getMessage());
+            System.err.println("Load_AGV_Components failed: ServiceLoader could not load AGV Component Factories: " + e.getMessage());
             return false;
         }
 
@@ -555,8 +544,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Load_AGV_Components failed: error while loading AGV Component Factories: "
-                    + e.getMessage());
+            System.err.println("Load_AGV_Components failed: error while loading AGV Component Factories: " + e.getMessage());
             return false;
         }
 
@@ -567,13 +555,15 @@ public class Machine_ComponentLoader_Class
             return false;
         }
 
-        // ── Step 3: Loop through the AGV map and delegate pairing ─────────────────
-        // For each AGV Structure, find its specific config entry from the
-        // "agvs" array (matched by machine_ID) and delegate pairing.
+        // ── Step 3: Loop through the AGV map to pair Structure with Component ───────────
+        // For each AGV Structure, use the specific config to pair it with the "agv" component.
         boolean allAGVs_arePaired = true;
 
         for (Map.Entry<Integer, AGV_Structure_Interface> agv_MapEntry : agv_Map.entrySet())
         {
+
+            // ── Step 4: Find the right config information to this AGV ───────────
+            // Find its specific config entry from the "agvs" config array (matched by machine_ID).
             int machineId = agv_MapEntry.getKey();
 
             JSONObject machineConfig = null;
@@ -582,6 +572,7 @@ public class Machine_ComponentLoader_Class
                 for (Object obj : config.getJSONArray("agvs"))
                 {
                     JSONObject entry = (JSONObject) obj;
+
                     if (entry.optInt("machine_ID", -1) == machineId)
                     {
                         machineConfig = entry;
@@ -597,13 +588,12 @@ public class Machine_ComponentLoader_Class
                 continue;
             }
 
+            // ── Step 5:  delegate pairing ───────────
+            // Hand over the config files and delegate the pairing to the helper method.
+            // Track whether all Structures were successfully paired.
             try
             {
-                boolean agv_isPaired = this.Pair_AGV_Component(
-                        agv_MapEntry.getValue(),
-                        machineId,
-                        available_Factories,
-                        machineConfig);
+                boolean agv_isPaired = this.Pair_AGV_Component( agv_MapEntry.getValue(), machineId, available_Factories, machineConfig );
 
                 if (!agv_isPaired)
                 {
@@ -612,8 +602,7 @@ public class Machine_ComponentLoader_Class
             }
             catch (Exception e)
             {
-                System.err.println("Load_AGV_Components failed: unexpected error while pairing AGV "
-                        + machineId + ": " + e.getMessage());
+                System.err.println("Load_AGV_Components failed: unexpected error while pairing AGV " + machineId + ": " + e.getMessage());
                 allAGVs_arePaired = false;
             }
         }
@@ -643,8 +632,7 @@ public class Machine_ComponentLoader_Class
         // Ensure all required config values are present in the config before proceeding.
         if (!agv_Config.has("type") || !agv_Config.has("ip") || !agv_Config.has("port"))
         {
-            System.err.println("Pair_AGV_Component failed: missing config for AGV "
-                    + agv_MachineID);
+            System.err.println("Pair_AGV_Component failed: missing config for AGV " + agv_MachineID);
             return false;
         }
 
@@ -664,8 +652,7 @@ public class Machine_ComponentLoader_Class
         }
         catch (Exception e)
         {
-            System.err.println("Pair_AGV_Component failed: could not read config values for AGV "
-                    + agv_MachineID + ": " + e.getMessage());
+            System.err.println("Pair_AGV_Component failed: could not read config values for AGV " + agv_MachineID + ": " + e.getMessage());
             return false;
         }
 
@@ -679,8 +666,7 @@ public class Machine_ComponentLoader_Class
             {
                 // ── Step 4: Create the Component using the matching factory ────────
                 // The factory handles instantiation with the correct connection settings.
-                AGV_Component_Interface agv_Component =
-                        agv_Factory.create(agv_IP, agv_Port);
+                AGV_Component_Interface agv_Component = agv_Factory.create(agv_IP, agv_Port);
 
                 // ── Step 5: Assign the Component to the Structure ─────────────────
                 // The Structure takes ownership of the Component after assignment.
@@ -690,22 +676,19 @@ public class Machine_ComponentLoader_Class
 
                 if (isAssigned)
                 {
-                    System.out.println("Pair_AGV_Component: successfully paired AGV "
-                            + agv_MachineID + " with component type: " + agv_ComponentType);
+                    System.out.println("Pair_AGV_Component: successfully paired AGV " + agv_MachineID + " with component type: " + agv_ComponentType);
                     return true;
                 }
                 else
                 {
-                    System.err.println("Pair_AGV_Component failed: could not assign component to AGV "
-                            + agv_MachineID);
+                    System.err.println("Pair_AGV_Component failed: could not assign component to AGV " + agv_MachineID);
                     return false;
                 }
             }
         }
 
         // No matching factory was found for this AGV type.
-        System.err.println("Pair_AGV_Component failed: no factory found for AGV "
-                + agv_MachineID + " with type: " + agv_ComponentType);
+        System.err.println("Pair_AGV_Component failed: no factory found for AGV " + agv_MachineID + " with type: " + agv_ComponentType);
         return false;
     }
 

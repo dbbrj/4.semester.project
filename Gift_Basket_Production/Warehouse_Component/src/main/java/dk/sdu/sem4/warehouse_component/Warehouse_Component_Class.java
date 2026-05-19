@@ -813,14 +813,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
                 ArrayList<String> inventoryID = new ArrayList<String>();
                 inventoryID.add(content);
 
-                Order_Item_Class orderItem = new Order_Item_Class(
-                        1,
-                        0,
-                        Order_Item_Status_Enum.IN_STOCK,
-                        0,
-                        content,
-                        inventoryID
-                );
+                Order_Item_Class orderItem = new Order_Item_Class(1, 0, Order_Item_Status_Enum.IN_STOCK, 0, content, inventoryID);
 
                 inventoryList.add(orderItem);
             }
