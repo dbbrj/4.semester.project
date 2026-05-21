@@ -2,13 +2,13 @@ package dk.sdu.sem4;
 
 
 
+import org.json.JSONObject;
+
+import dk.sdu.sem4.config.Config_file_reader;
 import dk.sdu.sem4.erp_simulator.ERP_Simulator;
+import dk.sdu.sem4.gui.Gui;
 import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Class;
 import dk.sdu.sem4.orderManager.OrderManager_Class;
-import dk.sdu.sem4.config.Config_file_reader;
-import dk.sdu.sem4.gui.Gui;
-
-import org.json.JSONObject;
 
 
 
@@ -16,7 +16,7 @@ import org.json.JSONObject;
 /**
  * The Core Class is the top-level coordinator of the entire system.
  * It is instantiated by Main and is responsible for creating, wiring
- * and starting all major subsystems — the Config Reader, ERP Simulator,
+ * and starting all major subsystems - the Config Reader, ERP Simulator,
  * Order Manager, GUI and Machine Orchestrator.
  * It owns the main running loop that drives the entire system.
  */
@@ -64,14 +64,14 @@ public class Core_Class
     /**
      * Constructs the Core Class.
      * All subsystems are created and wired together here.
-     * Does not start any subsystems — call Startup_Process() to begin.
+     * Does not start any subsystems - call Startup_Process() to begin.
      */
     public Core_Class()
     {
         this.isRunning = false;
 
         // ── Step 1: Create Config Reader ──────────────────────────────────
-        // Config Reader has no dependencies — created first.
+        // Config Reader has no dependencies - created first.
         this.configReader = new Config_file_reader();
 
         // ── Step 2: Read config file ──────────────────────────────────────
@@ -94,7 +94,7 @@ public class Core_Class
                 this.orderManager);
 
         // ── Step 6: Create GUI ────────────────────────────────────────────
-        // JavaFX Application cannot receive constructor args — inject via static setter.
+        // JavaFX Application cannot receive constructor args - inject via static setter.
         Gui.setOrchestrator(this.machineOrchestrator);
         this.gui = null;
 
@@ -196,7 +196,7 @@ public class Core_Class
             }
         }
 
-        // ── Loop ended — begin shutdown ───────────────────────────────────
+        // ── Loop ended - begin shutdown ───────────────────────────────────
         this.Shutdown_Process();
     }
 

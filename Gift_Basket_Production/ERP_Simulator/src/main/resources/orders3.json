@@ -1,0 +1,10 @@
+{
+"orders": [
+    {
+    "orderId": "1003",
+    "productName": "Item 3",
+    "quantity": 4,
+    "status": "IDLE"
+    }
+]
+}

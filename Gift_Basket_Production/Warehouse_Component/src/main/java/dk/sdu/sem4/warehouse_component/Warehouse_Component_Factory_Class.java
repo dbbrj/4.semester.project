@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class Warehouse_Component_Factory_Class implements Warehouse_Component_Factory_Interface
 {
 
-    // Hardcoded type identifier — matched against the config file by the Component Loader
+    // Hardcoded type identifier - matched against the config file by the Component Loader
     private final String COMPONENT_TYPE = "Warehouse_EFFIMAT_SOAP_V1.0";
 
 
@@ -71,7 +71,7 @@ public class Warehouse_Component_Factory_Class implements Warehouse_Component_Fa
     public Warehouse_Component_Interface create(int id, String ip, int port, JSONObject config_data)
     {
         // For the EFFIMAT implementation, the simple ip and port are sufficient.
-        // config_data is accepted but not used — reserved for future use.
+        // config_data is accepted but not used - reserved for future use.
         return new Warehouse_Component_Class(id, ip, port);
     }
 

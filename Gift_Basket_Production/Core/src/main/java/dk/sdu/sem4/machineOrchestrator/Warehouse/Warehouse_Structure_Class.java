@@ -258,7 +258,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
 
         if (componentStatus == Component_Status_Enum.ERROR)
         {
-            // Temporary error — should resolve itself soon.
+            // Temporary error - should resolve itself soon.
             // Structure stays in its current State and waits.
             super.Set_Machine_Structure_Status(Machine_Structure_Status_Enum.ERROR);
             return true;
@@ -266,7 +266,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
 
         if (componentStatus == Component_Status_Enum.ERROR_ACTION_NEEDED)
         {
-            // Serious error — human intervention required.
+            // Serious error - human intervention required.
             // Structure signals upward that action is needed.
             super.Set_Machine_Structure_Status(Machine_Structure_Status_Enum.ERROR_ACTION_NEEDED);
             return true;
@@ -274,7 +274,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
 
         // ── Step 3: Process current Structure task flag ───────────────────────────
 
-        // ── NONE — nothing to do ──────────────────────────────────────────────────
+        // ── NONE - nothing to do ──────────────────────────────────────────────────
         if (this.warehouseStructure_CurrentTask == Warehouse_Structure_Task_Option_Enum.NONE)
         {
             // Only transition to IDLE if we are not waiting for item pickup confirmation.
@@ -313,7 +313,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         else if (this.warehouseStructure_CurrentTask == Warehouse_Structure_Task_Option_Enum.EXTRACT_ITEM
                 || this.warehouseStructure_CurrentTask == Warehouse_Structure_Task_Option_Enum.EXTRACT_NEXT_ITEM_FROM_CURRENT_ORDER)
         {
-            // ── First cycle — Component just received the task ────────────────────
+            // ── First cycle - Component just received the task ────────────────────
             if (componentState == Component_Process_States_Enum.RUNNING_IDLE
                     && componentStatus == Component_Status_Enum.IDLE)
             {
@@ -322,7 +322,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
                 return true;
             }
 
-            // ── Subsequent cycles — hardware is moving ────────────────────────────
+            // ── Subsequent cycles - hardware is moving ────────────────────────────
             if (componentState == Component_Process_States_Enum.RUNNING_BUSY
                     && componentStatus == Component_Status_Enum.WORKING)
             {
@@ -331,7 +331,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
                 return true;
             }
 
-            // ── Hardware finished — Component is WAITING ──────────────────────────
+            // ── Hardware finished - Component is WAITING ──────────────────────────
             if (componentStatus == Component_Status_Enum.WAITING
                     && componentState == Component_Process_States_Enum.RUNNING_DONE)
             {
@@ -353,7 +353,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
 
                     super.Set_Machine_Structure_State(Machine_Process_States_Enum.RUNNING_DONE);
 
-                    // Status stays WAITING — the Orchestrator must confirm pickup.
+                    // Status stays WAITING - the Orchestrator must confirm pickup.
                     super.Set_Machine_Structure_Status(Machine_Structure_Status_Enum.WAITING);
                 }
                 else
@@ -367,7 +367,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         // ── INSERT_ITEM ───────────────────────────────────────────────────────────
         else if (this.warehouseStructure_CurrentTask == Warehouse_Structure_Task_Option_Enum.INSERT_ITEM)
         {
-            // ── First cycle — Component just received the task ────────────────────
+            // ── First cycle - Component just received the task ────────────────────
             if (componentState == Component_Process_States_Enum.RUNNING_IDLE
                     && componentStatus == Component_Status_Enum.IDLE)
             {
@@ -376,7 +376,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
                 return true;
             }
 
-            // ── Subsequent cycles — hardware is moving ────────────────────────────
+            // ── Subsequent cycles - hardware is moving ────────────────────────────
             if (componentState == Component_Process_States_Enum.RUNNING_BUSY
                     && componentStatus == Component_Status_Enum.WORKING)
             {
@@ -385,7 +385,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
                 return true;
             }
 
-            // ── Hardware finished — Component is RUNNING_DONE / IDLE ─────────────
+            // ── Hardware finished - Component is RUNNING_DONE / IDLE ─────────────
             if (componentStatus == Component_Status_Enum.IDLE
                     && componentState == Component_Process_States_Enum.RUNNING_DONE)
             {
@@ -417,7 +417,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         }
 
         // ── Step 4: Transition RUNNING_DONE back to RUNNING_IDLE ─────────────────
-        // Only transition if Status is IDLE — if WAITING, stay in RUNNING_DONE
+        // Only transition if Status is IDLE - if WAITING, stay in RUNNING_DONE
         // until the Orchestrator confirms the item has been picked up.
         if (super.Get_Machine_Structure_State() == Machine_Process_States_Enum.RUNNING_DONE
                 && super.Get_Machine_Structure_Status() == Machine_Structure_Status_Enum.IDLE
@@ -494,7 +494,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         this.warehouse_ItemRequest          = null;
         this.warehouse_OrderRequest         = null;
 
-        // Note: warehouse_ItemLoad is intentionally NOT cleared —
+        // Note: warehouse_ItemLoad is intentionally NOT cleared -
         // if an item is at the entrance at shutdown, we preserve that
         // information so the next startup knows the physical state.
 
@@ -960,7 +960,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
             return false;
         }
 
-        // Check that the entrance/exit is occupied —
+        // Check that the entrance/exit is occupied -
         // an item must be physically present before inserting.
         if (this.warehouse_ItemLoad == null)
         {
@@ -975,12 +975,25 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
             return false;
         }
 
-        // Store the item request at the Structure level.
+        // Delegate to the Component first - only set the Structure-level task
+        // flag if the Component actually accepts the request.
+        // Setting the flag BEFORE the Component call would leave the Structure
+        // in an inconsistent state (task = INSERT_ITEM, Component task = NONE)
+        // if the Component rejects, which causes Running_Process() to set
+        // status = WORKING and block all retries from the production line.
+        boolean accepted = this.warehouse_Component_instance.Insert_Item(item);
+
+        if (!accepted)
+        {
+            System.err.println("Insert_Item: Component rejected Insert_Item - will retry next cycle.");
+            return false;
+        }
+
+        // Component accepted - now record the request at the Structure level.
         this.warehouse_ItemRequest           = item;
         this.warehouseStructure_CurrentTask  = Warehouse_Structure_Task_Option_Enum.INSERT_ITEM;
 
-        // Delegate to the Component.
-        return this.warehouse_Component_instance.Insert_Item(item);
+        return true;
     }
 
     @Override
@@ -1012,7 +1025,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
             return false;
         }
 
-        // Check that the entrance/exit is occupied —
+        // Check that the entrance/exit is occupied -
         // an item must be physically present before inserting.
         if (this.warehouse_ItemLoad == null)
         {
@@ -1058,7 +1071,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
             return false;
         }
 
-        // Check that the entrance/exit is empty — prevent collisions.
+        // Check that the entrance/exit is empty - prevent collisions.
         if (this.warehouse_ItemLoad != null)
         {
             System.err.println("Extract_Item failed: entrance/exit is occupied. Call Confirm_ItemPickedUp() first.");
@@ -1072,12 +1085,21 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
             return false;
         }
 
-        // Store the item request at the Structure level.
+        // Delegate to the Component first - only set the Structure-level task
+        // flag if the Component actually accepts the request.
+        boolean accepted = this.warehouse_Component_instance.Extract_Item(item);
+
+        if (!accepted)
+        {
+            System.err.println("Extract_Item: Component rejected Extract_Item - will retry next cycle.");
+            return false;
+        }
+
+        // Component accepted - now record the request at the Structure level.
         this.warehouse_ItemRequest          = item;
         this.warehouseStructure_CurrentTask = Warehouse_Structure_Task_Option_Enum.EXTRACT_ITEM;
 
-        // Delegate to the Component.
-        return this.warehouse_Component_instance.Extract_Item(item);
+        return true;
     }
 
     @Override
@@ -1103,7 +1125,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
             return false;
         }
 
-        // Check that the entrance/exit is empty — prevent collisions.
+        // Check that the entrance/exit is empty - prevent collisions.
         if (this.warehouse_ItemLoad != null)
         {
             System.err.println("Extract_Item failed: entrance/exit is occupied. Call Confirm_ItemPickedUp() first.");
@@ -1163,7 +1185,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         this.warehouse_Inventory           = freshInventory;
         this.warehouse_Inventory_TimeStamp = LocalDateTime.now();
 
-        // Only update the String cache if it is valid — keep old value for debugging if null.
+        // Only update the String cache if it is valid - keep old value for debugging if null.
         if (freshInventoryString != null)
         {
             this.warehouse_Inventory_String = freshInventoryString;
@@ -1241,7 +1263,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
                         quantityFound++;
 
                         // No need to check the remaining IDs for this warehouse entry
-                        // once a match is found — move to the next warehouse item.
+                        // once a match is found - move to the next warehouse item.
                         break;
                     }
                 }
@@ -1285,7 +1307,7 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
         }
 
         // Search the warehouse inventory for a match.
-        // The ERP item has a keychain of IDs — we only need ONE match
+        // The ERP item has a keychain of IDs - we only need ONE match
         // against any single entry in the warehouse inventory.
         for (Order_Item_Class warehouseItem : this.warehouse_Inventory)
         {
@@ -1427,7 +1449,15 @@ public class Warehouse_Structure_Class extends Machine_Structure_Class implement
             return false;
         }
 
-        // Clear the entrance.
+        // Notify the Component so it also clears its own warehouse_ItemLoad
+        // and transitions from WAITING -> IDLE.
+        // Without this call the Component stays WAITING and rejects the next Insert_Item.
+        if (this.warehouse_Component_instance != null)
+        {
+            this.warehouse_Component_instance.Confirm_ItemPickedUp();
+        }
+
+        // Clear the Structure-level entrance tracking.
         this.warehouse_ItemLoad         = null;
         this.isCurrentlyLoaded_withItem = false;
 

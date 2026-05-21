@@ -3,14 +3,14 @@ package dk.sdu.sem4.machineOrchestrator;
 
 
 
-import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
-import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
-import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
-import dk.sdu.sem4.item.Item_Class;
-import dk.sdu.sem4.item.Order_Class;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import dk.sdu.sem4.item.Item_Class;
+import dk.sdu.sem4.item.Order_Class;
+import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
+import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
+import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
 
 
 
@@ -18,7 +18,7 @@ import java.util.HashMap;
 /**
  * The Production Line Class groups related machines together and tracks
  * the state of a single production workflow.
- * It is an expanded data class with helper methods — the Machine Orchestrator
+ * It is an expanded data class with helper methods - the Machine Orchestrator
  * still controls all decision making and coordination.
  * Each Production Line is anchored to exactly one AGV, but may reference
  * one or more Warehouses and Assembly Stations, including shared ones.
@@ -52,15 +52,15 @@ public class ProductionLine_Class
     public int         productionLine_ItemsDelivered;
     public int         productionLine_ItemsTotal;
 
-    // Sharing flags — quick boolean check
+    // Sharing flags - quick boolean check
     public boolean productionLine_isSharing_Warehouse;
     public boolean productionLine_isSharing_AssemblySt;
 
-    // Sharing tracking — which specific machines are shared
+    // Sharing tracking - which specific machines are shared
     public ArrayList<Integer> productionLine_Sharing_Warehouse_MachineIDs;
     public ArrayList<Integer> productionLine_Sharing_AssemblySt_MachineIDs;
 
-    // Reservation tracking — Machine ID → Production Line ID that reserved it
+    // Reservation tracking - Machine ID -> Production Line ID that reserved it
     public HashMap<Integer, Integer> productionLine_ReservedResources;
 
 
@@ -177,7 +177,7 @@ public class ProductionLine_Class
 
         this.productionLine_Sharing_Warehouse_MachineIDs.remove(Integer.valueOf(warehouse_MachineID));
 
-        // Update boolean — only false if no more shared Warehouses remain.
+        // Update boolean - only false if no more shared Warehouses remain.
         if (this.productionLine_Sharing_Warehouse_MachineIDs.isEmpty())
         {
             this.productionLine_isSharing_Warehouse = false;
@@ -255,7 +255,7 @@ public class ProductionLine_Class
 
         this.productionLine_Sharing_AssemblySt_MachineIDs.remove(Integer.valueOf(assemblySt_MachineID));
 
-        // Update boolean — only false if no more shared Assembly Stations remain.
+        // Update boolean - only false if no more shared Assembly Stations remain.
         if (this.productionLine_Sharing_AssemblySt_MachineIDs.isEmpty())
         {
             this.productionLine_isSharing_AssemblySt = false;
@@ -377,7 +377,7 @@ public class ProductionLine_Class
      * Resets all order and item tracking attributes.
      * Should be called when a new order is assigned to this Production Line
      * or when the current order is completed.
-     * @return true always — indicates the reset was performed.
+     * @return true always - indicates the reset was performed.
      */
     public boolean Reset_OrderTracking()
     {

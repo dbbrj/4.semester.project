@@ -22,7 +22,7 @@ public enum Machine_Orchestrator_Status_Enum
     CONSTRUCTED,
 
     /**
-     * The Machine Orchestrator is currently running its startup process —
+     * The Machine Orchestrator is currently running its startup process -
      * initialising machines, loading components and preparing Production Lines.
      */
     STARTING_UP,
@@ -40,7 +40,7 @@ public enum Machine_Orchestrator_Status_Enum
     RUNNING,
 
     /**
-     * The Machine Orchestrator is currently running its shutdown process —
+     * The Machine Orchestrator is currently running its shutdown process -
      * winding down all Production Lines and machines cleanly.
      */
     SHUTTING_DOWN,

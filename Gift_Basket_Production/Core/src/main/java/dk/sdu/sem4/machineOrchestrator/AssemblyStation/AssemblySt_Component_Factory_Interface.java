@@ -53,7 +53,7 @@ public interface AssemblySt_Component_Factory_Interface
      * passing in the connection settings and extra configuration data
      * read from the config file.
      * Use this for Assembly Station types that require additional parameters
-     * beyond just IP and port — for example MQTT topic names or
+     * beyond just IP and port - for example MQTT topic names or
      * authentication credentials.
      *
      * @param id

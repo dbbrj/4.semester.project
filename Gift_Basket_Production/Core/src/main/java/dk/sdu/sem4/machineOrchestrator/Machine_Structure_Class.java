@@ -3,13 +3,13 @@ package dk.sdu.sem4.machineOrchestrator;
 public class Machine_Structure_Class
 {
 
-    // Machine identity — identifies the physical machine (1 to 255)
+    // Machine identity - identifies the physical machine (1 to 255)
     private int machine_Structure_ID;
     private String machine_Structure_Type;
     private Machine_Structure_Status_Enum machine_Structure_Status;
     private Machine_Process_States_Enum machine_Structure_State;
 
-    // Component identity — identifies the component connected to this machine
+    // Component identity - identifies the component connected to this machine
     private int component_ID;
     private String component_Type;
     private Component_Status_Enum component_Status;
@@ -24,7 +24,7 @@ public class Machine_Structure_Class
 
 
 
-    // Constructor — called via super() from subclasses
+    // Constructor - called via super() from subclasses
     public Machine_Structure_Class(int machine_Structure_ID, String machine_Structure_Type)
     {
 
@@ -124,7 +124,7 @@ public class Machine_Structure_Class
 
 
 
-    // --- Protected helpers — internal access for subclasses only ---
+    // --- Protected helpers - internal access for subclasses only ---
 
 
     // Machine

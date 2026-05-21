@@ -4,8 +4,8 @@ package dk.sdu.sem4.machineOrchestrator;
 /**
  * The Machine Component Interface defines the shared public contract for all
  * Component implementations in the system, regardless of device type.
- * Every physical device component — Warehouse, AGV, Assembly Station, or any
- * future device — must implement this interface.
+ * Every physical device component - Warehouse, AGV, Assembly Station, or any
+ * future device - must implement this interface.
  * Device-specific interfaces extend this interface to add operations
  * specific to that device type.
  */

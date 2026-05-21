@@ -12,7 +12,21 @@ public class Config_file_reader {
 
     public boolean load_Config_file(){
        try{
-            InputStream is = Config_file_reader.class.getResourceAsStream("/config.json");
+            // Allow CONFIG_FILE env var to select an alternate config resource.
+            // e.g. set CONFIG_FILE=config.local.json to use localhost ports.
+            String configResource = System.getenv("CONFIG_FILE");
+            if (configResource == null || configResource.isBlank()) {
+                configResource = "/config.json";
+            } else if (!configResource.startsWith("/")) {
+                configResource = "/" + configResource;
+            }
+
+            InputStream is = Config_file_reader.class.getResourceAsStream(configResource);
+
+            if (is == null) {
+                throw new IllegalStateException("Config resource not found: " + configResource);
+            }
+
             String content = new String(is.readAllBytes());
             JSONObject jsonObject = new JSONObject(content);
 

@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  * and identity methods that all Components must implement regardless of device type.
  * Device-specific implementations of this interface are responsible for managing
  * communication with a physical Warehouse device.
- * The interface is intentionally focused — it only exposes what the physical
+ * The interface is intentionally focused - it only exposes what the physical
  * Warehouse device is capable of doing.
  * All order management, inventory caching and source tracking are handled
  * at the Structure level and are not the concern of this interface.
@@ -45,7 +45,7 @@ public interface Warehouse_Component_Interface extends Machine_Component_Interfa
 
     /**
      * Requests the physical Warehouse device to insert the given item into storage.
-     * This is a slow hardware operation — the method sets a task flag and returns
+     * This is a slow hardware operation - the method sets a task flag and returns
      * immediately without blocking.
      * The item must be physically present at the entrance before calling this.
      * Progress can be monitored via the Component Status and State.
@@ -57,7 +57,7 @@ public interface Warehouse_Component_Interface extends Machine_Component_Interfa
     /**
      * Requests the physical Warehouse device to insert an item into storage
      * using raw parameters instead of an Item_Class object.
-     * This is a slow hardware operation — the method sets a task flag and returns
+     * This is a slow hardware operation - the method sets a task flag and returns
      * immediately without blocking.
      * The item must be physically present at the entrance before calling this.
      * Progress can be monitored via the Component Status and State.
@@ -70,7 +70,7 @@ public interface Warehouse_Component_Interface extends Machine_Component_Interfa
     /**
      * Requests the physical Warehouse device to extract the given item
      * from storage and bring it to the entrance.
-     * This is a slow hardware operation — the method sets a task flag and returns
+     * This is a slow hardware operation - the method sets a task flag and returns
      * immediately without blocking.
      * Progress can be monitored via the Component Status and State.
      * @param item the Item_Class object representing the item to extract.
@@ -81,7 +81,7 @@ public interface Warehouse_Component_Interface extends Machine_Component_Interfa
     /**
      * Requests the physical Warehouse device to extract an item from storage
      * using raw inventory ID strings and bring it to the entrance.
-     * This is a slow hardware operation — the method sets a task flag and returns
+     * This is a slow hardware operation - the method sets a task flag and returns
      * immediately without blocking.
      * Progress can be monitored via the Component Status and State.
      * @param item_WarehouseInventory_ID a list of inventory ID strings identifying
@@ -120,7 +120,7 @@ public interface Warehouse_Component_Interface extends Machine_Component_Interfa
      * Retrieves the full current inventory of the Warehouse as a raw String.
      * The format of the returned String depends on the specific Warehouse
      * implementation and communication protocol.
-     * Primarily used for debugging purposes — use Get_Full_WarehouseInventory_List()
+     * Primarily used for debugging purposes - use Get_Full_WarehouseInventory_List()
      * for standardised data processing.
      * @return the inventory as a raw String, or null if the call failed.
      */
@@ -130,9 +130,9 @@ public interface Warehouse_Component_Interface extends Machine_Component_Interfa
      * Retrieves the full current inventory of the Warehouse as a standardised
      * ArrayList of Order_Item_Class objects.
      * Each entry represents a filled storage location in the Warehouse.
-     * Empty storage locations are excluded — only items that are IN_STOCK
+     * Empty storage locations are excluded - only items that are IN_STOCK
      * are included in the returned list.
-     * This is the primary method for inventory data processing — the conversion
+     * This is the primary method for inventory data processing - the conversion
      * from the device-specific format to the standardised Order_Item_Class format
      * is handled entirely by the Component implementation.
      * @return an ArrayList of Order_Item_Class objects representing the current

@@ -2,29 +2,24 @@ package dk.sdu.sem4.machineOrchestrator;
 
 
 
-import dk.sdu.sem4.item.Item_Class;
-import dk.sdu.sem4.item.Order_Item_Status_Enum;
-import dk.sdu.sem4.item.Order_Class;
-import dk.sdu.sem4.item.Order_Item_Class;
-
-
-import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
-import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Class;
-
-import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
-import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Class;
-
-import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
-import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Class;
-import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Location_Class;
-
-import dk.sdu.sem4.orderManager.OrderManager_Interface;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
+
+import dk.sdu.sem4.item.Item_Class;
+import dk.sdu.sem4.item.Order_Class;
+import dk.sdu.sem4.item.Order_Item_Class;
+import dk.sdu.sem4.item.Order_Item_Status_Enum;
+import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Location_Class;
+import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Class;
+import dk.sdu.sem4.machineOrchestrator.AGV.AGV_Structure_Interface;
+import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Class;
+import dk.sdu.sem4.machineOrchestrator.AssemblyStation.AssemblySt_Structure_Interface;
+import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Class;
+import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
+import dk.sdu.sem4.orderManager.OrderManager_Interface;
 
 
 
@@ -44,7 +39,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
 
     // --- Production Lines ---
     // Holds all Production Lines, each grouping a Warehouse, AGV and Assembly Station.
-    // Private — only the Machine Orchestrator has direct access to Production Lines.
+    // Private - only the Machine Orchestrator has direct access to Production Lines.
     private ArrayList<ProductionLine_Class> productionLines;
 
     // --- Order Manager reference ---
@@ -531,7 +526,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
             return false;
         }
 
-        // TODO: Expand Production Line creation to support config-driven setup —
+        // TODO: Expand Production Line creation to support config-driven setup -
         // allowing specific Warehouses and Assembly Stations to be assigned
         // to specific Production Lines, and supporting shared resource
         // configuration between Production Lines.
@@ -627,14 +622,14 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
         // ── Step 1: Check command from GUI ────────────────────────────────
         if (this.orchestrator_Command == Machine_Orchestrator_Command_Enum.SHUTDOWN)
         {
-            // GUI has requested shutdown — begin shutdown sequence.
+            // GUI has requested shutdown - begin shutdown sequence.
             this.orchestrator_Command = Machine_Orchestrator_Command_Enum.NONE;
             return this.Shutdown_Process();
         }
 
         if (this.orchestrator_Command == Machine_Orchestrator_Command_Enum.PAUSE)
         {
-            // GUI has requested pause — stop ticking Production Lines
+            // GUI has requested pause - stop ticking Production Lines
             // but keep machines alive.
             this.orchestrator_Status = Machine_Orchestrator_Status_Enum.IDLE;
             return true;
@@ -642,7 +637,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
 
         if (this.orchestrator_Command == Machine_Orchestrator_Command_Enum.START)
         {
-            // GUI has requested start — begin running.
+            // GUI has requested start - begin running.
             this.orchestrator_Command = Machine_Orchestrator_Command_Enum.NONE;
             this.orchestrator_Status  = Machine_Orchestrator_Status_Enum.RUNNING;
         }
@@ -779,18 +774,28 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
             switch (currentState)
             {
 
-                // ── NONE / IDLE — nothing to do ───────────────────────────
+                // ── NONE / IDLE - nothing to do ───────────────────────────
                 case NONE:
                 case IDLE:
                 {
-                    // Nothing to do — waiting for an order to be assigned.
+                    // Nothing to do - waiting for an order to be assigned.
                     break;
                 }
 
 
-                // ── ORDER_ASSIGNED — begin per-item loop ──────────────────
+                // ── ORDER_ASSIGNED - begin per-item loop ──────────────────
                 case ORDER_ASSIGNED:
                 {
+                    // Tell the Warehouse which order to process so that
+                    // Get_Current_ItemRequest() can return items to extract.
+                    boolean orderAssigned = warehouse.Assign_NewOrder(pl.productionLine_CurrentOrder);
+
+                    if (!orderAssigned)
+                    {
+                        System.err.println("Running_Process_ProductionLines failed: Warehouse rejected Assign_NewOrder.");
+                        return false;
+                    }
+
                     // Send AGV to Warehouse to begin the per-item loop.
                     boolean accepted = agv.Move_toWarehouse(warehouse_MachineID);
 
@@ -805,17 +810,18 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_MOVING_TO_WAREHOUSE — wait for AGV to arrive ──────
+                // ── AGV_MOVING_TO_WAREHOUSE - wait for AGV to arrive ──────
                 case AGV_MOVING_TO_WAREHOUSE:
                 {
-                    // Wait for AGV to arrive — status = WAITING.
-                    if (agv.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
+                    // Wait for AGV to arrive - movement completes with IDLE
+                    // (pickup/dropoff operations complete with WAITING instead).
+                    if (agv.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.IDLE)
                     {
-                        // AGV still moving — nothing to do this cycle.
+                        // AGV still moving - nothing to do this cycle.
                         break;
                     }
 
-                    // AGV has arrived — tell Warehouse to extract next item.
+                    // AGV has arrived - tell Warehouse to extract next item.
                     Item_Class nextItem = warehouse.Get_Current_ItemRequest();
 
                     if (nextItem == null)
@@ -838,17 +844,17 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── EXTRACTING_ITEM — wait for item at entrance ───────────
+                // ── EXTRACTING_ITEM - wait for item at entrance ───────────
                 case EXTRACTING_ITEM:
                 {
-                    // Wait for Warehouse to finish — status = WAITING.
+                    // Wait for Warehouse to finish - status = WAITING.
                     if (warehouse.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
                     {
-                        // Warehouse still working — nothing to do this cycle.
+                        // Warehouse still working - nothing to do this cycle.
                         break;
                     }
 
-                    // Item is at entrance — AGV picks up.
+                    // Item is at entrance - AGV picks up.
                     boolean accepted = agv.PickUp_atWarehouse(warehouse_MachineID);
 
                     if (!accepted)
@@ -862,13 +868,13 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_PICKING_UP_AT_WAREHOUSE — wait for AGV pickup ─────
+                // ── AGV_PICKING_UP_AT_WAREHOUSE - wait for AGV pickup ─────
                 case AGV_PICKING_UP_AT_WAREHOUSE:
                 {
-                    // Wait for AGV to finish — status = WAITING.
+                    // Wait for AGV to finish - status = WAITING.
                     if (agv.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
                     {
-                        // AGV still picking up — nothing to do this cycle.
+                        // AGV still picking up - nothing to do this cycle.
                         break;
                     }
 
@@ -890,14 +896,14 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_MOVING_TO_ASSEMBLY — send AGV to Assembly St. ─────
+                // ── AGV_MOVING_TO_ASSEMBLY - send AGV to Assembly St. ─────
                 case AGV_MOVING_TO_ASSEMBLY:
                 {
                     // Check Assembly Station is empty and idle.
                     if (assemblySt.Check_isLoaded()
                             || assemblySt.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.IDLE)
                     {
-                        // Assembly Station not ready — wait.
+                        // Assembly Station not ready - wait.
                         break;
                     }
 
@@ -915,13 +921,13 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_DROPPING_OFF_AT_ASSEMBLY — wait for dropoff ───────
+                // ── AGV_DROPPING_OFF_AT_ASSEMBLY - wait for dropoff ───────
                 case AGV_DROPPING_OFF_AT_ASSEMBLY:
                 {
-                    // Wait for AGV to finish — status = WAITING.
+                    // Wait for AGV to finish - status = WAITING.
                     if (agv.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
                     {
-                        // AGV still dropping off — nothing to do this cycle.
+                        // AGV still dropping off - nothing to do this cycle.
                         break;
                     }
 
@@ -943,7 +949,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── ITEM_DELIVERED — decision point ───────────────────────
+                // ── ITEM_DELIVERED - decision point ───────────────────────
                 case ITEM_DELIVERED:
                 {
                     // Increment items delivered counter.
@@ -952,34 +958,46 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                     // DECISION: are all items delivered?
                     if (!pl.Check_allItemsDelivered())
                     {
-                        // More items to deliver — loop back.
+                        // More items to deliver - loop back.
                         pl.productionLine_CurrentItem  = null;
                         pl.productionLine_CurrentState = ProductionLine_State_Enum.AGV_MOVING_TO_WAREHOUSE;
                         agv.Move_toWarehouse(warehouse_MachineID);
                     }
                     else
                     {
-                        // All items delivered — proceed to assembly.
+                        // All items delivered - try to start assembly.
+                        // Order_Ready_toPackage can fail if the Assembly Station is
+                        // momentarily in ERROR state due to a transient MQTT disconnect.
+                        // Retry next cycle by staying in ITEM_DELIVERED.
+                        boolean assemblyStarted = assemblySt.Order_Ready_toPackage(
+                                pl.productionLine_CurrentOrder);
+
+                        if (!assemblyStarted)
+                        {
+                            // Undo the counter increment so the check stays correct.
+                            pl.productionLine_ItemsDelivered--;
+                            break; // stay in ITEM_DELIVERED and retry next cycle
+                        }
+
                         pl.productionLine_CurrentItem  = null;
                         pl.productionLine_CurrentState = ProductionLine_State_Enum.ASSEMBLING;
-                        assemblySt.Order_Ready_toPackage(pl.productionLine_CurrentOrder);
                     }
 
                     break;
                 }
 
 
-                // ── ASSEMBLING — wait for assembly to finish ──────────────
+                // ── ASSEMBLING - wait for assembly to finish ──────────────
                 case ASSEMBLING:
                 {
                     // Wait for assembly to finish.
                     if (!assemblySt.Check_isPackage_Finished())
                     {
-                        // Assembly still in progress — nothing to do this cycle.
+                        // Assembly still in progress - nothing to do this cycle.
                         break;
                     }
 
-                    // Assembly finished — register the finished package.
+                    // Assembly finished - register the finished package.
                     Item_Class packageItem = pl.productionLine_CurrentOrder
                             .Translate_thisOrder_intoItem();
 
@@ -997,17 +1015,17 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── WAITING_FOR_PACKAGE_REGISTRATION — wait for ready ─────
+                // ── WAITING_FOR_PACKAGE_REGISTRATION - wait for ready ─────
                 case WAITING_FOR_PACKAGE_REGISTRATION:
                 {
                     // Wait for package to be ready for collection.
                     if (!assemblySt.Check_isPackage_Ready())
                     {
-                        // Package not yet ready — nothing to do this cycle.
+                        // Package not yet ready - nothing to do this cycle.
                         break;
                     }
 
-                    // Package is ready — send AGV to collect it.
+                    // Package is ready - send AGV to collect it.
                     boolean accepted = agv.PickUp_atAssemblySt(assemblySt_MachineID);
 
                     if (!accepted)
@@ -1021,13 +1039,13 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_MOVING_TO_ASSEMBLY_FOR_PACKAGE — wait for AGV ─────
+                // ── AGV_MOVING_TO_ASSEMBLY_FOR_PACKAGE - wait for AGV ─────
                 case AGV_MOVING_TO_ASSEMBLY_FOR_PACKAGE:
                 {
-                    // Wait for AGV to finish picking up package — status = WAITING.
+                    // Wait for AGV to finish picking up package - status = WAITING.
                     if (agv.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
                     {
-                        // AGV still moving — nothing to do this cycle.
+                        // AGV still moving - nothing to do this cycle.
                         break;
                     }
 
@@ -1042,13 +1060,13 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_PICKING_UP_PACKAGE — send AGV to Warehouse ────────
+                // ── AGV_PICKING_UP_PACKAGE - send AGV to Warehouse ────────
                 case AGV_PICKING_UP_PACKAGE:
                 {
                     // Check Warehouse entrance is empty.
                     if (warehouse.Check_isCurrentlyLoaded_withItem())
                     {
-                        // Warehouse entrance occupied — wait.
+                        // Warehouse entrance occupied - wait.
                         break;
                     }
 
@@ -1066,13 +1084,13 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_MOVING_TO_WAREHOUSE_FOR_PACKAGE — wait for AGV ────
+                // ── AGV_MOVING_TO_WAREHOUSE_FOR_PACKAGE - wait for AGV ────
                 case AGV_MOVING_TO_WAREHOUSE_FOR_PACKAGE:
                 {
-                    // Wait for AGV to finish dropping off — status = WAITING.
+                    // Wait for AGV to finish dropping off - status = WAITING.
                     if (agv.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
                     {
-                        // AGV still moving — nothing to do this cycle.
+                        // AGV still moving - nothing to do this cycle.
                         break;
                     }
 
@@ -1094,16 +1112,19 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── AGV_DROPPING_OFF_PACKAGE_AT_WAREHOUSE — insert ────────
+                // ── AGV_DROPPING_OFF_PACKAGE_AT_WAREHOUSE - insert ────────
                 case AGV_DROPPING_OFF_PACKAGE_AT_WAREHOUSE:
                 {
                     // Tell Warehouse to insert the package into storage.
+                    // Insert_Item can fail if the Warehouse component is still
+                    // in WAITING state (basket just placed at entrance).
+                    // Retry next cycle until it becomes IDLE and accepts the call.
                     boolean inserted = warehouse.Insert_Item(pl.productionLine_CurrentItem);
 
                     if (!inserted)
                     {
-                        System.err.println("Running_Process_ProductionLines failed: Warehouse rejected Insert_Item.");
-                        return false;
+                        // Warehouse not ready yet - stay here and retry next cycle.
+                        break;
                     }
 
                     pl.productionLine_CurrentState = ProductionLine_State_Enum.INSERTING_PACKAGE;
@@ -1111,23 +1132,23 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── INSERTING_PACKAGE — wait for Warehouse to finish ──────
+                // ── INSERTING_PACKAGE - wait for Warehouse to finish ──────
                 case INSERTING_PACKAGE:
                 {
-                    // Wait for Warehouse to finish — status = IDLE.
+                    // Wait for Warehouse to finish - status = IDLE.
                     if (warehouse.Read_Machine_Structure_Status() != Machine_Structure_Status_Enum.IDLE)
                     {
-                        // Warehouse still inserting — nothing to do this cycle.
+                        // Warehouse still inserting - nothing to do this cycle.
                         break;
                     }
 
-                    // Package inserted — order complete!
+                    // Package inserted - order complete!
                     pl.productionLine_CurrentState = ProductionLine_State_Enum.ORDER_COMPLETE;
                     break;
                 }
 
 
-                // ── ORDER_COMPLETE — clean up and return to IDLE ──────────
+                // ── ORDER_COMPLETE - clean up and return to IDLE ──────────
                 case ORDER_COMPLETE:
                 {
                     // Remove the order from the Warehouse.
@@ -1148,7 +1169,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
                 }
 
 
-                // ── Default — unknown state ───────────────────────────────
+                // ── Default - unknown state ───────────────────────────────
                 default:
                 {
                     System.err.println("Running_Process_ProductionLines: unknown state: " + currentState);
@@ -1179,7 +1200,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     /**
      * Runs the full shutdown sequence for the Machine Orchestrator.
      * Shuts down all Production Lines first, then all machines in
-     * reverse initialisation order — AGVs first, then Assembly Stations,
+     * reverse initialisation order - AGVs first, then Assembly Stations,
      * then Warehouses last.
      * Sets the Orchestrator status to STOPPED on success.
      * @return true if shutdown completed successfully, false otherwise.
@@ -1199,7 +1220,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
         }
 
         // ── Step 2: Shut down all AGVs ────────────────────────────────────
-        // AGVs first — most mobile and potentially dangerous if left running.
+        // AGVs first - most mobile and potentially dangerous if left running.
         if (!this.Shutdown_Process_AGV())
         {
             System.err.println("Shutdown_Process failed: AGV shutdown failed.");
@@ -1216,7 +1237,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
         }
 
         // ── Step 4: Shut down all Warehouses ─────────────────────────────
-        // Warehouses last — most stable device, safest to shut down last.
+        // Warehouses last - most stable device, safest to shut down last.
         if (!this.Shutdown_Process_Warehouse())
         {
             System.err.println("Shutdown_Process failed: Warehouse shutdown failed.");
@@ -1263,7 +1284,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
 
     /**
      * Calls Shutdown_Process() on all registered AGV Structures.
-     * Called second during Shutdown_Process() — AGVs are shut down first
+     * Called second during Shutdown_Process() - AGVs are shut down first
      * since they are the most mobile and potentially dangerous device.
      * @return true if all AGV Structures shut down successfully,
      *         false otherwise.
@@ -1286,7 +1307,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
 
     /**
      * Calls Shutdown_Process() on all registered Assembly Station Structures.
-     * Called third during Shutdown_Process() — after AGVs have been shut down.
+     * Called third during Shutdown_Process() - after AGVs have been shut down.
      * @return true if all Assembly Station Structures shut down successfully,
      *         false otherwise.
      */
@@ -1308,7 +1329,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
 
     /**
      * Calls Shutdown_Process() on all registered Warehouse Structures.
-     * Called last during Shutdown_Process() — Warehouses are the most stable
+     * Called last during Shutdown_Process() - Warehouses are the most stable
      * device and the safest to shut down last.
      * @return true if all Warehouse Structures shut down successfully,
      *         false otherwise.
@@ -1538,7 +1559,6 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     {
         if (this.currentOrder == null)
         {
-            System.err.println("Get_CurrentOrder_ID failed: no order is currently being processed.");
             return -1;
         }
 
@@ -1555,7 +1575,6 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     {
         if (this.currentOrder == null)
         {
-            System.err.println("Get_CurrentOrder_Status failed: no order is currently being processed.");
             return "";
         }
 
@@ -1572,7 +1591,6 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     {
         if (this.currentOrder == null)
         {
-            System.err.println("Get_CurrentOrder_ItemList failed: no order is currently being processed.");
             return null;
         }
 
@@ -1598,7 +1616,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
         }
 
         // Check that the inventory IDs are valid.
-        if (inventory_ID == null || inventory_ID.size() == 0)
+        if (inventory_ID == null || inventory_ID.isEmpty())
         {
             System.err.println("Request_ExtraItem failed: inventory ID array is null or empty.");
             return false;
@@ -1674,12 +1692,12 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
      * Sets the Machine Orchestrator command to START.
      * The Running_process() will pick up this command on its next cycle
      * and begin the production workflow.
-     * @return true always — the command has been set.
+     * @return true always - the command has been set.
      */
     @Override
     public boolean Start_MachineOrchestrator()
     {
-        // If previously stopped or in error — reset first before starting.
+        // If previously stopped or in error - reset first before starting.
         if (this.orchestrator_Status == Machine_Orchestrator_Status_Enum.STOPPED
                 || this.orchestrator_Status == Machine_Orchestrator_Status_Enum.ERROR
                 || this.orchestrator_Status == Machine_Orchestrator_Status_Enum.ERROR_ACTION_NEEDED)
@@ -1702,7 +1720,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
      * Sets the Machine Orchestrator command to PAUSE.
      * The Running_process() will pick up this command on its next cycle
      * and pause the production workflow without shutting down machines.
-     * @return true always — the command has been set.
+     * @return true always - the command has been set.
      */
     @Override
     public boolean Stop_MachineOrchestrator()
@@ -1936,7 +1954,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     /**
      * Requests a connection to the Warehouse identified by the given ID.
      * @param warehouse_ID the machine ID of the target Warehouse.
-     * @return true always — TODO: implement proper reconnection logic.
+     * @return true always - TODO: implement proper reconnection logic.
      */
     @Override
     public boolean Connect_Warehouse(int warehouse_ID)
@@ -1948,7 +1966,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     /**
      * Requests a connection to the Assembly Station identified by the given ID.
      * @param assemblyStation_ID the machine ID of the target Assembly Station.
-     * @return true always — TODO: implement proper reconnection logic.
+     * @return true always - TODO: implement proper reconnection logic.
      */
     @Override
     public boolean Connect_AssemblyStation(int assemblyStation_ID)
@@ -1960,7 +1978,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     /**
      * Requests a connection to the AGV identified by the given ID.
      * @param agv_ID the machine ID of the target AGV.
-     * @return true always — TODO: implement proper reconnection logic.
+     * @return true always - TODO: implement proper reconnection logic.
      */
     @Override
     public boolean Connect_AGV(int agv_ID)
@@ -1972,7 +1990,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     /**
      * Requests a disconnection from the Warehouse identified by the given ID.
      * @param warehouse_ID the machine ID of the target Warehouse.
-     * @return true always — TODO: implement proper disconnection logic.
+     * @return true always - TODO: implement proper disconnection logic.
      */
     @Override
     public boolean Disconnect_Warehouse(int warehouse_ID)
@@ -1984,7 +2002,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     /**
      * Requests a disconnection from the Assembly Station identified by the given ID.
      * @param assemblyStation_ID the machine ID of the target Assembly Station.
-     * @return true always — TODO: implement proper disconnection logic.
+     * @return true always - TODO: implement proper disconnection logic.
      */
     @Override
     public boolean Disconnect_AssemblyStation(int assemblyStation_ID)
@@ -1996,7 +2014,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     /**
      * Requests a disconnection from the AGV identified by the given ID.
      * @param agv_ID the machine ID of the target AGV.
-     * @return true always — TODO: implement proper disconnection logic.
+     * @return true always - TODO: implement proper disconnection logic.
      */
     @Override
     public boolean Disconnect_AGV(int agv_ID)
@@ -2093,7 +2111,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     @Override
     public String Get_MachineError_Message(int machine_ID)
     {
-        // TODO: Improve error message retrieval in the future —
+        // TODO: Improve error message retrieval in the future -
         // consider storing dedicated error messages per machine.
 
         if (this.warehouse_Map.containsKey(machine_ID))
@@ -2129,7 +2147,7 @@ public class Machine_Orchestrator_Class implements Machine_Orchestrator_Interfac
     @Override
     public boolean Confirm_MachineError_Resolved(int machine_ID)
     {
-        // TODO: Improve error resolution logic in the future —
+        // TODO: Improve error resolution logic in the future -
         // consider actively resetting the machine state rather than
         // just checking and returning.
 

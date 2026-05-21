@@ -20,8 +20,8 @@ import java.util.ArrayList;
  * between the Warehouse and the Assembly Station.
  * It operates independently of the Warehouse and Assembly Station,
  * and is almost always the slowest actor in the production flow.
- * The AGV maintains two separate lists of known locations —
- * one for Warehouses and one for Assembly Stations — allowing the
+ * The AGV maintains two separate lists of known locations -
+ * one for Warehouses and one for Assembly Stations - allowing the
  * Machine Orchestrator to reference locations using the same Machine
  * Structure IDs it already uses in its own maps.
  * The interface is divided into five groups of methods:
@@ -102,7 +102,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
      * by the given Machine Structure ID.
      * The AGV Structure looks up the corresponding location from its
      * internal Warehouse location list using the provided machine ID.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * and independently, and is almost always the slowest actor
      * in the production flow.
      * The method sets a task flag and returns immediately without blocking.
@@ -120,7 +120,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
      * by the given Machine Structure ID.
      * The AGV Structure looks up the corresponding location from its
      * internal Assembly Station location list using the provided machine ID.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * and independently, and is almost always the slowest actor
      * in the production flow.
      * The method sets a task flag and returns immediately without blocking.
@@ -135,7 +135,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
 
     /**
      * Instructs the AGV to navigate to its charging station.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * and independently to the charger.
      * The method sets a task flag and returns immediately without blocking.
      * Will be rejected if the AGV is not idle.
@@ -153,7 +153,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
      * and pick up the item waiting at that location.
      * Combines the movement and pickup into a single operation,
      * simplifying coordination for the Machine Orchestrator.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Warehouse and uses its robot arm to pick up the item.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Warehouse signals that an item
@@ -172,7 +172,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
      * and pick up the item or finished package waiting at that location.
      * Combines the movement and pickup into a single operation,
      * simplifying coordination for the Machine Orchestrator.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Assembly Station and uses its robot arm to pick up the item.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Assembly Station signals that an item
@@ -191,7 +191,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
      * and drop off the item it is currently carrying.
      * Combines the movement and drop off into a single operation,
      * simplifying coordination for the Machine Orchestrator.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Warehouse and uses its robot arm to place the item.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Warehouse signals that its entrance
@@ -210,7 +210,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
      * and drop off the item it is currently carrying.
      * Combines the movement and drop off into a single operation,
      * simplifying coordination for the Machine Orchestrator.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Assembly Station and uses its robot arm to place the item.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Assembly Station signals that it
@@ -233,7 +233,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
      * Returns the item currently loaded on the AGV.
      * Returns null if the AGV is not currently carrying anything.
      * Can be used by the Machine Orchestrator to diagnose problems
-     * when Check_isLoaded_with() returns false — allowing the Orchestrator
+     * when Check_isLoaded_with() returns false - allowing the Orchestrator
      * to determine whether the wrong item was picked up or
      * no item was picked up at all.
      * @return the Item_Class object representing the loaded item,
@@ -300,7 +300,7 @@ public interface AGV_Structure_Interface extends Machine_Structure_Interface
 
     /**
      * Returns the current battery charge level of the AGV.
-     * The AGV needs to recharge periodically — monitor this value
+     * The AGV needs to recharge periodically - monitor this value
      * to decide when to send the AGV to the charging station
      * via Move_toCharger().
      * @return an integer representing the battery charge percentage

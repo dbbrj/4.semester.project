@@ -24,7 +24,7 @@ import org.json.JSONObject;
  * and identity methods that all Components must implement regardless of device type.
  * Device-specific implementations of this interface are responsible for managing
  * communication with a physical Assembly Station device.
- * The interface is intentionally minimal — it only exposes what the physical
+ * The interface is intentionally minimal - it only exposes what the physical
  * Assembly Station device is capable of doing.
  * All item tracking, order management and source tracking are handled
  * at the Structure level and are not the concern of this interface.
@@ -54,7 +54,7 @@ public interface AssemblySt_Component_Interface extends Machine_Component_Interf
      * its default assembly process.
      * The specific process triggered is determined entirely
      * by the Adapter layer based on the current configuration.
-     * This is a slow hardware operation — the method sets a task flag
+     * This is a slow hardware operation - the method sets a task flag
      * and returns immediately without blocking.
      * The progress of the assembly can be monitored via
      * Check_isAssemblyFinished().
@@ -69,7 +69,7 @@ public interface AssemblySt_Component_Interface extends Machine_Component_Interf
      * to trigger on the physical device.
      * The mapping from assembly ID to the specific protocol command
      * is handled entirely by the Adapter layer.
-     * This is a slow hardware operation — the method sets a task flag
+     * This is a slow hardware operation - the method sets a task flag
      * and returns immediately without blocking.
      * The progress of the assembly can be monitored via
      * Check_isAssemblyFinished().
@@ -90,7 +90,7 @@ public interface AssemblySt_Component_Interface extends Machine_Component_Interf
      * The only way the Structure can know if the assembly is finished
      * is by asking the Component, which monitors the quality control
      * signal from the physical device.
-     * Returns true when both conditions are met — the assembly process
+     * Returns true when both conditions are met - the assembly process
      * has completed AND the quality control signal confirms it was successful.
      * @return true if the assembly is finished and passed quality control,
      *         false otherwise.

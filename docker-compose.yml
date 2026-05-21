@@ -15,7 +15,7 @@ services:
       - mqtt
     environment:
       MQTT_TCP_CONNECTION_HOST: "mqtt"
-      MQTT_TCP_CONNECTION_PORT: 1883
+      MQTT_TCP_CONNECTION_PORT: 9001
 
   st4-agv:
     image: thmork/st4-agv:latest

@@ -25,7 +25,7 @@ import dk.sdu.sem4.machineOrchestrator.Warehouse.Warehouse_Structure_Interface;
  * It uses the Java ServiceLoader mechanism to discover available Component
  * Factory implementations at runtime, and matches them against the config file
  * to determine which factory to use for each Structure.
- * It is purely a startup tool — it has no ongoing responsibilities after pairing.
+ * It is purely a startup tool - it has no ongoing responsibilities after pairing.
  */
 public class Machine_ComponentLoader_Class
 {
@@ -51,7 +51,7 @@ public class Machine_ComponentLoader_Class
      * Uses ServiceLoader to discover all available Warehouse Component Factory
      * implementations at runtime, then iterates over the warehouse map and
      * delegates the pairing of each Structure to Pair_Warehouse_Component().
-     * The warehouse_Map is passed by reference — any changes made to the
+     * The warehouse_Map is passed by reference - any changes made to the
      * Structures inside the map are reflected directly in the Machine Orchestrator.
      * @param warehouse_Map the map of Warehouse Structures to pair, keyed by machine ID.
      * @param config the full system config JSONObject containing connection settings for each Warehouse.
@@ -192,7 +192,7 @@ public class Machine_ComponentLoader_Class
     {
         // ── Step 1: Validate the config values ───────────────────────────────────
         // Ensure all required config values are present in the config before proceeding.
-        if (!warehouse_Config.has("type") || !warehouse_Config.has("ip") || !warehouse_Config.has("port"))
+        if (!warehouse_Config.has("component_Type") ||!warehouse_Config.has("component_ID") || !warehouse_Config.has("ip") || !warehouse_Config.has("port"))
         {
             System.err.println("Pair_Warehouse_Component failed: missing config for Warehouse " + warehouse_MachineID);
             return false;
@@ -203,14 +203,16 @@ public class Machine_ComponentLoader_Class
         // ── Step 2: Read config for this specific Warehouse ───────────────────────
         // Each Warehouse has its own config entry identified by its machine ID.
         // Wrapped in a try/catch to handle cases where the values exist but
-        // are of the wrong type — e.g. "port" stored as a String instead of an int.
+        // are of the wrong type - e.g. "port" stored as a String instead of an int.
         String warehouse_ComponentType;
-        String warehouse_IP;
+        int    warehouse_ComponentID;
+        String warehouse_IP;        
         int    warehouse_Port;
 
         try
         {
-            warehouse_ComponentType = warehouse_Config.getString("type");
+            warehouse_ComponentType = warehouse_Config.getString("component_Type");
+            warehouse_ComponentID   = warehouse_Config.getInt("component_ID");
             warehouse_IP            = warehouse_Config.getString("ip");
             warehouse_Port          = warehouse_Config.getInt("port");
         }
@@ -225,14 +227,14 @@ public class Machine_ComponentLoader_Class
         // ── Step 3: Find the factory whose Component type matches the config ───────
         // Loop through all available factories and compare their Component type
         // against the type defined in the config file for this Warehouse.
-        // Only one factory should match — we stop as soon as we find it.
+        // Only one factory should match - we stop as soon as we find it.
         for (Warehouse_Component_Factory_Interface warehouse_Factory : available_Factories)
         {
             if (warehouse_Factory.get_ComponentType().equals(warehouse_ComponentType))
             {
                 // ── Step 4: Create the Component using the matching factory ────────
                 // The factory handles instantiation with the correct connection settings.
-                Warehouse_Component_Interface warehouse_Component = warehouse_Factory.create(warehouse_IP, warehouse_Port);
+                Warehouse_Component_Interface warehouse_Component = warehouse_Factory.create(warehouse_ComponentID,warehouse_IP, warehouse_Port);
 
                 // ── Step 5: Assign the Component to the Structure ─────────────────
                 // The Structure takes ownership of the Component after assignment.
@@ -276,7 +278,7 @@ public class Machine_ComponentLoader_Class
      * Uses ServiceLoader to discover all available Assembly Station Component Factory
      * implementations at runtime, then iterates over the assembly station map and
      * delegates the pairing of each Structure to Pair_AssemblyStation_Component().
-     * The assemblySt_Map is passed by reference — any changes made to the
+     * The assemblySt_Map is passed by reference - any changes made to the
      * Structures inside the map are reflected directly in the Machine Orchestrator.
      * @param assemblySt_Map the map of Assembly Station Structures to pair, keyed by machine ID.
      * @param config the full system config JSONObject containing connection settings for each Assembly Station.
@@ -414,7 +416,7 @@ public class Machine_ComponentLoader_Class
     {
         // ── Step 1: Validate the config values ───────────────────────────────────
         // Ensure all required config values are present in the config before proceeding.
-        if (!assemblySt_Config.has("type") || !assemblySt_Config.has("ip") || !assemblySt_Config.has("port"))
+        if (!assemblySt_Config.has("component_Type") || !assemblySt_Config.has("component_ID") || !assemblySt_Config.has("ip") || !assemblySt_Config.has("port"))
         {
             System.err.println("Pair_AssemblyStation_Component failed: missing config for Assembly Station " + assemblySt_MachineID);
             return false;
@@ -423,14 +425,16 @@ public class Machine_ComponentLoader_Class
         // ── Step 2: Read config for this specific Assembly Station ────────────────
         // Each Assembly Station has its own config entry identified by its machine ID.
         // Wrapped in a try/catch to handle cases where the values exist but
-        // are of the wrong type — e.g. "port" stored as a String instead of an int.
+        // are of the wrong type - e.g. "port" stored as a String instead of an int.
         String assemblySt_ComponentType;
+        int    assemblySt_ComponentID;
         String assemblySt_IP;
         int    assemblySt_Port;
 
         try
         {
-            assemblySt_ComponentType = assemblySt_Config.getString("type");
+            assemblySt_ComponentType = assemblySt_Config.getString("component_Type");
+            assemblySt_ComponentID   = assemblySt_Config.getInt("component_ID");
             assemblySt_IP            = assemblySt_Config.getString("ip");
             assemblySt_Port          = assemblySt_Config.getInt("port");
         }
@@ -444,14 +448,14 @@ public class Machine_ComponentLoader_Class
         // ── Step 3: Find the factory whose Component type matches the config ───────
         // Loop through all available factories and compare their Component type
         // against the type defined in the config file for this Assembly Station.
-        // Only one factory should match — we stop as soon as we find it.
+        // Only one factory should match - we stop as soon as we find it.
         for (AssemblySt_Component_Factory_Interface assemblySt_Factory : available_Factories)
         {
             if (assemblySt_Factory.get_ComponentType().equals(assemblySt_ComponentType))
             {
                 // ── Step 4: Create the Component using the matching factory ────────
                 // The factory handles instantiation with the correct connection settings.
-                AssemblySt_Component_Interface assemblySt_Component = assemblySt_Factory.create(assemblySt_IP, assemblySt_Port);
+                AssemblySt_Component_Interface assemblySt_Component = assemblySt_Factory.create(assemblySt_ComponentID, assemblySt_IP, assemblySt_Port);
 
                 // ── Step 5: Assign the Component to the Structure ─────────────────
                 // The Structure takes ownership of the Component after assignment.
@@ -493,7 +497,7 @@ public class Machine_ComponentLoader_Class
      * Uses ServiceLoader to discover all available AGV Component Factory
      * implementations at runtime, then iterates over the AGV map and
      * delegates the pairing of each Structure to Pair_AGV_Component().
-     * The agv_Map is passed by reference — any changes made to the
+     * The agv_Map is passed by reference - any changes made to the
      * Structures inside the map are reflected directly in the Machine Orchestrator.
      * @param agv_Map the map of AGV Structures to pair, keyed by machine ID.
      * @param config the full system config JSONObject containing connection settings for each AGV.
@@ -630,7 +634,7 @@ public class Machine_ComponentLoader_Class
     {
         // ── Step 1: Validate the config values ───────────────────────────────────
         // Ensure all required config values are present in the config before proceeding.
-        if (!agv_Config.has("type") || !agv_Config.has("ip") || !agv_Config.has("port"))
+        if (!agv_Config.has("component_Type") ||!agv_Config.has("component_ID") || !agv_Config.has("ip") || !agv_Config.has("port"))
         {
             System.err.println("Pair_AGV_Component failed: missing config for AGV " + agv_MachineID);
             return false;
@@ -639,14 +643,16 @@ public class Machine_ComponentLoader_Class
         // ── Step 2: Read config for this specific AGV ─────────────────────────────
         // Each AGV has its own config entry identified by its machine ID.
         // Wrapped in a try/catch to handle cases where the values exist but
-        // are of the wrong type — e.g. "port" stored as a String instead of an int.
+        // are of the wrong type - e.g. "port" stored as a String instead of an int.
         String agv_ComponentType;
+        int    agv_ComponentID;
         String agv_IP;
         int    agv_Port;
 
         try
         {
-            agv_ComponentType = agv_Config.getString("type");
+            agv_ComponentType = agv_Config.getString("component_Type");
+            agv_ComponentID   = agv_Config.getInt("component_ID");
             agv_IP            = agv_Config.getString("ip");
             agv_Port          = agv_Config.getInt("port");
         }
@@ -659,14 +665,14 @@ public class Machine_ComponentLoader_Class
         // ── Step 3: Find the factory whose Component type matches the config ───────
         // Loop through all available factories and compare their Component type
         // against the type defined in the config file for this AGV.
-        // Only one factory should match — we stop as soon as we find it.
+        // Only one factory should match - we stop as soon as we find it.
         for (AGV_Component_Factory_Interface agv_Factory : available_Factories)
         {
             if (agv_Factory.get_ComponentType().equals(agv_ComponentType))
             {
                 // ── Step 4: Create the Component using the matching factory ────────
                 // The factory handles instantiation with the correct connection settings.
-                AGV_Component_Interface agv_Component = agv_Factory.create(agv_IP, agv_Port);
+                AGV_Component_Interface agv_Component = agv_Factory.create(agv_ComponentID, agv_IP, agv_Port);
 
                 // ── Step 5: Assign the Component to the Structure ─────────────────
                 // The Structure takes ownership of the Component after assignment.

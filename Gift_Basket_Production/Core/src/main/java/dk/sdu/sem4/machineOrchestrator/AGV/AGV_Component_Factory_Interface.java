@@ -55,7 +55,7 @@ public interface AGV_Component_Factory_Interface
      * passing in the connection settings and extra configuration data
      * read from the config file.
      * Use this for AGV types that require additional parameters beyond
-     * just IP and port — for example authentication credentials or
+     * just IP and port - for example authentication credentials or
      * device-specific settings.
      *
      * @param id

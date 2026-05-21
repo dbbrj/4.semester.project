@@ -24,7 +24,7 @@ import org.json.JSONObject;
  * Device-specific implementations of this interface are responsible for managing
  * communication with a physical AGV device.
  * All operations are expressed generically in terms of Machine Structure IDs
- * and location lists — the mapping to specific protocol commands is handled
+ * and location lists - the mapping to specific protocol commands is handled
  * entirely by the Adapter layer.
  * The location lists are passed down from the Structure via the Update methods,
  * giving the Component the information it needs to correctly map Machine Structure
@@ -89,7 +89,7 @@ public interface AGV_Component_Interface extends Machine_Component_Interface
      * by the given Machine Structure ID.
      * The Component uses its internal Warehouse location list to map
      * the Machine Structure ID to the correct physical location.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * and independently, and is almost always the slowest actor
      * in the production flow.
      * The method sets a task flag and returns immediately without blocking.
@@ -103,7 +103,7 @@ public interface AGV_Component_Interface extends Machine_Component_Interface
      * by the given Machine Structure ID.
      * The Component uses its internal Assembly Station location list to map
      * the Machine Structure ID to the correct physical location.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * and independently, and is almost always the slowest actor
      * in the production flow.
      * The method sets a task flag and returns immediately without blocking.
@@ -114,9 +114,9 @@ public interface AGV_Component_Interface extends Machine_Component_Interface
 
     /**
      * Requests the AGV to navigate to its charging station.
-     * The charging station is not part of either location list —
+     * The charging station is not part of either location list -
      * it is a fixed destination handled separately.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * and independently to the charger.
      * The method sets a task flag and returns immediately without blocking.
      * @return true if the request was accepted, false otherwise.
@@ -136,7 +136,7 @@ public interface AGV_Component_Interface extends Machine_Component_Interface
      * The Component uses its internal Warehouse location list to map
      * the Machine Structure ID to the correct physical location,
      * and the Adapter maps the location to the correct protocol commands.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Warehouse and performs the pickup.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Warehouse signals that an item
@@ -154,7 +154,7 @@ public interface AGV_Component_Interface extends Machine_Component_Interface
      * The Component uses its internal Assembly Station location list to map
      * the Machine Structure ID to the correct physical location,
      * and the Adapter maps the location to the correct protocol commands.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Assembly Station and performs the pickup.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Assembly Station signals that an item
@@ -172,7 +172,7 @@ public interface AGV_Component_Interface extends Machine_Component_Interface
      * The Component uses its internal Warehouse location list to map
      * the Machine Structure ID to the correct physical location,
      * and the Adapter maps the location to the correct protocol commands.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Warehouse and performs the drop off.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Warehouse signals that its entrance
@@ -190,7 +190,7 @@ public interface AGV_Component_Interface extends Machine_Component_Interface
      * The Component uses its internal Assembly Station location list to map
      * the Machine Structure ID to the correct physical location,
      * and the Adapter maps the location to the correct protocol commands.
-     * This is a slow hardware operation — the AGV moves physically
+     * This is a slow hardware operation - the AGV moves physically
      * to the Assembly Station and performs the drop off.
      * The method sets a task flag and returns immediately without blocking.
      * Should only be called when the Assembly Station signals that it

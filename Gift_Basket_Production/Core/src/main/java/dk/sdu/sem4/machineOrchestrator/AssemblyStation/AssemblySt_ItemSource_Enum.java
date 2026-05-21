@@ -42,7 +42,7 @@ public enum AssemblySt_ItemSource_Enum
      * The currently loaded item was intentionally placed manually
      * on the Assembly Station.
      * Set when ReceiveItem_Manually() is called successfully.
-     * Should only occur during testing or manual intervention —
+     * Should only occur during testing or manual intervention -
      * never in the normal production flow.
      */
     MANUALLY,

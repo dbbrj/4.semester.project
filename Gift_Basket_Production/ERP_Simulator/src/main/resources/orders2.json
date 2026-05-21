@@ -1,8 +1,8 @@
 {
 "orders": [
     {
-    "orderId": "1001",
-    "productName": "Item 1",
+    "orderId": "1002",
+    "productName": "Item 2",
     "quantity": 1,
     "status": "IDLE"
     }

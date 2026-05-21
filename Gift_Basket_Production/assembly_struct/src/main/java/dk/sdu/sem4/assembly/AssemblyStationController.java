@@ -11,7 +11,7 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     private static final int PROCESS_ID_PLACE_PRODUCTS = 1001;
     private static final int PROCESS_ID_RETURN_BASKET  = 1002;
 
-    // --- Adapter — ---
+    // --- Adapter ---
     private final AssemblyStationAdapter adapter;
 
     // --- Listener ---
@@ -62,18 +62,18 @@ public class AssemblyStationController implements AssemblyStationControllerInter
 
     
     // -------------------------------------------------------------------------
-    // Status — Requirement ID 16
+    // Status - Requirement ID 16
     // -------------------------------------------------------------------------
     @Override
     public String checkStatus() {
         if (!adapter.getIsConnected()) {
-            return "NOT CONNECTED — check docker-compose is running";
+            return "NOT CONNECTED - check docker-compose is running";
         }
         return switch (adapter.getState()) {
-            case STATE_IDLE      -> "IDLE — ready for commands";
-            case STATE_EXECUTING -> "EXECUTING — process " + adapter.getCurrentOperation() + " running";
-            case STATE_ERROR     -> "ERROR — check emulator/checkhealth topic";
-            default              -> "WAITING — connected but no status received yet";
+            case STATE_IDLE      -> "IDLE - ready for commands";
+            case STATE_EXECUTING -> "EXECUTING - process " + adapter.getCurrentOperation() + " running";
+            case STATE_ERROR     -> "ERROR - check emulator/checkhealth topic";
+            default              -> "WAITING - connected but no status received yet";
         };
     }
 
@@ -88,18 +88,18 @@ public class AssemblyStationController implements AssemblyStationControllerInter
     // -------------------------------------------------------------------------
     @Override
     public boolean startAssembly(int processId) {
-        System.out.println("[Controller] startAssembly() — processId: " + processId);
+        System.out.println("[Controller] startAssembly() - processId: " + processId);
 
         if (!adapter.getIsConnected()) {
             System.err.println("[Controller] ERROR: Not connected.");
-            notifyError("Cannot start assembly — station is not connected.");
+            notifyError("Cannot start assembly - station is not connected.");
             return false;
         }
 
         if (adapter.getState() == STATE_EXECUTING) {
             System.err.println("[Controller] ERROR: Already executing process "
                     + adapter.getCurrentOperation());
-            notifyError("Cannot start — station is already busy with process "
+            notifyError("Cannot start - station is already busy with process "
                     + adapter.getCurrentOperation());
             return false;
         }
@@ -141,11 +141,11 @@ public class AssemblyStationController implements AssemblyStationControllerInter
 
         switch (newState) {
             case STATE_EXECUTING -> {
-                System.out.println("[Controller] Assembly started — process: " + processId);
+                System.out.println("[Controller] Assembly started - process: " + processId);
                 if (listener != null) listener.onAssemblyStarted(processId);
             }
             case STATE_IDLE -> {
-                System.out.println("[Controller] Assembly completed — process: " + processId);
+                System.out.println("[Controller] Assembly completed - process: " + processId);
                 if (listener != null) listener.onAssemblyCompleted(processId);
             }
             case STATE_ERROR -> {

@@ -25,7 +25,7 @@ public class AGV_Component_Factory_Class implements AGV_Component_Factory_Interf
 
 
 
-    // Hardcoded type identifier — matched against the config file by the Component Loader
+    // Hardcoded type identifier - matched against the config file by the Component Loader
     private final String COMPONENT_TYPE = "AGV_Enabled_REST_V1";
 
 
@@ -38,11 +38,11 @@ public class AGV_Component_Factory_Class implements AGV_Component_Factory_Interf
     /**
      * No-argument constructor required by the Java ServiceLoader.
      * The ServiceLoader instantiates factories via reflection using
-     * this constructor — it must always be present and public.
+     * this constructor - it must always be present and public.
      */
     public AGV_Component_Factory_Class()
     {
-        // No initialisation needed — this is a pure factory class.
+        // No initialisation needed - this is a pure factory class.
     }
 
 
@@ -90,7 +90,7 @@ public class AGV_Component_Factory_Class implements AGV_Component_Factory_Interf
      * Called by the Machine Component Loader after finding a matching factory,
      * passing in the connection settings and extra configuration data
      * read from the config file.
-     * For now delegates to the basic create() method — extend this
+     * For now delegates to the basic create() method - extend this
      * when the AGV Component needs additional config parameters
      * such as authentication credentials or device-specific settings.
      *

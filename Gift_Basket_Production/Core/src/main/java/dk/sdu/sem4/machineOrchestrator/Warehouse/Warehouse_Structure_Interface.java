@@ -172,7 +172,7 @@ public interface Warehouse_Structure_Interface extends Machine_Structure_Interfa
 
     /**
      * Returns the full current inventory of the Warehouse as a raw String.
-     * Reads from the local cache — call Update_Full_WarehouseInventory()
+     * Reads from the local cache - call Update_Full_WarehouseInventory()
      * first to ensure the data is current.
      * @return the inventory as a String, or null if the cache is not initialised.
      */
@@ -182,7 +182,7 @@ public interface Warehouse_Structure_Interface extends Machine_Structure_Interfa
     /**
      * Returns the full current inventory of the Warehouse as a standardised
      * ArrayList of Order_Item_Class objects.
-     * Reads from the local cache — call Update_Full_WarehouseInventory()
+     * Reads from the local cache - call Update_Full_WarehouseInventory()
      * first to ensure the data is current.
      * @return an ArrayList of Order_Item_Class objects, or null if the cache
      *         is not initialised.
@@ -198,7 +198,7 @@ public interface Warehouse_Structure_Interface extends Machine_Structure_Interfa
     /**
      * Checks whether the Warehouse inventory contains enough items
      * to fulfil the given order item.
-     * Reads from the local cache — call Update_Full_WarehouseInventory()
+     * Reads from the local cache - call Update_Full_WarehouseInventory()
      * first to ensure the data is current.
      * @param order_toCheck the Order_Item_Class object representing the item to check.
      * @return 0 if the warehouse has everything needed,
@@ -210,23 +210,23 @@ public interface Warehouse_Structure_Interface extends Machine_Structure_Interfa
 
     /**
      * Checks whether the Warehouse inventory contains the given item.
-     * Reads from the local cache — call Update_Full_WarehouseInventory()
+     * Reads from the local cache - call Update_Full_WarehouseInventory()
      * first to ensure the data is current.
      * @param item the Item_Class object representing the item to check.
      * @return true if the item exists in the inventory, false otherwise.
      */
-    // Checks whether a specific item exists in the inventory — returns tray ID or quantity
+    // Checks whether a specific item exists in the inventory - returns tray ID or quantity
     public boolean Check_WarehouseInventory_forItem(Item_Class item);
 
     /**
      * Checks whether the Warehouse inventory contains an item matching
      * any of the given inventory ID strings.
-     * Reads from the local cache — call Update_Full_WarehouseInventory()
+     * Reads from the local cache - call Update_Full_WarehouseInventory()
      * first to ensure the data is current.
      * @param item_WarehouseInventory_IDs the list of inventory ID strings to check.
      * @return true if a matching item exists in the inventory, false otherwise.
      */
-    // Checks whether a specific item exists in the inventory — returns tray ID or quantity
+    // Checks whether a specific item exists in the inventory - returns tray ID or quantity
     public boolean Check_WarehouseInventory_forItem(ArrayList<String> item_WarehouseInventory_IDs);
 
 

@@ -21,16 +21,17 @@ public class AssemblyStationAdapter {
 
 
     // --- Cached state from incoming messages ---
-    private int lastOperation;
-    private int currentOperation;
-    private int state;   // 0=Idle, 1=Executing, 2=Error
-    private String timestamp;
+    // Written by CallbackHandler via setters; read by the Component Class via getters.
+    private int     lastOperation;
+    private int     currentOperation;
+    private int     state;        // 0=Idle, 1=Executing, 2=Error
+    private String  timestamp;
     private boolean isHealthy;
     private boolean isConnected;
 
     public AssemblyStationAdapter(String brokerUrl, String clientId) {
-        this.brokerUrl  = brokerUrl;
-        this.clientId   = clientId;
+        this.brokerUrl        = brokerUrl;
+        this.clientId         = clientId;
         this.lastOperation    = -1;
         this.currentOperation = -1;
         this.state            = -1;
@@ -46,7 +47,9 @@ public class AssemblyStationAdapter {
     public boolean connect() {
         try {
             mqttClient = new MqttClient(brokerUrl, clientId, new MemoryPersistence());
-            mqttClient.setCallback(new CallbackHandler(this.lastOperation, this.currentOperation, this.state, this.timestamp, this.isHealthy, this.isConnected));
+
+            // Pass 'this' so the callback can update our state fields via setters.
+            mqttClient.setCallback(new CallbackHandler(this));
 
             MqttConnectionOptions options = new MqttConnectionOptions();
             options.setCleanStart(true);
@@ -55,8 +58,9 @@ public class AssemblyStationAdapter {
 
             mqttClient.connect(options);
 
-            mqttClient.subscribe(TOPIC_STATUS, 1); //Subscribe to the status topic, and make sure I actually receive the messages — resend if needed.
-            mqttClient.subscribe(TOPIC_CHECKHEALTH, 1); //Subscribe to the status topic, and make sure I actually receive the messages — resend if needed.
+            // QoS 1 - at-least-once delivery; resend if not acknowledged.
+            mqttClient.subscribe(TOPIC_STATUS,      1);
+            mqttClient.subscribe(TOPIC_CHECKHEALTH, 1);
 
             this.isConnected = true;
             System.out.println("[Adapter] Connected to broker: " + brokerUrl);
@@ -87,7 +91,7 @@ public class AssemblyStationAdapter {
 
     public boolean publishOperation(int processId) {
         if (!this.isConnected) {
-            System.err.println("[Adapter] Cannot publish — not connected!");
+            System.err.println("[Adapter] Cannot publish - not connected!");
             return false;
         }
         try {
@@ -108,13 +112,24 @@ public class AssemblyStationAdapter {
     }
 
     // -------------------------------------------------------------------------
-    // Getters
+    // Getters - read by Component Class each cycle
     // -------------------------------------------------------------------------
 
-    public boolean getIsConnected()             { return this.isConnected; }
-    public int     getState()                   { return this.state; }
-    public int     getLastOperation()           { return this.lastOperation; }
-    public int     getCurrentOperation()        { return this.currentOperation; }
-    public String  getTimestamp()               { return this.timestamp; }
-    public boolean getIsHealthy()               { return this.isHealthy; }
+    public boolean getIsConnected()      { return this.isConnected;      }
+    public int     getState()            { return this.state;             }
+    public int     getLastOperation()    { return this.lastOperation;     }
+    public int     getCurrentOperation() { return this.currentOperation;  }
+    public String  getTimestamp()        { return this.timestamp;         }
+    public boolean getIsHealthy()        { return this.isHealthy;         }
+
+    // -------------------------------------------------------------------------
+    // Setters - called exclusively by CallbackHandler on incoming MQTT messages
+    // -------------------------------------------------------------------------
+
+    public void setState           (int     value) { this.state             = value; }
+    public void setIsHealthy       (boolean value) { this.isHealthy         = value; }
+    public void setIsConnected     (boolean value) { this.isConnected       = value; }
+    public void setLastOperation   (int     value) { this.lastOperation     = value; }
+    public void setCurrentOperation(int     value) { this.currentOperation  = value; }
+    public void setTimestamp       (String  value) { this.timestamp         = value; }
 }

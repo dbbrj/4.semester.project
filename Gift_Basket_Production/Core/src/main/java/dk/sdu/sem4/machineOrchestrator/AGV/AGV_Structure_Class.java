@@ -43,11 +43,11 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
     // AGV Item Tracking
     private Item_Class agv_ItemLoad;
 
-    // AGV Current Location — tracks where the AGV currently is.
+    // AGV Current Location - tracks where the AGV currently is.
     // -1 means unknown.
     private int agv_CurrentLocation_ID;
 
-    // AGV Current Target — tracks where the AGV is currently heading.
+    // AGV Current Target - tracks where the AGV is currently heading.
     // -1 and null mean no target is currently set.
     private int agv_CurrentTarget_MachineID;
     private AGV_Location_Class agv_CurrentTarget_Location;
@@ -86,10 +86,10 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
         // Item tracking
         this.agv_ItemLoad = null;
 
-        // Current location — unknown until AGV reports in
+        // Current location - unknown until AGV reports in
         this.agv_CurrentLocation_ID = -1;
 
-        // Current target — no target set initially
+        // Current target - no target set initially
         this.agv_CurrentTarget_MachineID = -1;
         this.agv_CurrentTarget_Location  = null;
     }
@@ -124,10 +124,10 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
         // Item tracking
         this.agv_ItemLoad = null;
 
-        // Current location — unknown until AGV reports in
+        // Current location - unknown until AGV reports in
         this.agv_CurrentLocation_ID = -1;
 
-        // Current target — no target set initially
+        // Current target - no target set initially
         this.agv_CurrentTarget_MachineID = -1;
         this.agv_CurrentTarget_Location  = null;
     }
@@ -304,7 +304,7 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
 
         // ── Step 3: Process current task flag ────────────────────────────
 
-        // ── NONE — nothing to do ──────────────────────────────────────────
+        // ── NONE - nothing to do ──────────────────────────────────────────
         if (this.agv_CurrentTask == AGV_Structure_Task_Option_Enum.NONE)
         {
             if (super.Get_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
@@ -316,7 +316,7 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
         }
 
         // ── All movement and operation tasks ──────────────────────────────
-        // First cycle — Component just received the task.
+        // First cycle - Component just received the task.
         if (componentState == Component_Process_States_Enum.RUNNING_IDLE
                 && componentStatus == Component_Status_Enum.IDLE)
         {
@@ -325,7 +325,7 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
             return true;
         }
 
-        // Subsequent cycles — AGV is working.
+        // Subsequent cycles - AGV is working.
         if (componentState == Component_Process_States_Enum.RUNNING_BUSY
                 && componentStatus == Component_Status_Enum.WORKING)
         {
@@ -334,7 +334,7 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
             return true;
         }
 
-        // Task finished — Component is back to IDLE.
+        // Task finished - Component is back to IDLE.
         if (componentState == Component_Process_States_Enum.RUNNING_DONE
                 && componentStatus == Component_Status_Enum.IDLE)
         {
@@ -343,7 +343,7 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
                     || this.agv_CurrentTask == AGV_Structure_Task_Option_Enum.MOVE_TO_ASSEMBLY_STATION
                     || this.agv_CurrentTask == AGV_Structure_Task_Option_Enum.MOVE_TO_CHARGER)
             {
-                // Movement finished — update current location.
+                // Movement finished - update current location.
                 this.agv_CurrentLocation_ID      = this.agv_CurrentTarget_MachineID;
                 this.agv_LastTask                = this.agv_CurrentTask;
                 this.agv_CurrentTask             = AGV_Structure_Task_Option_Enum.NONE;
@@ -355,7 +355,7 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
             }
             else
             {
-                // Pickup or dropoff finished — stay WAITING until
+                // Pickup or dropoff finished - stay WAITING until
                 // Orchestrator calls Confirm_ItemPickedUp() or Confirm_ItemDroppedOff().
                 this.agv_LastTask    = this.agv_CurrentTask;
                 this.agv_CurrentTask = AGV_Structure_Task_Option_Enum.NONE;
@@ -439,7 +439,7 @@ public class AGV_Structure_Class extends Machine_Structure_Class implements AGV_
         this.agv_CurrentTarget_MachineID = -1;
         this.agv_CurrentTarget_Location  = null;
 
-        // Note: agv_ItemLoad is intentionally NOT cleared —
+        // Note: agv_ItemLoad is intentionally NOT cleared -
         // if the AGV is carrying an item at shutdown, we preserve that
         // information so the next startup knows the physical state.
 

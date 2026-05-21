@@ -5,8 +5,8 @@
       "machine_Type": "Warehouse_EFFIMAT_SOAP_V1.0",
       "component_ID": 101,
       "component_Type": "Warehouse_EFFIMAT_SOAP_V1.0",
-      "ip": "st4-warehouse",
-      "port": 80
+      "ip": "localhost",
+      "port": 8081
     }
   ],
   "assemblyStations": [
@@ -15,8 +15,8 @@
       "component_ID": 201,
       "machine_Type": "AssemblyStation_Brand_MQTT_V1",
       "component_Type": "AssemblyStation_Brand_MQTT_V1",
-      "ip": "mqtt",
-      "port": 1883
+      "ip": "localhost",
+      "port": 9001
     }
   ],
   "agvs": [
@@ -25,8 +25,8 @@
       "component_ID": 301,
       "machine_Type": "AGV_Enabled_REST_V1",
       "component_Type": "AGV_Enabled_REST_V1",
-      "ip": "st4-agv",
-      "port": 80,
+      "ip": "localhost",
+      "port": 8082,
       "warehouse_Locations": [
         { "machine_ID": 1 }
       ],

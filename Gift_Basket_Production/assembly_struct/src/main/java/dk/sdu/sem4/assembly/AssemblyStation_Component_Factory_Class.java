@@ -21,7 +21,7 @@ public class AssemblyStation_Component_Factory_Class implements AssemblySt_Compo
 {
 
 
-    // Hardcoded type identifier — matched against the config file by the Component Loader
+    // Hardcoded type identifier - matched against the config file by the Component Loader
     private final String COMPONENT_TYPE = "AssemblyStation_Brand_MQTT_V1";
 
 
@@ -33,11 +33,11 @@ public class AssemblyStation_Component_Factory_Class implements AssemblySt_Compo
     /**
      * No-argument constructor required by the Java ServiceLoader.
      * The ServiceLoader instantiates factories via reflection using
-     * this constructor — it must always be present and public.
+     * this constructor - it must always be present and public.
      */
     public AssemblyStation_Component_Factory_Class()
     {
-        // No initialisation needed — this is a pure factory class.
+        // No initialisation needed - this is a pure factory class.
     }
 
 
@@ -85,7 +85,7 @@ public class AssemblyStation_Component_Factory_Class implements AssemblySt_Compo
      * Called by the Machine Component Loader after finding a matching factory,
      * passing in the connection settings and extra configuration data
      * read from the config file.
-     * For now delegates to the basic create() method — extend this
+     * For now delegates to the basic create() method - extend this
      * when the Assembly Station Component needs additional config parameters
      * such as MQTT topic names or authentication credentials.
      *

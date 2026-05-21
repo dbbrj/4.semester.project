@@ -1,10 +1,17 @@
 package dk.sdu.sem4.gui;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import dk.sdu.sem4.machineOrchestrator.Machine_Orchestrator_Interface;
+import dk.sdu.sem4.item.Order_Class;
 import dk.sdu.sem4.item.Order_Item_Class;
+import dk.sdu.sem4.item.Order_Item_Status_Enum;
+import dk.sdu.sem4.item.Order_Status_Enum;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -18,6 +25,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -30,6 +38,7 @@ public class Gui extends Application {
     }
 
     private Machine_Orchestrator_Interface orchestrator;
+    private Stage primaryStage;
 
     private int selectedWarehouseId = -1;
     private int selectedAssemblyId = -1;
@@ -58,9 +67,14 @@ public class Gui extends Application {
     private TextArea inventoryArea = new TextArea();
     private TextArea logArea = new TextArea();
 
+    // Used to detect order completion: when lastSeenOrderId transitions from a
+    // valid ID to -1 we know the order just finished and can log it in the GUI.
+    private int lastSeenOrderId = -1;
+
     @Override
     public void start(Stage stage) {
         this.orchestrator = prelaunchOrchestrator;
+        this.primaryStage = stage;
         stage.setTitle("Gift Basket Production - GUI");
 
         Label title = new Label("Gift Basket Production Monitor");
@@ -83,6 +97,32 @@ public class Gui extends Application {
                 createActionButton("Refresh", this::updateGui)
         );
 
+        // ── Load Order from File ──────────────────────────────────────────
+        HBox loadOrderBox = new HBox(10);
+        Label loadOrderLabel = new Label("No file selected");
+        Button loadOrderButton = new Button("Browse order file...");
+        Button assignOrderButton = new Button("Assign Order");
+        assignOrderButton.setDisable(true);
+
+        final File[] selectedOrderFile = {null};
+
+        loadOrderButton.setOnAction(e -> {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Select Order JSON file");
+            chooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("JSON files", "*.json"));
+            File file = chooser.showOpenDialog(primaryStage);
+            if (file != null) {
+                selectedOrderFile[0] = file;
+                loadOrderLabel.setText(file.getName());
+                assignOrderButton.setDisable(false);
+            }
+        });
+
+        assignOrderButton.setOnAction(e -> loadOrderFromFile(selectedOrderFile[0]));
+        loadOrderBox.getChildren().addAll(loadOrderButton, loadOrderLabel, assignOrderButton);
+
+        // ── Extra Item Request ────────────────────────────────────────────
         HBox extraItemBox = new HBox(10);
         TextField extraItemInput = new TextField();
         extraItemInput.setPromptText("Inventory ID, fx 1 eller 1,2,3");
@@ -105,6 +145,8 @@ public class Gui extends Application {
                 systemStatus,
                 statusCards,
                 buttons,
+                new Label("Load Order"),
+                loadOrderBox,
                 new Label("Extra Item Request"),
                 extraItemBox,
                 new Label("Warehouse Inventory"),
@@ -414,6 +456,12 @@ public class Gui extends Application {
         currentOrderId.setText("Order ID: " + (orderId == -1 ? "None" : orderId));
         currentOrderStatus.setText("Status: " + safe(orchestrator.Get_CurrentOrder_Status()));
 
+        // Detect order completion: previous cycle had an active order, this cycle has none.
+        if (lastSeenOrderId != -1 && orderId == -1) {
+            log("✅ Order " + lastSeenOrderId + " completed successfully.");
+        }
+        lastSeenOrderId = orderId;
+
         ArrayList<Order_Item_Class> items = orchestrator.Get_CurrentOrder_ItemList();
 
         if (items == null || items.isEmpty()) {
@@ -456,6 +504,96 @@ public class Gui extends Application {
             return "Unknown";
         }
         return value;
+    }
+
+    /**
+     * Reads an ERP Simulator orders.json file and assigns the first IDLE order
+     * to the Machine Orchestrator.
+     *
+     * Uses the ERP Simulator format:
+     * {
+     *   "orders": [
+     *     { "orderId": "1001", "productName": "GiftBasketSmall", "quantity": 2, "status": "IDLE" },
+     *     ...
+     *   ]
+     * }
+     *
+     * Each ERP order becomes one Order_Item_Class where productName is used as
+     * the warehouse inventory ID and quantity is the number of items to pick.
+     */
+    private void loadOrderFromFile(File file) {
+        if (orchestrator == null) {
+            log("Cannot load order: orchestrator not connected.");
+            return;
+        }
+
+        if (file == null || !file.exists()) {
+            log("Cannot load order: no file selected.");
+            return;
+        }
+
+        try {
+            String content = Files.readString(file.toPath());
+            JSONObject json = new JSONObject(content);
+            JSONArray ordersArray = json.getJSONArray("orders");
+
+            int assigned = 0;
+
+            for (int i = 0; i < ordersArray.length(); i++) {
+                JSONObject erpOrder = ordersArray.getJSONObject(i);
+
+                String status = erpOrder.optString("status", "IDLE");
+                if (!status.equalsIgnoreCase("IDLE")) {
+                    continue; // skip orders that aren't waiting
+                }
+
+                int orderId         = Integer.parseInt(erpOrder.getString("orderId"));
+                String productName  = erpOrder.getString("productName");
+                int quantity        = erpOrder.getInt("quantity");
+
+                // Each ERP order line becomes one Order_Item in the orchestrator.
+                // productName is used as the warehouse inventory lookup ID.
+                ArrayList<String> inventoryIds = new ArrayList<>();
+                inventoryIds.add(productName);
+
+                Order_Item_Class item = new Order_Item_Class(
+                        quantity,
+                        Order_Item_Status_Enum.PENDING,
+                        orderId,
+                        productName,
+                        inventoryIds
+                );
+
+                ArrayList<Order_Item_Class> itemList = new ArrayList<>();
+                itemList.add(item);
+
+                // The finished basket gets its own inventory ID so it can be
+                // stored back in the Warehouse after assembly completes.
+                // Without this, Translate_thisOrder_intoItem() returns null.
+                ArrayList<String> packageInventoryId = new ArrayList<>();
+                packageInventoryId.add("Basket-" + orderId);
+
+                Order_Class order = new Order_Class(orderId, Order_Status_Enum.ORDER_PENDING,
+                        itemList, packageInventoryId, true);
+
+                boolean ok = orchestrator.Assign_Order(order);
+                if (ok) {
+                    log("Order " + orderId + " (" + productName + " x" + quantity + ") assigned.");
+                    assigned++;
+                    updateGui();
+                    break; // assign one order at a time
+                } else {
+                    log("Orchestrator rejected order " + orderId + " - may already have an active order.");
+                }
+            }
+
+            if (assigned == 0) {
+                log("No IDLE orders found in file, or orchestrator is busy.");
+            }
+
+        } catch (Exception e) {
+            log("Error loading order file: " + e.getMessage());
+        }
     }
 
     private void log(String message) {

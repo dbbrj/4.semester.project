@@ -31,17 +31,17 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     ////////////////////    Attributes    ///////////////////////
     ///
 
-    // Hardcoded type identifier — matched against the config file by the Component Loader
+    // Hardcoded type identifier - matched against the config file by the Component Loader
     private final String COMPONENT_TYPE = "Warehouse_EFFIMAT_SOAP_V1.0";
 
 
-    // Connection settings — loaded from config file
+    // Connection settings - loaded from config file
     private String ip;
 
     private int port;
 
 
-    // Component identity — identifies the component connected to this machine
+    // Component identity - identifies the component connected to this machine
     private int component_ID;
 
     private String component_Type;
@@ -51,13 +51,13 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     private Component_Process_States_Enum component_State;
 
 
-    // Internal state — task flags
+    // Internal state - task flags
     private Warehouse_Component_Task_Option_Enum warehouse_component_CurrentTask;
 
     private Warehouse_Component_Task_Option_Enum warehouse_component_LastTask;
 
 
-    // Internal state — item tracking
+    // Internal state - item tracking
     // warehouse_ItemRequest: the item currently requested (for insert or extract)
     private Item_Class warehouse_ItemRequest;
 
@@ -139,26 +139,18 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
     @Override
     public Component_Status_Enum Read_Component_Status()
     {
-        // Check if the Component Status is out of sync with the Warehouse.
-        int temp_status = this.warehouse_Controller.GetStatus();
-
-        // Check for -1 (Connection Error).    Checks only the Warehouse has an error.
-        if (temp_status == -1 && !(this.component_Status == Component_Status_Enum.ERROR))
-        {
-            this.component_Status = Component_Status_Enum.ERROR;
-        }
-
-        // Check for 0 (Idle).  Checks only if the Component is out of sync with the Warehouse.
-        if (this.component_Status == Component_Status_Enum.IDLE && temp_status == 1)
-        {
-            this.component_Status = Component_Status_Enum.WORKING;
-        }
-        if (this.component_Status == Component_Status_Enum.IDLE && temp_status == 2)
-        {
-            this.component_Status = Component_Status_Enum.ERROR;
-        }
-
-        // If everything is as it should be, and nothing is changed.
+        // Return the cached status only - do NOT call GetStatus() here.
+        //
+        // Calling the EFFIMAT on every orchestrator cycle is dangerous:
+        //   - If the EFFIMAT reports State=1 (e.g., tray returning to storage after a
+        //     PickItem) while component_CurrentTask == NONE, the old code mutated
+        //     component_Status IDLE -> WORKING.
+        //   - Running_process() has no branch to reset WORKING->IDLE when task==NONE,
+        //     so the component became permanently locked and every subsequent
+        //     Insert_Item / Extract_Item call was rejected with "Component is not IDLE".
+        //
+        // All hardware-driven status mutations now happen exclusively inside
+        // Running_process(), where they are guarded by the current task flag.
         return this.component_Status;
     }
 
@@ -321,20 +313,20 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
 
 
 
-        // ── EXTRACT_ITEM — Start the extraction ───────────────────────────────
+        // ── EXTRACT_ITEM - Start the extraction ───────────────────────────────
         else if ((this.warehouse_component_CurrentTask == Warehouse_Component_Task_Option_Enum.EXTRACT_ITEM)  &&  (this.component_Status == Component_Status_Enum.IDLE)  &&  (this.component_State == Component_Process_States_Enum.RUNNING_IDLE))
         {
             // Safety check: entrance must be empty before starting an extraction
             if (this.warehouse_ItemLoad != null)
             {
-                System.err.println("Running_process: Extract_Item blocked — entrance/exit is occupied by: " + this.warehouse_ItemLoad);
+                System.err.println("Running_process: Extract_Item blocked - entrance/exit is occupied by: " + this.warehouse_ItemLoad);
                 return true;
             }
 
             // Safety check: no Item was placed in the Request.
             if (this.warehouse_ItemRequest == null)
             {
-                System.err.println("Running_process: Extract_Item blocked — no Item was placed in the request");
+                System.err.println("Running_process: Extract_Item blocked - no Item was placed in the request");
                 this.component_Status = Component_Status_Enum.ERROR;
                 return true;
             }
@@ -347,17 +339,17 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
 
             if (response == null)
             {
-                System.err.println("Running_process: Extract_Item failed — Controller returned null.");
+                System.err.println("Running_process: Extract_Item failed - Controller returned null.");
                 this.component_Status = Component_Status_Enum.ERROR;
                 this.warehouse_component_LastTask    = this.warehouse_component_CurrentTask;
                 this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.NONE;
             }
 
-            // If successful, stay in WORKING — hardware is now moving.
+            // If successful, stay in WORKING - hardware is now moving.
             // Running_process() will poll GetStatus() on subsequent cycles.
         }
 
-        // ── EXTRACT_ITEM — Poll until hardware finishes ───────────────────────
+        // ── EXTRACT_ITEM - Poll until hardware finishes ───────────────────────
         else if ((this.warehouse_component_CurrentTask == Warehouse_Component_Task_Option_Enum.EXTRACT_ITEM)  &&  (this.component_Status == Component_Status_Enum.WORKING)  &&  (this.component_State == Component_Process_States_Enum.RUNNING_BUSY))
         {
             int warehouseState = this.warehouse_Controller.GetStatus();
@@ -369,11 +361,11 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
             }
             else if (warehouseState == 0)
             {
-                // Hardware finished — item is now at the entrance/exit
+                // Hardware finished - item is now at the entrance/exit
                 this.warehouse_ItemLoad    = this.warehouse_ItemRequest;
                 this.warehouse_ItemRequest = null;
 
-                // Reset flag — wait for external Confirm_ItemPickedUp() call
+                // Reset flag - wait for external Confirm_ItemPickedUp() call
                 this.warehouse_component_LastTask    = this.warehouse_component_CurrentTask;
                 this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.NONE;
                 this.component_State  = Component_Process_States_Enum.RUNNING_DONE;
@@ -381,20 +373,20 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
                 // Status stays WAITING until the AGV picks up the item
                 this.component_Status = Component_Status_Enum.WAITING;
             }
-            // else warehouseState == 1: still moving — do nothing, wait for next cycle
+            // else warehouseState == 1: still moving - do nothing, wait for next cycle
         }
 
 
 
 
 
-        // ── INSERT_ITEM — Start the insertion ─────────────────────────────────
+        // ── INSERT_ITEM - Start the insertion ─────────────────────────────────
         else if ((this.warehouse_component_CurrentTask == Warehouse_Component_Task_Option_Enum.INSERT_ITEM)  &&  (this.component_Status == Component_Status_Enum.IDLE)  &&  (this.component_State == Component_Process_States_Enum.RUNNING_IDLE))
         {
             // Safety check: no Item was placed in the Request.
             if (this.warehouse_ItemRequest == null)
             {
-                System.err.println("Running_process: Insert_Item blocked — no Item was placed in the request");
+                System.err.println("Running_process: Insert_Item blocked - no Item was placed in the request");
                 this.component_Status = Component_Status_Enum.ERROR;
                 return true;
             }
@@ -407,16 +399,16 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
 
             if (response == null)
             {
-                System.err.println("Running_process: Insert_Item failed — Controller returned null.");
+                System.err.println("Running_process: Insert_Item failed - Controller returned null.");
                 this.component_Status = Component_Status_Enum.ERROR;
                 this.warehouse_component_LastTask    = this.warehouse_component_CurrentTask;
                 this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.NONE;
             }
 
-            // If successful, stay in WORKING — hardware is now moving.
+            // If successful, stay in WORKING - hardware is now moving.
         }
 
-        // ── INSERT_ITEM — Poll until hardware finishes ────────────────────────
+        // ── INSERT_ITEM - Poll until hardware finishes ────────────────────────
         else if ((this.warehouse_component_CurrentTask == Warehouse_Component_Task_Option_Enum.INSERT_ITEM)  &&  (this.component_Status == Component_Status_Enum.WORKING)  &&  (this.component_State == Component_Process_States_Enum.RUNNING_BUSY))
         {
             int warehouseState = this.warehouse_Controller.GetStatus();
@@ -428,20 +420,44 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
             }
             else if (warehouseState == 0)
             {
-                // Hardware finished — item has been inserted into the Warehouse
+                // Hardware finished - item has been inserted into the Warehouse.
                 this.warehouse_ItemLoad    = null;
                 this.warehouse_ItemRequest = null;
 
-                // Reset flag and status
-                this.warehouse_component_LastTask    = this.warehouse_component_CurrentTask;
-                this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.NONE;
+                // Record last task but DO NOT clear currentTask to NONE yet.
+                // Keeping currentTask = INSERT_ITEM prevents Step 4 from immediately
+                // transitioning RUNNING_DONE -> RUNNING_IDLE in the same cycle.
+                // If we cleared currentTask here, Step 4 (task==NONE + state==RUNNING_DONE
+                // + status==IDLE) would fire and reset state to RUNNING_IDLE before the
+                // Warehouse_Structure_Class can read the RUNNING_DONE state and detect
+                // that insertion is complete. The Structure would then see RUNNING_IDLE/IDLE
+                // again (identical to the "first cycle" state) and loop forever, never
+                // advancing INSERTING_PACKAGE to ORDER_COMPLETE.
+                this.warehouse_component_LastTask = this.warehouse_component_CurrentTask;
+                // currentTask intentionally left as INSERT_ITEM - self-reset happens in
+                // the next cycle once the Structure has processed the RUNNING_DONE state.
                 this.component_State  = Component_Process_States_Enum.RUNNING_DONE;
                 this.component_Status = Component_Status_Enum.IDLE;
             }
-            // else warehouseState == 1: still moving — do nothing, wait for next cycle
+            // else warehouseState == 1: still moving - do nothing, wait for next cycle
+        }
+
+        // ── INSERT_ITEM - Self-reset after Structure has processed completion ─
+        // After the INSERT_ITEM poll done case above:
+        //   - currentTask is still INSERT_ITEM (not NONE) so Step 4 does not fire
+        //   - state = RUNNING_DONE, status = IDLE
+        // The Structure reads RUNNING_DONE/IDLE, calls Check_LastTask_Success, and
+        // transitions to IDLE. On the NEXT cycle we arrive here and can safely reset.
+        else if ((this.warehouse_component_CurrentTask == Warehouse_Component_Task_Option_Enum.INSERT_ITEM)  &&  (this.component_Status == Component_Status_Enum.IDLE)  &&  (this.component_State == Component_Process_States_Enum.RUNNING_DONE))
+        {
+            // Structure has already seen and acted on RUNNING_DONE - reset to idle.
+            this.warehouse_component_CurrentTask = Warehouse_Component_Task_Option_Enum.NONE;
+            this.component_State = Component_Process_States_Enum.RUNNING_IDLE;
         }
 
         // ── Step 4: Transition RUNNING_DONE back to RUNNING_IDLE ─────────────
+        // Only fires when task == NONE, so INSERT_ITEM's intentional RUNNING_DONE
+        // state (where currentTask is kept as INSERT_ITEM) is never prematurely reset.
         if ((this.component_State == Component_Process_States_Enum.RUNNING_DONE)  &&  (this.component_Status == Component_Status_Enum.IDLE)   &&   (this.warehouse_component_CurrentTask == Warehouse_Component_Task_Option_Enum.NONE))
         {
             this.component_State = Component_Process_States_Enum.RUNNING_IDLE;
@@ -510,7 +526,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
         //
 
-        // Not using Flags — fast cyber-level operation.
+        // Not using Flags - fast cyber-level operation.
         return this.warehouse_Controller.Check_Connection();
     }
 
@@ -530,7 +546,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
         //
 
-        // Using Flags — slow hardware operation.
+        // Using Flags - slow hardware operation.
 
         // Check if ready for new task
         if ((this.warehouse_component_CurrentTask != Warehouse_Component_Task_Option_Enum.NONE)   ||   (this.component_Status != Component_Status_Enum.IDLE))
@@ -554,7 +570,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
         //
 
-        // Using Flags — slow hardware operation.
+        // Using Flags - slow hardware operation.
 
         // Check if ready for new task
         if ((this.warehouse_component_CurrentTask != Warehouse_Component_Task_Option_Enum.NONE)   ||   (this.component_Status != Component_Status_Enum.IDLE))
@@ -579,7 +595,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
         //
 
-        // Using Flags — slow hardware operation.
+        // Using Flags - slow hardware operation.
 
         // Check if ready for new task
         if ((this.warehouse_component_CurrentTask != Warehouse_Component_Task_Option_Enum.NONE)   ||   (this.component_Status != Component_Status_Enum.IDLE))
@@ -603,7 +619,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
         //
 
-        // Using Flags — slow hardware operation.
+        // Using Flags - slow hardware operation.
 
         // Check if ready for new task
         if ((this.warehouse_component_CurrentTask != Warehouse_Component_Task_Option_Enum.NONE)   ||   (this.component_Status != Component_Status_Enum.IDLE))
@@ -632,8 +648,10 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         // Clear the entrance/exit
         this.warehouse_ItemLoad = null;
 
-        // Transition from WAITING back to IDLE
-        if ((this.component_Status == Component_Status_Enum.WAITING)   &&   (this.component_State == Component_Process_States_Enum.RUNNING_BUSY  ||  this.component_State == Component_Process_States_Enum.RUNNING_IDLE))
+        // Transition from WAITING back to IDLE.
+        // After Extract_Item completes, the Component is in RUNNING_DONE (not RUNNING_BUSY
+        // or RUNNING_IDLE), so we check only the status - any WAITING state should clear.
+        if (this.component_Status == Component_Status_Enum.WAITING)
         {
             this.component_Status = Component_Status_Enum.IDLE;
             this.component_State  = Component_Process_States_Enum.RUNNING_IDLE;
@@ -682,7 +700,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
             return -20;
         }
 
-        // Check for error status — something went wrong.
+        // Check for error status - something went wrong.
         if (this.component_Status == Component_Status_Enum.ERROR
                 || this.component_Status == Component_Status_Enum.ERROR_ACTION_NEEDED)
         {
@@ -707,7 +725,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
                 return 10;
             }
 
-            // Success — item is physically at the entrance and Component is WAITING.
+            // Success - item is physically at the entrance and Component is WAITING.
             if (this.component_Status == Component_Status_Enum.WAITING
                     && this.warehouse_ItemLoad != null)
             {
@@ -731,7 +749,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
                 return 10;
             }
 
-            // Success — Component is IDLE and entrance is empty.
+            // Success - Component is IDLE and entrance is empty.
             if (this.component_Status == Component_Status_Enum.IDLE
                     && this.warehouse_ItemLoad == null)
             {
@@ -769,7 +787,7 @@ public class Warehouse_Component_Class implements Warehouse_Component_Interface
         // Not using Flags: We skip the use of flags/CurrentTask for tasks/processes that is "instant"/"fast", and can be handled on a cyber-level.
         //
 
-        // Not using Flags — fast cyber-level operation.
+        // Not using Flags - fast cyber-level operation.
         return this.warehouse_Controller.GetInventory();
     }
 

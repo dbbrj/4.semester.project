@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * The Warehouse Adapter Class is the only class in the component that communicates
  * directly with the physical Warehouse device over SOAP.
- * All SOAP-specific code is isolated here — no other class knows about XML,
+ * All SOAP-specific code is isolated here - no other class knows about XML,
  * HTTP or the SOAP protocol.
  * Each public method is responsible for building its own SOAP command,
  * packing it into an envelope, sending it, unpacking its own specific response,
@@ -22,14 +22,14 @@ import org.json.JSONObject;
 public class Warehouse_Adapter_Class
 {
 
-    // Connection settings — passed in from the Component Class,
+    // Connection settings - passed in from the Component Class,
     // which reads them from the config file at startup.
     private String ip;
     private int port;
     private String endpoint;
 
     // Tracks whether the last connection attempt to the Warehouse was successful.
-    // This is a cached value from the last check — not a live connection state.
+    // This is a cached value from the last check - not a live connection state.
     private boolean LastChecked_wasConnected;
 
 
@@ -38,7 +38,7 @@ public class Warehouse_Adapter_Class
      * Receives the connection settings from the Component Class,
      * which reads them from the config file at startup.
      * Builds the full SOAP endpoint URL from the ip and port.
-     * The connection is not verified at construction time —
+     * The connection is not verified at construction time -
      * call Check_Connection() to verify the endpoint is reachable.
      * @param ip the IP address of the Warehouse SOAP service.
      * @param port the port number of the Warehouse SOAP service.
@@ -337,7 +337,7 @@ public class Warehouse_Adapter_Class
 
     /**
      * Wraps the provided SOAP command string inside a standard SOAP 1.1 envelope.
-     * The Adapter is responsible for the envelope structure —
+     * The Adapter is responsible for the envelope structure -
      * each public method is responsible for building its own command content.
      * @param soap_Command the method-specific SOAP XML command to wrap inside the envelope Body.
      * @return a String containing the complete SOAP 1.1 envelope XML ready to send.
@@ -356,7 +356,7 @@ public class Warehouse_Adapter_Class
      * Sends the provided SOAP envelope as an HTTP POST request to the Warehouse endpoint.
      * Handles all HTTP connection setup, header configuration, request writing
      * and response reading.
-     * Returns the full raw XML response body — each public method is responsible
+     * Returns the full raw XML response body - each public method is responsible
      * for unpacking its own specific result from this raw response.
      * Updates the LastChecked_wasConnected flag based on whether the call succeeded or failed.
      * @param soap_Envelope the complete SOAP envelope XML string to send.

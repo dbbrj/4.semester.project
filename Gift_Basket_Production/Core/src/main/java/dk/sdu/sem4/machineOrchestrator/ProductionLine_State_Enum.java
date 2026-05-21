@@ -7,7 +7,7 @@ package dk.sdu.sem4.machineOrchestrator;
  * Used by the Machine Orchestrator to track which phase of
  * the production workflow each Production Line is currently in,
  * allowing it to coordinate machines and make decisions accordingly.
- * The extraction and transport phases are repeatable — the AGV
+ * The extraction and transport phases are repeatable - the AGV
  * loops back and forth between the Warehouse and Assembly Station
  * once per item until all items have been delivered.
  */
@@ -31,7 +31,7 @@ public enum ProductionLine_State_Enum
     ORDER_ASSIGNED,
 
 
-    // ── Per-Item Loop — repeated once per item in the order ───────────────
+    // ── Per-Item Loop - repeated once per item in the order ───────────────
 
 
     /**
@@ -67,14 +67,14 @@ public enum ProductionLine_State_Enum
 
     /**
      * The item has been dropped off at the Assembly Station.
-     * The Production Line checks if more items are needed —
+     * The Production Line checks if more items are needed -
      * if yes, loops back to AGV_MOVING_TO_WAREHOUSE.
      * If all items are delivered, transitions to ASSEMBLING.
      */
     ITEM_DELIVERED,
 
 
-    // ── Assembly Phase — entered once all items are delivered ─────────────
+    // ── Assembly Phase - entered once all items are delivered ─────────────
 
 
     /**
@@ -91,7 +91,7 @@ public enum ProductionLine_State_Enum
     WAITING_FOR_PACKAGE_REGISTRATION,
 
 
-    // ── Return Phase — package returns to Warehouse ───────────────────────
+    // ── Return Phase - package returns to Warehouse ───────────────────────
 
 
     /**
@@ -144,7 +144,7 @@ public enum ProductionLine_State_Enum
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Production Line Workflow — Overview
+// Production Line Workflow - Overview
 // ══════════════════════════════════════════════════════════════════════════════
 //
 // The Production Line follows a structured workflow to fulfil a single order.
@@ -154,71 +154,71 @@ public enum ProductionLine_State_Enum
 // ── Setup ─────────────────────────────────────────────────────────────────────
 //
 //  IDLE
-//    → Order is assigned by the Machine Orchestrator
+//    -> Order is assigned by the Machine Orchestrator
 //  ORDER_ASSIGNED
-//    → Machine Orchestrator sets productionLine_ItemsTotal from the order
-//    → Machine Orchestrator begins the per-item loop
+//    -> Machine Orchestrator sets productionLine_ItemsTotal from the order
+//    -> Machine Orchestrator begins the per-item loop
 //
 //
-// ── Per-Item Loop — repeated once per item in the order ──────────────────────
+// ── Per-Item Loop - repeated once per item in the order ──────────────────────
 //
 //  AGV_MOVING_TO_WAREHOUSE
-//    → AGV navigates to the Warehouse
-//    → Machine Orchestrator waits for AGV to arrive
+//    -> AGV navigates to the Warehouse
+//    -> Machine Orchestrator waits for AGV to arrive
 //  EXTRACTING_ITEM
-//    → Warehouse extracts the next item and brings it to the entrance
-//    → Machine Orchestrator waits for Warehouse status == WAITING
+//    -> Warehouse extracts the next item and brings it to the entrance
+//    -> Machine Orchestrator waits for Warehouse status == WAITING
 //  AGV_PICKING_UP_AT_WAREHOUSE
-//    → AGV picks up the item from the Warehouse entrance
-//    → Machine Orchestrator calls:
+//    -> AGV picks up the item from the Warehouse entrance
+//    -> Machine Orchestrator calls:
 //        agv.Confirm_ItemPickedUp(item)
 //        warehouse.Confirm_ItemPickedUp()
 //  AGV_MOVING_TO_ASSEMBLY
-//    → AGV navigates to the Assembly Station
-//    → Machine Orchestrator waits for AGV to arrive
+//    -> AGV navigates to the Assembly Station
+//    -> Machine Orchestrator waits for AGV to arrive
 //  AGV_DROPPING_OFF_AT_ASSEMBLY
-//    → AGV drops off the item at the Assembly Station
-//    → Machine Orchestrator calls:
+//    -> AGV drops off the item at the Assembly Station
+//    -> Machine Orchestrator calls:
 //        agv.Confirm_ItemDroppedOff()
 //        assemblySt.ReceiveItem_fromAGV(item)
 //        assemblySt.Confirm_ItemReceived_fromAGV(item)
 //  ITEM_DELIVERED
-//    → productionLine_ItemsDelivered is incremented
-//    → DECISION POINT:
+//    -> productionLine_ItemsDelivered is incremented
+//    -> DECISION POINT:
 //        if productionLine.Check_allItemsDelivered() == false
-//            → loop back to AGV_MOVING_TO_WAREHOUSE for next item
+//            -> loop back to AGV_MOVING_TO_WAREHOUSE for next item
 //        if productionLine.Check_allItemsDelivered() == true
-//            → proceed to ASSEMBLING
+//            -> proceed to ASSEMBLING
 //
 //
 // ── Assembly Phase ────────────────────────────────────────────────────────────
 //
 //  ASSEMBLING
-//    → Machine Orchestrator calls assemblySt.Order_Ready_toPackage(order)
-//    → Machine Orchestrator waits for assemblySt.Check_isPackage_Finished() == true
+//    -> Machine Orchestrator calls assemblySt.Order_Ready_toPackage(order)
+//    -> Machine Orchestrator waits for assemblySt.Check_isPackage_Finished() == true
 //  WAITING_FOR_PACKAGE_REGISTRATION
-//    → Machine Orchestrator calls:
+//    -> Machine Orchestrator calls:
 //        assemblySt.Receive_FinishedPackage_ItemClass(
 //            order.Translate_thisOrder_intoItem())
-//    → Machine Orchestrator waits for assemblySt.Check_isPackage_Ready() == true
+//    -> Machine Orchestrator waits for assemblySt.Check_isPackage_Ready() == true
 //
 //
 // ── Return Phase ──────────────────────────────────────────────────────────────
 //
 //  AGV_MOVING_TO_ASSEMBLY_FOR_PACKAGE
-//    → AGV navigates to the Assembly Station to collect the finished package
-//    → Machine Orchestrator waits for AGV to arrive
+//    -> AGV navigates to the Assembly Station to collect the finished package
+//    -> Machine Orchestrator waits for AGV to arrive
 //  AGV_PICKING_UP_PACKAGE
-//    → AGV picks up the finished package from the Assembly Station
-//    → Machine Orchestrator calls:
+//    -> AGV picks up the finished package from the Assembly Station
+//    -> Machine Orchestrator calls:
 //        agv.Confirm_ItemPickedUp(packageItem)
 //        assemblySt.RemoveItem_byAGV()
 //  AGV_MOVING_TO_WAREHOUSE_FOR_PACKAGE
-//    → AGV navigates back to the Warehouse with the finished package
-//    → Machine Orchestrator waits for AGV to arrive
+//    -> AGV navigates back to the Warehouse with the finished package
+//    -> Machine Orchestrator waits for AGV to arrive
 //  AGV_DROPPING_OFF_PACKAGE_AT_WAREHOUSE
-//    → AGV drops off the finished package at the Warehouse entrance
-//    → Machine Orchestrator calls:
+//    -> AGV drops off the finished package at the Warehouse entrance
+//    -> Machine Orchestrator calls:
 //        agv.Confirm_ItemDroppedOff()
 //        warehouse.CurrentlyLoaded_withItem(packageItem)
 //        warehouse.Check_isCurrentlyLoaded_withItem(packageItem)
@@ -227,17 +227,17 @@ public enum ProductionLine_State_Enum
 // ── Insertion Phase ───────────────────────────────────────────────────────────
 //
 //  INSERTING_PACKAGE
-//    → Machine Orchestrator calls warehouse.Insert_Item(packageItem)
-//    → Machine Orchestrator waits for Warehouse status == IDLE
+//    -> Machine Orchestrator calls warehouse.Insert_Item(packageItem)
+//    -> Machine Orchestrator waits for Warehouse status == IDLE
 //
 //
 // ── Completion ────────────────────────────────────────────────────────────────
 //
 //  ORDER_COMPLETE
-//    → Machine Orchestrator calls warehouse.Remove_CurrentOrder()
-//    → Machine Orchestrator calls productionLine.Reset_OrderTracking()
-//    → Production Line transitions back to IDLE
-//    → Ready to accept a new order
+//    -> Machine Orchestrator calls warehouse.Remove_CurrentOrder()
+//    -> Machine Orchestrator calls productionLine.Reset_OrderTracking()
+//    -> Production Line transitions back to IDLE
+//    -> Ready to accept a new order
 //
 // ══════════════════════════════════════════════════════════════════════════════
 

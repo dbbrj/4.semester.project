@@ -292,7 +292,7 @@ public class Order_Class
      * the finished basket, ready to be stored back in the Warehouse.
      * Uses the order ID as the item ID and the order_Inventory_ID list
      * as the inventory identifiers for the basket.
-     * Returns null if valid_Inventory_ID_Format is false — indicating
+     * Returns null if valid_Inventory_ID_Format is false - indicating
      * the order does not have valid inventory ID data for translation.
      * @return a new Item_Class object representing the finished basket,
      *         or null if the inventory ID format is not valid.

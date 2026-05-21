@@ -18,8 +18,8 @@ import java.util.ArrayList;
  * state and lifecycle methods that all Structure Classes must implement.
  * The Assembly Station is a fully automatic device that assembles
  * items into a finished package without any manual input.
- * Items can arrive from and be removed to multiple sources —
- * the AGV, the Packing Area, or manually — and the source of the
+ * Items can arrive from and be removed to multiple sources -
+ * the AGV, the Packing Area, or manually - and the source of the
  * currently loaded item is always tracked internally.
  * The interface is divided into five groups of methods:
  * component pairing, connection, item special cases,
@@ -70,7 +70,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * of the item cannot be determined in this context.
      * Should only be used to fix bugs or recover from corrupted state
      * where normal item registration methods cannot resolve the issue.
-     * Never use this in normal production flow — use ReceiveItem_fromAGV(),
+     * Never use this in normal production flow - use ReceiveItem_fromAGV(),
      * ReceiveItem_fromPacking() or ReceiveItem_Manually() instead.
      * @param item the Item_Class object to forcefully assign.
      * @return true if successfully assigned, false otherwise.
@@ -94,7 +94,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * Returns null if nothing is currently loaded.
      * Can be used by the Machine Orchestrator to diagnose problems
      * when Confirm_ItemReceived_fromAGV() or Confirm_ItemReceived_fromPacking()
-     * returns false — allowing the Orchestrator to determine whether
+     * returns false - allowing the Orchestrator to determine whether
      * the wrong item arrived or no item arrived at all.
      * @return the current Item_Class instance, or null if nothing is loaded.
      */
@@ -106,7 +106,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * Clears the item load and resets the source to NONE.
      * Should only be used to fix bugs or recover from corrupted state
      * where normal item removal methods cannot resolve the issue.
-     * Never use this in normal production flow — use RemoveItem_byAGV(),
+     * Never use this in normal production flow - use RemoveItem_byAGV(),
      * RemoveItem_byPacking() or RemoveItem_Manually() instead.
      * @return true if successfully removed, false otherwise.
      */
@@ -122,7 +122,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * Notifies the Structure that the AGV has physically collected
      * the currently loaded item or finished package from the Assembly Station.
      * Clears the item load and resets the source tracking to NONE.
-     * Does not track where the item went — only that it left via the AGV.
+     * Does not track where the item went - only that it left via the AGV.
      * Must only be called after the AGV has physically collected the item.
      * @return true if successfully registered, false otherwise.
      */
@@ -132,7 +132,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * Notifies the Structure that the currently loaded item has been
      * physically sent to the Packing Area from the Assembly Station.
      * Clears the item load and resets the source tracking to NONE.
-     * Does not track where the item went — only that it left via the Packing Area.
+     * Does not track where the item went - only that it left via the Packing Area.
      * Must only be called after the item has physically left for the Packing Area.
      * @return true if successfully registered, false otherwise.
      */
@@ -179,7 +179,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * the source as MANUALLY.
      * Will be rejected if an item is already loaded on the station.
      * Should only be used during testing, manual intervention or error recovery.
-     * Never use this in normal production flow — use ReceiveItem_fromAGV()
+     * Never use this in normal production flow - use ReceiveItem_fromAGV()
      * or ReceiveItem_fromPacking() instead.
      * @param item the Item_Class object representing the placed item.
      * @return true if successfully registered, false otherwise.
@@ -194,7 +194,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
     /**
      * Checks whether the currently loaded item matches the expected item
      * and that it arrived from the AGV.
-     * Returns true only if both conditions are met — the loaded item
+     * Returns true only if both conditions are met - the loaded item
      * matches the expected item AND the source is AGV_AREA.
      * If false, the Orchestrator can call Get_Current_ItemLoaded()
      * to determine whether the wrong item arrived or the item
@@ -208,7 +208,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
     /**
      * Checks whether the currently loaded item matches the expected item
      * and that it arrived from the Packing Area.
-     * Returns true only if both conditions are met — the loaded item
+     * Returns true only if both conditions are met - the loaded item
      * matches the expected item AND the source is PACKING_AREA.
      * If false, the Orchestrator can call Get_Current_ItemLoaded()
      * to determine whether the wrong item arrived or the item
@@ -264,7 +264,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * indicating the physical assembly is complete but the package has not yet
      * been registered in the system via Receive_FinishedPackage_ItemClass().
      * Use this to detect when to call Receive_FinishedPackage_ItemClass().
-     * Do not use this as the green light to send the AGV —
+     * Do not use this as the green light to send the AGV -
      * use Check_isPackage_Ready() for that instead.
      * @return true if the assembly is finished and awaiting package registration,
      *         false otherwise.
@@ -275,7 +275,7 @@ public interface AssemblySt_Structure_Interface extends Machine_Structure_Interf
      * Checks whether the Assembly Station has finished its assembly process
      * and the finished package has been registered in the system
      * via Receive_FinishedPackage_ItemClass().
-     * Returns true only when both conditions are met — the physical assembly
+     * Returns true only when both conditions are met - the physical assembly
      * is complete AND the package has been registered as an Item_Class object.
      * This is the definitive signal that the AGV can be sent to collect
      * the finished package.

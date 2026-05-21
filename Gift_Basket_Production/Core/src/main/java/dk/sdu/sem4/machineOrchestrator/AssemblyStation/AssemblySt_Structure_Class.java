@@ -262,7 +262,7 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
 
         // ── Step 3: Process current task flag ────────────────────────────
 
-        // ── NONE — nothing to do ──────────────────────────────────────────
+        // ── NONE - nothing to do ──────────────────────────────────────────
         if (this.assemblySt_CurrentTask == AssemblySt_Structure_Task_Option_Enum.NONE)
         {
             if (super.Get_Machine_Structure_Status() != Machine_Structure_Status_Enum.WAITING)
@@ -273,7 +273,7 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
             return true;
         }
 
-        // ── Item receiving and removing tasks — fast cyber-level ──────────
+        // ── Item receiving and removing tasks - fast cyber-level ──────────
         // These complete in one cycle for the current implementation.
         // Future Assembly Station brands may require hardware operations here.
         if (this.assemblySt_CurrentTask == AssemblySt_Structure_Task_Option_Enum.RECEIVE_ITEM_FROM_AGV
@@ -283,7 +283,7 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
                 || this.assemblySt_CurrentTask == AssemblySt_Structure_Task_Option_Enum.REMOVE_ITEM_BY_PACKING
                 || this.assemblySt_CurrentTask == AssemblySt_Structure_Task_Option_Enum.REMOVE_ITEM_MANUALLY)
         {
-            // Complete immediately — reset flag.
+            // Complete immediately - reset flag.
             this.assemblySt_LastTask    = this.assemblySt_CurrentTask;
             this.assemblySt_CurrentTask = AssemblySt_Structure_Task_Option_Enum.NONE;
 
@@ -291,10 +291,10 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
             super.Set_Machine_Structure_Status(Machine_Structure_Status_Enum.IDLE);
         }
 
-        // ── PACKAGE_ORDER — slow hardware operation ───────────────────────
+        // ── PACKAGE_ORDER - slow hardware operation ───────────────────────
         else if (this.assemblySt_CurrentTask == AssemblySt_Structure_Task_Option_Enum.PACKAGE_ORDER)
         {
-            // First cycle — Component just received the task.
+            // First cycle - Component just received the task.
             if (componentState == Component_Process_States_Enum.RUNNING_IDLE
                     && componentStatus == Component_Status_Enum.IDLE)
             {
@@ -303,7 +303,7 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
                 return true;
             }
 
-            // Subsequent cycles — assembly in progress.
+            // Subsequent cycles - assembly in progress.
             if (componentState == Component_Process_States_Enum.RUNNING_BUSY
                     && componentStatus == Component_Status_Enum.WORKING)
             {
@@ -312,13 +312,13 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
                 return true;
             }
 
-            // Assembly finished — Component signals completion.
+            // Assembly finished - Component signals completion.
             if (componentState == Component_Process_States_Enum.RUNNING_DONE
                     && componentStatus == Component_Status_Enum.IDLE)
             {
                 if (this.assemblySt_Component_instance.Check_isAssemblyFinished())
                 {
-                    // Physical assembly complete — waiting for package registration.
+                    // Physical assembly complete - waiting for package registration.
                     this.assemblySt_isPackageFinished = true;
 
                     this.assemblySt_LastTask    = this.assemblySt_CurrentTask;
@@ -335,10 +335,10 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
             }
         }
 
-        // ── TRANSPORT_PACKAGE — fast cyber-level ──────────────────────────
+        // ── TRANSPORT_PACKAGE - fast cyber-level ──────────────────────────
         else if (this.assemblySt_CurrentTask == AssemblySt_Structure_Task_Option_Enum.TRANSPORT_PACKAGE)
         {
-            // Complete immediately — reset flag.
+            // Complete immediately - reset flag.
             this.assemblySt_LastTask    = this.assemblySt_CurrentTask;
             this.assemblySt_CurrentTask = AssemblySt_Structure_Task_Option_Enum.NONE;
 
@@ -421,7 +421,7 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
         this.assemblySt_isPackageReady    = false;
 
         // Note: assemblySt_ItemLoad, assemblySt_PackageItem and assemblySt_CurrentOrder
-        // are intentionally NOT cleared — if an item or order is present at shutdown,
+        // are intentionally NOT cleared - if an item or order is present at shutdown,
         // we preserve that information so the next startup knows the physical state.
 
         // ── Shutdown complete ─────────────────────────────────────────────
@@ -683,6 +683,11 @@ public class AssemblySt_Structure_Class extends Machine_Structure_Class implemen
         this.assemblySt_ItemSource        = AssemblySt_ItemSource_Enum.NONE;
         this.assemblySt_isPackageFinished = false;
         this.assemblySt_isPackageReady    = false;
+
+        // Clear the current order so Order_Ready_toPackage() accepts the next order.
+        // Without this, the non-null guard in Order_Ready_toPackage() permanently
+        // blocks all subsequent orders after the first one completes.
+        this.assemblySt_CurrentOrder = null;
 
         // Set task flag for Running_Process().
         this.assemblySt_CurrentTask = AssemblySt_Structure_Task_Option_Enum.REMOVE_ITEM_BY_AGV;

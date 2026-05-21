@@ -8,7 +8,7 @@ package dk.sdu.sem4.machineOrchestrator.AGV;
 /**
  * The AGV Location Class represents a physical location that an AGV
  * is able to navigate to.
- * It bridges two different identification systems — the Machine Structure ID
+ * It bridges two different identification systems - the Machine Structure ID
  * used by the Machine Orchestrator to identify devices in the system,
  * and the Location ID used internally by the AGV to identify its destinations.
  * Each location is also typed to indicate what kind of device is present
@@ -27,7 +27,7 @@ public class AGV_Location_Class
     // Used internally when communicating with the physical AGV device.
     private int location_ID;
 
-    // Type flags — define what kind of device is present at this location.
+    // Type flags - define what kind of device is present at this location.
     // Allows the AGV Structure to categorise and look up locations by type.
     private boolean location_isWarehouse_Type;
     private boolean location_isAssemblySt_Type;
